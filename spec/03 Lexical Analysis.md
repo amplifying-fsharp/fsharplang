@@ -1,11 +1,10 @@
-## 3. LEXICAL ANALYSIS
+# 3. LEXICAL ANALYSIS
 
 Lexical analysis converts an input stream of Unicode characters into a stream of tokens by iteratively
 processing the stream. If more than one token can match a sequence of characters in the source file,
-lexical processing always forms the longest possible lexical element. Some tokens, such as _block-
-comment-start_, are discarded after processing as described later in this section.
+lexical processing always forms the longest possible lexical element. Some tokens, such as `block-comment-start`, are discarded after processing as described later in this section.
 
-### 3.1 WHITESPACE
+## 3.1 WHITESPACE
 
 Whitespace consists of spaces and newline characters.
 
@@ -14,9 +13,9 @@ regexp whitespace = ' '+
 regexp newline = '\n' | '\r' '\n'
 token whitespace-or-newline = whitespace | newline
 ```
-Whitespace tokens _whitespace-or-newline_ are discarded from the returned token stream.
+Whitespace tokens `whitespace-or-newline` are discarded from the returned token stream.
 
-### 3.2 COMMENTS
+## 3.2 COMMENTS
 
 Block comments are delimited by `(*` and `*)` and may be nested. Single-line comments begin with
 two backslashes (`//`) and extend to the end of the line.
@@ -26,12 +25,12 @@ token block-comment-start = "(*"
 token block-comment-end = "*)"
 token end-of-line-comment = "//" [^'\n' '\r']*
 ```
-When the input stream matches a _block-comment-start_ token, the subsequent text is tokenized
-recursively against the tokens that are described in §3 until a _block-comment-end_ token is found. The
+When the input stream matches a `block-comment-start` token, the subsequent text is tokenized
+recursively against the tokens that are described in §3 until a `block-comment-end` token is found. The
 intermediate tokens are discarded.
 
 For example, comments can be nested, and strings that are embedded within comments are
-tokenized by the rules for _string, verbatim-string_ , and _triple-quoted string_. In particular, strings
+tokenized by the rules for `string`, `verbatim-string` , and `triple-quoted string`. In particular, strings
 that are embedded in comments are tokenized in their entirety, without considering closing `*)`
 marks. As a result of this rule, the following is a valid comment:
 
@@ -45,12 +44,12 @@ closing comment token *) followed by a triple-quoted mark is parsed as part of a
 (* """ *)
 ```
 For the purposes of this specification, comment tokens are discarded from the returned lexical
-stream. In practice, XML documentation tokens are _end-of-line-comments_ that begin with ///. The
+stream. In practice, XML documentation tokens are `end-of-line-comments` that begin with ///. The
 delimiters are retained and are associated with the remaining elements to generate XML
 documentation.
 
 
-### 3.3 CONDITIONAL COMPILATION
+## 3.3 CONDITIONAL COMPILATION
 
 The lexical preprocessing directives `#if ident /#else/#endif` delimit conditional compilation
 sections. The following describes the grammar for such sections:
@@ -63,15 +62,19 @@ token endif-directive = "#endif"
 if-expression-term =
     ident-text
     '(' if-expression ')'
+
 if-expression-neg =
     if-expression-term
     '!' if-expression-term
+
 if-expression-and =
     if-expression-neg
     if-expression-and && if-expression-and
+
 if-expression-or =
     if-expression-and
     if-expression-or || if-expression-or
+
 if-expression = if-expression-or
 ```
 A preprocessing directive always occupies a separate line of source code and always begins with a #
@@ -91,7 +94,7 @@ the text between any corresponding _`else-directive`_ and the _`endif-directive`
 - In skipped text, `#if ident /#else/#endif` sections can be nested.
 - Strings and comments are not treated as special
 
-### 3.4 IDENTIFIERS AND KEYWORDS
+## 3.4 IDENTIFIERS AND KEYWORDS
 
 Identifiers follow the specification in this section.
 
@@ -101,9 +104,11 @@ regexp letter-char = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
 regexp connecting-char = '\Pc'
 regexp combining-char = '\Mn' | '\Mc'
 regexp formatting-char = '\Cf'
+
 regexp ident-start-char =
     | letter-char
     | _
+
 regexp ident-char =
     | letter-char
     | digit-char
@@ -112,6 +117,7 @@ regexp ident-char =
     | formatting-char
     | '
     | _
+
 regexp ident-text = ident-start-char ident-char *
 token ident =
     | ident-text For example, myName1
@@ -162,7 +168,7 @@ In the remainder of this specification, we refer to the token that is generated 
 by using the text of the keyword itself.
 
 
-### 3.5 STRINGS AND CHARACTERS
+## 3.5 STRINGS AND CHARACTERS
 
 String literals may be specified for two types:
 
@@ -182,6 +188,7 @@ regexp escape-char = '\' ["\'ntbrafv]
 regexp non-escape-chars = '\' [^"\'ntbrafv]
 regexp simple-char-char =
     | (any char except '\n' '\t' '\r' '\b' '\a' '\f' '\v' ' \ ")
+
 regexp unicodegraph-short = '\' 'u' hexdigit hexdigit hexdigit hexdigit
 regexp unicodegraph-long =  '\' 'U' hexdigit hexdigit hexdigit hexdigit
                                     hexdigit hexdigit hexdigit hexdigit
@@ -193,6 +200,7 @@ regexp char-char =
     | escape-char
     | trigraph
     | unicodegraph-short
+
 regexp string-char =
     | simple-string-char
     | escape-char
@@ -243,8 +251,8 @@ example:
 let s = "abc
     def"
 ```
-In this case, s has the value `"abc\010    def"` where `\010` is the embedded control character for `\n`,
-which has Unicode UTF- 16value 10.
+In this case, s has the value `abc\010    def` where `\010` is the embedded control character for `\n`,
+which has Unicode UTF-16 value 10.
 
 Verbatim strings may be specified by using the `@` symbol preceding the string as in C#. For example,
 the following assigns the value `"abc\def"` to `s`.
@@ -275,7 +283,7 @@ let catalog = """
 </catalog>
 """
 ```
-### 3.6 SYMBOLIC KEYWORDS
+## 3.6 SYMBOLIC KEYWORDS
 
 The following symbolic or partially symbolic character sequences are treated as keywords:
 
@@ -292,7 +300,7 @@ The following symbols are reserved for future use:
 token reserved-symbolic-sequence =
     ~ `
 ```
-### 3.7 SYMBOLIC OPERATORS
+## 3.7 SYMBOLIC OPERATORS
 
 User-defined and library-defined symbolic operators are sequences of characters as shown below,
 except where the sequence of characters is a symbolic keyword (§3.6).
@@ -300,10 +308,13 @@ except where the sequence of characters is a symbolic keyword (§3.6).
 ```
 regexp first-op-char = !%&*+-./<=>@^|~
 regexp op-char = first-op-char |?
+
 token quote-op-left =
     | <@ <@@
+
 token quote-op-right =
     | @> @@>
+
 token symbolic-op =
     |?
     | ?<-
@@ -319,7 +330,7 @@ The `quote-op-left` and `quote-op-right` operators are used in quoted expression
 For details about the associativity and precedence of symbolic operators in expression forms, see
 §4.4.
 
-### 3.8 NUMERIC LITERALS
+## 3.8 NUMERIC LITERALS
 
 The lexical specification of numeric literals is as follows:
 
@@ -366,7 +377,7 @@ token float =
     digit +. digit *
     digit + (. digit * )? (e|E) (+|-)? digit +
 ```
-##### 3.8.1 Post-filtering of Adjacent Prefix Tokens
+### 3.8.1 Post-filtering of Adjacent Prefix Tokens
 
 Negative integers are specified using the `–` token; for example, `-3`. The token steam is post-filtered
 according to the following rules:
@@ -396,28 +407,28 @@ according to the following rules:
       | ADJACENT_PREFIX_OP expr
 ```
 
-##### 3.8.2 Post-filtering of Integers Followed by Adjacent “..”
+### 3.8.2 Post-filtering of Integers Followed by Adjacent “..”
 
 Tokens of the form
 
 ```
 token intdotdot = int..
 ```
-such as 34.. are post-filtered to two tokens: one _int_ and one _symbolic-keyword_ , “..”.
+such as `34..` are post-filtered to two tokens: one `int` and one `symbolic-keyword` , “`..`”.
 
-This rule allows “..” to immediately follow an integer. This construction is used in expressions of the
-form [for x in 1..2 -> x + x ]. Without this rule, the longest-match rule would consider this
-sequence to be a floating-point number followed by a “.”.
+This rule allows “`..`” to immediately follow an integer. This construction is used in expressions of the
+form `[for x in 1..2 -> x + x ]`. Without this rule, the longest-match rule would consider this
+sequence to be a floating-point number followed by a “`.`”.
 
-##### 3.8.3 Reserved Numeric Literal Forms
+### 3.8.3 Reserved Numeric Literal Forms
 
 The following token forms are reserved for future numeric literal formats:
 
 ```
 token reserved-literal-formats =
-| (xint | ieee32 | ieee64) ident-char+
+    | (xint | ieee32 | ieee64) ident-char+
 ```
-##### 3.8.4 Shebang
+### 3.8.4 Shebang
 
 A shebang (#!) directive may exist at the beginning of F# source files. Such a line is treated as a
 comment. This allows F# scripts to be compatible with the Unix convention whereby a script
@@ -427,7 +438,7 @@ the #! directive.
 ```
 #!/bin/usr/env fsharpi --exec
 ```
-### 3.9 LINE DIRECTIVES
+## 3.9 LINE DIRECTIVES
 
 Line directives adjust the source code filenames and line numbers that are reported in error
 messages, recorded in debugging symbols, and propagated to quoted expressions. F# supports the
@@ -435,39 +446,28 @@ following line directives:
 
 ```
 token line-directive =
-# int
-# int string
-# int verbatim-string
-#line int
-#line int string
-#line int verbatim-string
+    # int
+    # int string
+    # int verbatim-string
+    #line int
+    #line int string
+    #line int verbatim-string
 ```
 A line directive applies to the line that immediately follows the directive. If no line directive is
 present, the first line of a file is numbered 1.
 
-### 3.10 HIDDEN TOKENS
+## 3.10 HIDDEN TOKENS
 
 Some hidden tokens are inserted by lexical filtering (§ 15 ) or are used to replace existing tokens. See
 § 15 for a full specification and for the augmented grammar rules that take these into account.
 
 
-### 3.11 IDENTIFIER REPLACEMENTS
+## 3.11 IDENTIFIER REPLACEMENTS
 
 The following table lists identifiers that are automatically replaced by expressions.
 
-**Identifier Replacement**
-
-__SOURCE_DIRECTORY__ (^) A literal verbatim string that specifies the name of the directory that contains the
-current file. For example:
-C:\source
-The name of the current file is derived from the most recent line directive in the
-file. If no line directive has appeared, the name is derived from the name that was
-specificed to the command-line compiler in combination with
-System.IO.Path.GetFullPath.
-In F# Interactive, the name stdin is used. When F# Interactive is used from tools
-such as Visual Studio, a line directive is implicitly added before the interactive
-execution of each script fragment.
-__SOURCE_FILE__ (^) A literal verbatim string that contains the name of the current file. For example:
-file.fs
-__LINE__ (^) A literal string that specifies the line number in the source file, after taking into
-account adjustments from line directives.
+| Identifier | Replacement |
+| --- | --- |
+| `__SOURCE_DIRECTORY__` | A literal verbatim string that specifies the name of the directory that contains the <br> current file. For example:<br>`C:\source`<br>The name of the current file is derived from the most recent line directive in the file. If no line directive has appeared, the name is derived from the name that was specificed to the command-line compiler in combination with<br> `System.IO.Path.GetFullPath`.<br> In F# Interactive, the name `stdin` is used. When F# Interactive is used from tools such as Visual Studio, a line directive is implicitly added before the interactive execution of each script fragment. |
+| `__SOURCE_FILE__` | A literal verbatim string that contains the name of the current file. For example:<br>`file.fs` |
+| `__LINE__`| A literal string that specifies the line number in the source file, after taking into account adjustments from line directives. |
