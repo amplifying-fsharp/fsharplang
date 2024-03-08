@@ -15,7 +15,7 @@ To explore this program, you can:
 - Manually invoke the F# command line compiler fsc.exe.
 - Use F# Interactive, the dynamic compiler that is part of the F# distribution.
 
-## 1.1.1 Lightweight Syntax
+### 1.1.1 Lightweight Syntax
 
 The F# language uses simplified, indentation-aware syntactic constructs known as lightweight syntax. The lines of the sample program in the previous section form a sequence of declarations and are aligned on the same column. For example, the two lines in the following code are two separate declarations:
 
@@ -38,7 +38,7 @@ The following shows the correct alignment:
 
 The use of lightweight syntax is the default for all F# code in files with the extension .fs, .fsx, .fsi, or .fsscript.
 
-## 1.1.2 Making Data Simple
+### 1.1.2 Making Data Simple
 
 The first line in our sample simply declares a list of numbers from one through ten.
 
@@ -73,7 +73,7 @@ To define a tuple, you separate the individual components with commas.
 
 A key concept in F# is immutability. Tuples and lists are some of the many types in F# that are immutable, and indeed most things in F# are immutable by default. Immutability means that once a value is created and given a name, the value associated with the name cannot be changed. Immutability has several benefits. Most notably, it prevents many classes of bugs, and immutable data is inherently thread-safe, which makes the process of parallelizing code simpler.
 
-## 1.1.3 Making Types Simple
+### 1.1.3 Making Types Simple
 
 The next line of the sample program defines a function called `square`, which squares its input.
 
@@ -103,7 +103,7 @@ The process of type inference also applies *automatic generalization* to declara
 
 Here the function `swap` is generic, and `'a` and `'b` represent type variables, which are placeholders for types in generic code. Type inference and automatic generalization greatly simplify the process of writing reusable code fragments.
 
-## 1.1.4 Functional Programming
+### 1.1.4 Functional Programming
 
 Continuing with the sample, we have a list of integers named `numbers`, and the `square` function, and we want to create a new list in which each item is the result of a call to our function. This is called *mapping* our function over each item in the list. The F# library function `List.map` does just that:
 
@@ -153,7 +153,7 @@ We can use the functions as values in a pipeline:
 
 Pipelining demonstrates one way in which F# supports compositionality, a key concept in functional programming. The pipeline operator simplifies the process of writing compositional code where the result of one function is passed into the next.
 
-## 1.1.5 Imperative Programming
+### 1.1.5 Imperative Programming
 
 The next line of the sample program prints text in the console window.
 
@@ -169,7 +169,7 @@ The format specifiers `%d`, `%f`, and `%s` are placeholders for integers, floats
 
 The `printfn` function is an example of *imperative programming*, which means calling functions for their side effects. Other commonly used imperative programming techniques include arrays and dictionaries (also called hash tables). F# programs typically use a mixture of functional and imperative techniques.
 
-## 1.1.6 .NET Interoperability and CLI Fidelity
+### 1.1.6 .NET Interoperability and CLI Fidelity
 
 The Common Language Infrastructure (CLI) function `System.Console.ReadKey` to pause the program before the console window closes.
 
@@ -177,7 +177,7 @@ The Common Language Infrastructure (CLI) function `System.Console.ReadKey` to pa
 
 Because F# is built on top of CLI implementations, you can call any CLI library from F#. Furthermore, other CLI languages can easily use any F# components.
 
-## 1.1.7 Parallel and Asynchronous Programming
+### 1.1.7 Parallel and Asynchronous Programming
 
 F# is both a parallel and a reactive language. During execution, F# programs can have multiple parallel active evaluations and multiple pending reactions, such as callbacks and agents that wait to react to events and messages.
 
@@ -224,7 +224,7 @@ F# is also a reactive language. The following example requests multiple web page
 
 By using asynchronous workflows together with other CLI libraries, F# programs can implement parallel tasks, parallel I/O operations, and message-receiving agents.
 
-## 1.1.8 Strong Typing for Floating-Point Code
+### 1.1.8 Strong Typing for Floating-Point Code
 
 F# applies type checking and type inference to floating-point-intensive domains through units of measure inference and checking. This feature allows you to type-check programs that manipulate floating-point numbers that represent physical and abstract quantities in a stronger way than other typed languages, without losing any performance in your compiled code. You can think of this feature as providing a type system for floating-point code.
 
@@ -240,7 +240,7 @@ Consider the following example:
 
 The `Measure` attribute tells F# that `kg`, `s`, and `m` are not really types in the usual sense of the word, but are used to build units of measure. Here `speedOfImpact` is inferred to have type `float<m/s>`.
 
-## 1.1.9 Object-Oriented Programming and Code Organization
+### 1.1.9 Object-Oriented Programming and Code Organization
 
 The sample program shown at the start of this chapter is a `script`. Although scripts are excellent for rapid prototyping, they are not suitable for larger software components. F# supports the transition from scripting to structured code through several techniques.
 
@@ -318,7 +318,7 @@ Modules are also used in the F# library design to associate extra functionality 
 
 Other mechanisms aimed at supporting software engineering include *signatures*, which can be used to give explicit types to components, and namespaces, which serve as a way of organizing the name hierarchies for larger APIs.
 
-## 1.1.10 Information-rich Programming
+### 1.1.10 Information-rich Programming
 
 F# Information-rich programming addresses the trend toward greater availability of data, services, and information. The key to information-rich programming is to eliminate barriers to working with diverse information sources that are available on the Internet and in modern enterprise environments. Type providers and query expressions are a significant part of F# support for information-rich programming.
 
