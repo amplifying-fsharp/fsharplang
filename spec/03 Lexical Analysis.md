@@ -8,7 +8,7 @@ lexical processing always forms the longest possible lexical element. Some token
 
 Whitespace consists of spaces and newline characters.
 
-```
+```fsgrammar
 regexp whitespace = ' '+
 regexp newline = '\n' | '\r' '\n'
 token whitespace-or-newline = whitespace | newline
@@ -20,7 +20,7 @@ Whitespace tokens `whitespace-or-newline` are discarded from the returned token 
 Block comments are delimited by `(*` and `*)` and may be nested. Single-line comments begin with
 two backslashes (`//`) and extend to the end of the line.
 
-```
+```fsgrammar
 token block-comment-start = "(*"
 token block-comment-end = "*)"
 token end-of-line-comment = "//" [^'\n' '\r']*
@@ -54,7 +54,7 @@ documentation.
 The lexical preprocessing directives `#if ident /#else/#endif` delimit conditional compilation
 sections. The following describes the grammar for such sections:
 
-```
+```fsgrammar
 token if-directive = "#if" whitespace if-expression-text
 token else-directive = "#else"
 token endif-directive = "#endif"
@@ -98,7 +98,7 @@ the text between any corresponding _`else-directive`_ and the _`endif-directive`
 
 Identifiers follow the specification in this section.
 
-```
+```fsgrammar
 regexp digit-char = [0-9]
 regexp letter-char = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
 regexp connecting-char = '\Pc'
@@ -138,7 +138,7 @@ Unicode characters that are accepted for the Unicode character classes \Lu, \Li,
 
 The following identifiers are treated as keywords of the F# language:
 
-```
+```fsgrammar
 token ident-keyword =
     abstract and as assert base begin class default delegate do done
     downcast downto elif else end exception extern false finally for
@@ -149,7 +149,7 @@ token ident-keyword =
 ```
 The following identifiers are reserved for future use:
 
-```
+```fsgrammar
 token reserved-ident-keyword =
     atomic break checked component const constraint constructor
     continue eager fixed fori functor include
@@ -160,7 +160,7 @@ A future revision of the F# language may promote any of these identifiers to be 
 
 The following token forms are reserved, except when they are part of a symbolic keyword (§3.6).
 
-```
+```fsgrammar
 token reserved-ident-formats =
     | ident-text ( '!' | '#')
 ```
@@ -183,7 +183,7 @@ string in the same way as in C#:
 - Identifiers, as described in the previous section, such as “abc”
 - Trigraph specifications of Unicode characters, such as “`\067`” which represents “C”
 
-```
+```fsgrammar
 regexp escape-char = '\' ["\'ntbrafv]
 regexp non-escape-chars = '\' [^"\'ntbrafv]
 regexp simple-char-char =
@@ -240,14 +240,14 @@ for the _`string-char`_ elements within the string. Strings may include `\n` as 
 However, if a line ends with `\`, the newline character and any leading whitespace elements on the
 subsequent line are ignored. Thus, the following gives `s` the value `"abcdef"`:
 
-```
+```fsharp
 let s = "abc\
     def"
 ```
 Without the backslash, the resulting string includes the newline and whitespace characters. For
 example:
 
-```
+```fsharp
 let s = "abc
     def"
 ```
@@ -257,7 +257,7 @@ which has Unicode UTF-16 value 10.
 Verbatim strings may be specified by using the `@` symbol preceding the string as in C#. For example,
 the following assigns the value `"abc\def"` to `s`.
 
-```
+```fsharp
 let s = @"abc\def"
 ```
 String-like and character-like literals can also be specified for unsigned byte arrays (type `byte[]`).
@@ -268,7 +268,7 @@ A triple-quoted string is specified by using three quotation marks (`"""`) to en
 includes one or more escaped strings is interpreted verbatim. For example, a triple-quoted string can
 be used to embed XML blobs:
 
-```
+```fsharp
 let catalog = """
 <?xml version="1.0"?>
 <catalog>
@@ -287,7 +287,7 @@ let catalog = """
 
 The following symbolic or partially symbolic character sequences are treated as keywords:
 
-```
+```fsgrammar
 token symbolic-keyword =
     let! use! do! yield! return!
     | -> <-. : ( ) [ ] [< >] [| |] { }
@@ -296,7 +296,7 @@ token symbolic-keyword =
 ```
 The following symbols are reserved for future use:
 
-```
+```fsgrammar
 token reserved-symbolic-sequence =
     ~ `
 ```
@@ -305,7 +305,7 @@ token reserved-symbolic-sequence =
 User-defined and library-defined symbolic operators are sequences of characters as shown below,
 except where the sequence of characters is a symbolic keyword (§3.6).
 
-```
+```fsgrammar
 regexp first-op-char = !%&*+-./<=>@^|~
 regexp op-char = first-op-char |?
 
@@ -334,7 +334,7 @@ For details about the associativity and precedence of symbolic operators in expr
 
 The lexical specification of numeric literals is as follows:
 
-```
+```fsgrammar
 regexp digit = [0-9]
 regexp hexdigit = digit | [A-F] | [a-f]
 regexp octaldigit = [0-7]
@@ -395,13 +395,13 @@ according to the following rules:
   For example, the `–` and `b` tokens in the following sequence are not merged if all three tokens
   are adjacent:
 
-```
+```fsharp
     a-b
 ```
 - Otherwise, the usual grammar rules apply to the uses of `–` and `+`, with an addition for
   `ADJACENT_PREFIX_OP`:
 
-```
+```fsgrammar
   expr = expr MINUS expr
       | MINUS expr
       | ADJACENT_PREFIX_OP expr
@@ -411,7 +411,7 @@ according to the following rules:
 
 Tokens of the form
 
-```
+```fsgrammar
 token intdotdot = int..
 ```
 such as `34..` are post-filtered to two tokens: one `int` and one `symbolic-keyword` , “`..`”.
@@ -424,7 +424,7 @@ sequence to be a floating-point number followed by a “`.`”.
 
 The following token forms are reserved for future numeric literal formats:
 
-```
+```fsgrammar
 token reserved-literal-formats =
     | (xint | ieee32 | ieee64) ident-char+
 ```
@@ -435,7 +435,7 @@ comment. This allows F# scripts to be compatible with the Unix convention whereb
 indicates the interpreter to use by providing the path to that interpreter on the first line, following
 the #! directive.
 
-```
+```fsharp
 #!/bin/usr/env fsharpi --exec
 ```
 ## 3.9 LINE DIRECTIVES
@@ -444,7 +444,7 @@ Line directives adjust the source code filenames and line numbers that are repor
 messages, recorded in debugging symbols, and propagated to quoted expressions. F# supports the
 following line directives:
 
-```
+```fsgrammar
 token line-directive =
     # int
     # int string
