@@ -4,10 +4,12 @@ F# is a scalable, succinct, type-safe, type-inferred, efficiently executing func
 ## 1.1 A First Program
 Over the next few sections, we will look at some small F# programs, describing some important aspects of F# along the way. As an introduction to F#, consider the following program:
 
+```fsharp
     let numbers = [ 1 .. 10 ]
     let square x = x * x
     let squares = List.map square numbers
     printfn "N^2 = %A" squares
+```
 
 To explore this program, you can:
 
@@ -19,22 +21,28 @@ To explore this program, you can:
 
 The F# language uses simplified, indentation-aware syntactic constructs known as lightweight syntax. The lines of the sample program in the previous section form a sequence of declarations and are aligned on the same column. For example, the two lines in the following code are two separate declarations:
 
+```fsharp
     let squares = List.map square numbers
     printfn "N^2 = %A" squares
+```
 
 Lightweight syntax applies to all the major constructs of the F# syntax. In the next example, the code is incorrectly aligned. The declaration starts in the first line and continues to the second and subsequent lines, so those lines must be indented to the same column under the first line:
 
+```fsharp
     let computeDerivative f x =
         let p1 = f (x - 0.05)
       let p2 = f (x + 0.05)
            (p2 - p1) / 0.1
+```
 
 The following shows the correct alignment:
 
+```fsharp
     let computeDerivative f x =
         let p1 = f (x - 0.05)
         let p2 = f (x + 0.05)
         (p2 - p1) / 0.1
+```
 
 The use of lightweight syntax is the default for all F# code in files with the extension .fs, .fsx, .fsi, or .fsscript.
 
@@ -42,7 +50,9 @@ The use of lightweight syntax is the default for all F# code in files with the e
 
 The first line in our sample simply declares a list of numbers from one through ten.
 
+```fsharp
     let numbers = [1 .. 10]
+```
 
 An F# list is an immutable linked list, which is a type of data used extensively in functional programming. Some operators that are related to lists include :: to add an item to the front of a list and @ to concatenate two lists. If we try these operators in F# Interactive, we see the following
 results:
@@ -77,7 +87,9 @@ A key concept in F# is immutability. Tuples and lists are some of the many types
 
 The next line of the sample program defines a function called `square`, which squares its input.
 
+```fsharp
     let square x = x * x
+```
 
 Most statically-typed languages require that you specify type information for a function declaration. However, F# typically infers this type information for you. This process is referred to as *type inference*.
 
@@ -107,7 +119,9 @@ Here the function `swap` is generic, and `'a` and `'b` represent type variables,
 
 Continuing with the sample, we have a list of integers named `numbers`, and the `square` function, and we want to create a new list in which each item is the result of a call to our function. This is called *mapping* our function over each item in the list. The F# library function `List.map` does just that:
 
+```fsharp
     let squares = List.map square numbers
+```
 
 Consider another example:
 
@@ -120,6 +134,7 @@ Both of these examples pass a function as a parameter to another function — th
 
 Another tool for data transformation and analysis is *pattern matching*. This powerful switch construct allows you to branch control flow and to bind new values. For example, we can match an F# list against a sequence of list elements.
 
+```fsharp
     let checkList alist =
         match alist with
         | [] -> 0
@@ -127,24 +142,29 @@ Another tool for data transformation and analysis is *pattern matching*. This po
         | [a; b] -> 2
         | [a; b; c] -> 3
         | _ -> failwith "List is too big!"
+```
 
 In this example, `alist` is compared with each potentially matching pattern of elements. When `alist` matches a pattern, the result expression is evaluated and is returned as the value of the match expression. Here, the `->` operator separates a pattern from the result that a match returns.
 
 Pattern matching can also be used as a control construct — for example, by using a pattern that performs a dynamic type test:
 
+```fsharp
     let getType (x : obj) =
         match x with
         | :? string -> "x is a string"
         | :? int -> "x is an int"
         | :? System.Exception -> "x is an exception"
+```
 
 The `:?` operator returns true if the value matches the specified type, so if `x` is a string, `getType` returns `"x is a string"`.
 
 Function values can also be combined with the pipeline operator, `|>`. For example, given these functions:
 
+```fsharp
     let square x = x * x
     let toStr (x : int) = x.ToString()
     let reverse (x : string) = new System.String(Array.rev (x.ToCharArray()))
+```
 
 We can use the functions as values in a pipeline:
 
@@ -157,7 +177,9 @@ Pipelining demonstrates one way in which F# supports compositionality, a key con
 
 The next line of the sample program prints text in the console window.
 
+```fsharp
     printfn "N^2 = %A" squares
+```
 
 The F# library function printfn is a simple and type-safe way to print text in the console window. Consider this example, which prints an integer, a floating-point number, and a string:
 
@@ -173,7 +195,9 @@ The `printfn` function is an example of *imperative programming*, which means ca
 
 The Common Language Infrastructure (CLI) function `System.Console.ReadKey` to pause the program before the console window closes.
 
+```fsharp
     System.Console.ReadKey(true)
+```
 
 Because F# is built on top of CLI implementations, you can call any CLI library from F#. Furthermore, other CLI languages can easily use any F# components.
 
@@ -183,6 +207,7 @@ F# is both a parallel and a reactive language. During execution, F# programs can
 
 One way to write parallel and reactive F# programs is to use F# async expressions. For example, the code below is similar to the original program in §1.1 except that it computes the Fibonacci function (using a technique that will take some time) and schedules the computation of the numbers in parallel:
 
+```fsharp
     let rec fib x = if x < 2 then 1 else fib(x-1) + fib(x-2)
 
     let fibs =
@@ -192,11 +217,13 @@ One way to write parallel and reactive F# programs is to use F# async expression
     printfn "The Fibonacci numbers are %A" fibs
 
     System.Console.ReadKey(true)
+```
 
 The preceding code sample shows multiple, parallel, CPU-bound computations.
 
 F# is also a reactive language. The following example requests multiple web pages in parallel, reacts to the responses for each request, and finally returns the collected results.
 
+```fsharp
     open System
     open System.IO
     open System.Net
@@ -221,6 +248,7 @@ F# is also a reactive language. The following example requests multiple web page
     let htmlOfSites =
         Async.Parallel [for site in sites -> http site ]
         |> Async.RunSynchronously
+```
 
 By using asynchronous workflows together with other CLI libraries, F# programs can implement parallel tasks, parallel I/O operations, and message-receiving agents.
 
@@ -230,6 +258,7 @@ F# applies type checking and type inference to floating-point-intensive domains 
 
 Consider the following example:
 
+```fsharp
     [<Measure>] type kg
     [<Measure>] type m
     [<Measure>] type s
@@ -237,6 +266,7 @@ Consider the following example:
     let gravityOnEarth = 9.81<m/s^2>
     let heightOfTowerOfPisa = 55.86<m>
     let speedOfImpact = sqrt(2.0 * gravityOnEarth * heightOfTowerOfPisa)
+```
 
 The `Measure` attribute tells F# that `kg`, `s`, and `m` are not really types in the usual sense of the word, but are used to build units of measure. Here `speedOfImpact` is inferred to have type `float<m/s>`.
 
@@ -246,6 +276,7 @@ The sample program shown at the start of this chapter is a `script`. Although sc
 
 The most important of these is *object-oriented programming* through the use of *class type definitions*, *interface type definitions*, and *object expressions*. Object-oriented programming is a primary application programming interface (API) design technique for controlling the complexity of large software projects. For example, here is a class definition for an encoder/decoder object.
 
+```fsharp
     open System
 
     /// Build an encoder/decoder object that maps characters to an
@@ -270,13 +301,16 @@ The most important of these is *object-oriented programming* through the use of 
 
         /// Decode the given string
         member x.Decode(s) = decode s
+```
 
 You can instantiate an object of this type as follows:
 
+```fsharp
     let rot13 (c:char) =
         char(int 'a' + ((int c - int 'a' + 13) % 26))
     let encoder =
         CharMapEncoder( [for c in 'a'..'z' -> (c, rot13 c)])
+```
 
 And use the object as follows:
 
@@ -288,23 +322,28 @@ And use the object as follows:
 
 An interface type can encapsulate a family of object types:
 
+```fsharp
     open System
 
     type IEncoding =
         abstract Encode : string -> string
         abstract Decode : string -> string
+```
 
 In this example, `IEncoding` is an interface type that includes both `Encode` and `Decode` object types.
 
 Both object expressions and type definitions can implement interface types. For example, here is an object expression that implements the `IEncoding` interface type:
 
+```fsharp
     let nullEncoder =
         { new IEncoding with
             member x.Encode(s) = s
             member x.Decode(s) = s }
+```
 
 *Modules* are a simple way to encapsulate code during rapid prototyping when you do not want to spend the time to design a strict object-oriented type hierarchy. In the following example, we place a portion of our original script in a module.
 
+```fsharp
     module ApplicationLogic =
         let numbers n = [1 .. n]
         let square x = x * x
@@ -313,6 +352,7 @@ Both object expressions and type definitions can implement interface types. For 
     printfn "Squares up to 5 = %A" (ApplicationLogic.squares 5)
     printfn "Squares up to 10 = %A" (ApplicationLogic.squares 10)
     System.Console.ReadKey(true)
+```
 
 Modules are also used in the F# library design to associate extra functionality with types. For example, `List.map´ is a function in a module.
 
@@ -324,21 +364,25 @@ F# Information-rich programming addresses the trend toward greater availability 
 
 The F# Type Provider mechanism allows you to seamlessly incorporate, in a strongly typed manner, data and services from external sources. A type provider presents your program with new types and methods that are typically based on the schemas of external information sources. For example, an F# type provider for Structured Query Language (SQL) supplies types and methods that allow programmers to work directly with the tables of any SQL database:
 
+```fsharp
     // Add References to FSharp.Data.TypeProviders, System.Data, and System.Data.   Linq
     type schema = SqlDataConnection<"Data Source=localhost;Integrated   Security=SSPI;">
 
     let db = schema.GetDataContext()
+```
 
 The type provider connects to the database automatically and uses this for IntelliSense and type information.
 
 Query expressions (added in F# 3.0) add the established power of query-based programming against SQL, Open Data Protocol (OData), and other structured or relational data sources. Query expressions provide support for language-Integrated Query (LINQ) in F#, and several query operators enable you to construct more complex queries. For example, we can create a query to filter the customers in the data source:
 
+```fsharp
     let countOfCustomers =
         query {
             for customer in db.Customers do
                 where (customer.LastName.StartsWith("N"))
                 select (customer.FirstName, customer.LastName)
             }
+```
 
 Now it is easier than ever to access many important data sources—including enterprise, web, and cloud—by using a set of built-in type providers for SQL databases and web data protocols. Where necessary, you can create your own custom type providers or reference type providers that others have created. For example, assume your organization has a data service that provides a large and growing number of named data sets, each with its own stable data schema. You may choose to create a type provider that reads the schemas and presents the latest available data sets to the programmer in a strongly typed way.
 
