@@ -1,10 +1,10 @@
-# 3. LEXICAL ANALYSIS
+# 3. Lexical Analysis
 
 Lexical analysis converts an input stream of Unicode characters into a stream of tokens by iteratively
 processing the stream. If more than one token can match a sequence of characters in the source file,
 lexical processing always forms the longest possible lexical element. Some tokens, such as `block-comment-start`, are discarded after processing as described later in this section.
 
-## 3.1 WHITESPACE
+## 3.1 Whitespace
 
 Whitespace consists of spaces and newline characters.
 
@@ -15,7 +15,7 @@ token whitespace-or-newline = whitespace | newline
 ```
 Whitespace tokens `whitespace-or-newline` are discarded from the returned token stream.
 
-## 3.2 COMMENTS
+## 3.2 Comments
 
 Block comments are delimited by `(*` and `*)` and may be nested. Single-line comments begin with
 two backslashes (`//`) and extend to the end of the line.
@@ -49,7 +49,7 @@ delimiters are retained and are associated with the remaining elements to genera
 documentation.
 
 
-## 3.3 CONDITIONAL COMPILATION
+## 3.3 Conditional Compilation
 
 The lexical preprocessing directives `#if ident /#else/#endif` delimit conditional compilation
 sections. The following describes the grammar for such sections:
@@ -94,7 +94,7 @@ the text between any corresponding _`else-directive`_ and the _`endif-directive`
 - In skipped text, `#if ident /#else/#endif` sections can be nested.
 - Strings and comments are not treated as special
 
-## 3.4 IDENTIFIERS AND KEYWORDS
+## 3.4 Identifiers and Keywords
 
 Identifiers follow the specification in this section.
 
@@ -168,7 +168,7 @@ In the remainder of this specification, we refer to the token that is generated 
 by using the text of the keyword itself.
 
 
-## 3.5 STRINGS AND CHARACTERS
+## 3.5 Strings and Characters
 
 String literals may be specified for two types:
 
@@ -283,7 +283,7 @@ let catalog = """
 </catalog>
 """
 ```
-## 3.6 SYMBOLIC KEYWORDS
+## 3.6 Symbolic Keywords
 
 The following symbolic or partially symbolic character sequences are treated as keywords:
 
@@ -300,7 +300,7 @@ The following symbols are reserved for future use:
 token reserved-symbolic-sequence =
     ~ `
 ```
-## 3.7 SYMBOLIC OPERATORS
+## 3.7 Symbolic Operators
 
 User-defined and library-defined symbolic operators are sequences of characters as shown below,
 except where the sequence of characters is a symbolic keyword (§3.6).
@@ -330,7 +330,7 @@ The `quote-op-left` and `quote-op-right` operators are used in quoted expression
 For details about the associativity and precedence of symbolic operators in expression forms, see
 §4.4.
 
-## 3.8 NUMERIC LITERALS
+## 3.8 Numeric Literals
 
 The lexical specification of numeric literals is as follows:
 
@@ -438,7 +438,7 @@ the #! directive.
 ```fsharp
 #!/bin/usr/env fsharpi --exec
 ```
-## 3.9 LINE DIRECTIVES
+## 3.9 Line Directives
 
 Line directives adjust the source code filenames and line numbers that are reported in error
 messages, recorded in debugging symbols, and propagated to quoted expressions. F# supports the
@@ -456,13 +456,13 @@ token line-directive =
 A line directive applies to the line that immediately follows the directive. If no line directive is
 present, the first line of a file is numbered 1.
 
-## 3.10 HIDDEN TOKENS
+## 3.10 Hidden Tokens
 
 Some hidden tokens are inserted by lexical filtering (§ 15 ) or are used to replace existing tokens. See
 § 15 for a full specification and for the augmented grammar rules that take these into account.
 
 
-## 3.11 IDENTIFIER REPLACEMENTS
+## 3.11 Identifier Replacements
 
 The following table lists identifiers that are automatically replaced by expressions.
 

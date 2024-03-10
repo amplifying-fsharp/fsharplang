@@ -1,4 +1,4 @@
-## 2. PROGRAM STRUCTURE
+# 2. Program Structure
 
 The inputs to the F# compiler or the F# Interactive dynamic compiler consist of:
 
