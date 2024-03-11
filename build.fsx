@@ -38,6 +38,15 @@ let rec newSection level prevSection =
     | h::t when prevSection.Length = level - 1 -> 1::prevSection
     | _ -> []
 
+let referencable (s: string) =
+    seq {
+        for c in s do
+            if Char.IsAsciiLetterLower c || c = '-' || Char.IsAsciiDigit c then yield c
+            if Char.IsAsciiLetterUpper c then yield Char.ToLower c
+            if c = ' ' then yield '-'
+        }
+    |> Seq.toArray |> String
+
 let renumberIfHeaderLine clauseName state line =
     let m = Regex.Match(line, "^(#+) (\d.*)")
     if m.Success then
@@ -52,10 +61,12 @@ let renumberIfHeaderLine clauseName state line =
                     let error = $"The header level jump in {clauseName} from {state.section.Length} to {level}: {line}"
                     {state with errors = error::state.errors}
                 else state
-            let s = $"""{List.last section}.{section |> List.rev |> List.tail |> List.map string |> String.concat "."}"""
+            let rSection = List.rev section
+            let sText = $"""{rSection.Head}.{rSection.Tail |> List.map string |> String.concat "."}"""
             let headerText = m.Groups[2].Value
-            let headerLine = $"{headerPrefix} {s} {headerText}"
-            let indexLine = String.replicate (level - 1) "  " + $"- {s} {headerText}"
+            let headerLine = $"{headerPrefix} {sText} {headerText}"
+            let anchor = $"#{referencable sText}-{referencable headerText}"
+            let indexLine = String.replicate (level - 1) "  " + $"- [{sText} {headerText}]({anchor})"
             headerLine, {state with section = section; index = indexLine::state.index}
         else failwith $"unexpected regex failure: {line}"
     else line, state
