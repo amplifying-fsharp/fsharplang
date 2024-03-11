@@ -71,6 +71,7 @@ let build() =
     else
     let total = List.rev state.index @ List.collect (fun clause -> ""::clause.lines) outClauses
     File.WriteAllLines(outFile, total)
+    printfn $"created {outFile}"
 
 build()
 
