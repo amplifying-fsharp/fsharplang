@@ -12,7 +12,7 @@ type ClauseIndex = {MainBody: string list; Annexes: string list}
 type BuildState = {section: int list; index: string list; errors: string list}
 
 let indexHead = List.rev ["# Index"; $"WIP {DateTime.Now}"; ""]
-let initialState = {section = []; index = indexHead; errors = []}
+let initialState = {section = [0]; index = indexHead; errors = []}
 
 let specDir = "spec"
 let outDir = "artifacts"
@@ -57,12 +57,12 @@ let renumberIfHeaderLine clauseName state line =
         let m = Regex.Match(rest, "([\.\d]*) ?(.*)")
         if m.Success then
             let section = newSection level state.section
-            let state =
-                if section.IsEmpty then
-                    let error = $"The header level jump in {clauseName} from {state.section.Length} to {level}: {line}"
-                    {state with errors = error::state.errors}
-                else state
+            if section.IsEmpty then
+                let error = $"The header level jump in {clauseName} from {state.section.Length} to {level}: {line}"
+                line, {state with errors = error::state.errors}
+            else
             let rSection = List.rev section
+            if rSection.IsEmpty then printfn $"empty section: {clauseName} {state} {line}"
             let sText = $"""{rSection.Head}.{rSection.Tail |> List.map string |> String.concat "."}"""
             let headerText = m.Groups[2].Value
             let headerLine = $"{headerPrefix} {sText} {headerText}"
@@ -80,7 +80,7 @@ let build() =
     let clauses = readClauses()
     let (outClauses, state) = (initialState, clauses) ||> List.mapFold renumberClause
     if state.errors.Length > 0 then
-        state.errors |> List.iter (printfn "%s")
+        state.errors |> List.rev |> List.iter (printfn "%s")
     else
     let total = List.rev state.index @ List.collect (fun clause -> ""::clause.lines) outClauses
     if not <| Directory.Exists outDir then Directory.CreateDirectory outDir |> ignore
