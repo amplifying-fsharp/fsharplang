@@ -8,24 +8,25 @@ open System.Text.Json
 open System.IO
 
 type Clause = {name: string; lines: string list}
-type ClauseIndex = {MainBody: string list; Annexes: string list}
-type BuildState = {section: int list; index: string list; errors: string list}
+type ClauseCatalog = {MainBody: string list; Annexes: string list}
+type BuildState = {section: int list; toc: string list; errors: string list}
 
-let indexHead = List.rev ["# Index"; $"WIP {DateTime.Now}"; ""]
-let initialState = {section = [0]; index = indexHead; errors = []}
+let tocHead = List.rev ["# Index"; $"WIP {DateTime.Now}"; ""]
+let initialState = {section = [0]; toc = tocHead; errors = []}
 
 let specDir = "spec"
 let outDir = "artifacts"
 let specFilePath filename = $"{specDir}/{filename}"
 let clauseFilePath clauseName = specFilePath clauseName + ".md"
-let clausesFilePath = specFilePath "clauses.json"
+let clauseCatalogPath = specFilePath "clauses.json"
 let outFile = $"{outDir}/spec.md"
 
 let readClauses() =
     try
-        let clauseIndex = JsonSerializer.Deserialize<ClauseIndex>(File.OpenRead(clausesFilePath))
+        use clauseStream = File.OpenRead clauseCatalogPath
+        let clauseCatalog = JsonSerializer.Deserialize<ClauseCatalog> clauseStream
         let getClause name = {name = name; lines = File.ReadAllLines(clauseFilePath name) |> Array.toList}
-        let clauses = clauseIndex.MainBody |> List.map getClause
+        let clauses = clauseCatalog.MainBody |> List.map getClause  // For now. TODO: Annexes etc.
         printfn $"read {clauses.Length} files with a total of {clauses |> List.sumBy (_.lines >> List.length)} lines"
         clauses
     with
@@ -67,8 +68,8 @@ let renumberIfHeaderLine clauseName state line =
             let headerText = m.Groups[2].Value
             let headerLine = $"{headerPrefix} {sText} {headerText}"
             let anchor = $"#{referencable sText}-{referencable headerText}"
-            let indexLine = String.replicate (level - 1) "  " + $"- [{sText} {headerText}]({anchor})"
-            headerLine, {state with section = section; index = indexLine::state.index}
+            let tocLine = String.replicate (level - 1) "  " + $"- [{sText} {headerText}]({anchor})"
+            headerLine, {state with section = section; toc = tocLine::state.toc}
         else failwith $"unexpected regex failure: {line}"
     else line, state
 
@@ -82,7 +83,7 @@ let build() =
     if state.errors.Length > 0 then
         state.errors |> List.rev |> List.iter (printfn "%s")
     else
-    let total = List.rev state.index @ List.collect (fun clause -> ""::clause.lines) outClauses
+    let total = List.rev state.toc @ List.collect (fun clause -> ""::clause.lines) outClauses
     if not <| Directory.Exists outDir then Directory.CreateDirectory outDir |> ignore
     File.WriteAllLines(outFile, total)
     printfn $"created {outFile}"
