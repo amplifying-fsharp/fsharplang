@@ -1,5 +1,6 @@
-// For now just creating the index
+// For now just creating the full doc with freshly numbered section headers
 // For now just a single script
+// TODO: boilerplate, index with links, reference links ...
 
 open System
 open System.Text.RegularExpressions
@@ -8,14 +9,15 @@ open System.IO
 
 type Clause = {name: string; lines: string list}
 type ClauseIndex = {MainBody: string list; Annexes: string list}
-type BuildState = {section: int list; errors: string list}
+type BuildState = {section: int list; index: string list; errors: string list}
 
-let initialState = {section = []; errors = []}
+let initialState = {section = []; index = ["# Index"]; errors = []}
 
 let specDir = "spec"
 let specFilePath filename = $"{specDir}/{filename}"
 let clauseFilePath clauseName = specFilePath clauseName + ".md"
 let clausesFilePath = specFilePath "clauses.json"
+let outFile = "artifacts/spec.md"
 
 let readClauses() =
     try
@@ -36,7 +38,7 @@ let rec newSection level prevSection =
     | _ -> []
 
 let renumberIfHeaderLine clauseName state line =
-    let m = Regex.Match(line, "^(#+) (.*)")
+    let m = Regex.Match(line, "^(#+) (\d.*)")
     if m.Success then
         let headerPrefix = m.Groups[1].Value
         let level = headerPrefix.Length
@@ -49,9 +51,11 @@ let renumberIfHeaderLine clauseName state line =
                     let error = $"The header level jump in {clauseName} from {state.section.Length} to {level}: {line}"
                     {state with errors = error::state.errors}
                 else state
-            let s = $"""{section.Head}.{section |> List.rev |> List.tail |> List.map string |> String.concat "."}"""
+            let s = $"""{List.last section}.{section |> List.rev |> List.tail |> List.map string |> String.concat "."}"""
             let headerText = m.Groups[2].Value
-            $"{headerPrefix} {s} {headerText}", {state with section = section}
+            let headerLine = $"{headerPrefix} {s} {headerText}"
+            let indexLine = String.replicate (level - 1) " " + $"{s} {headerText}"
+            headerLine, {state with section = section; index = indexLine:: state.index}
         else failwith $"unexpected regex failure: {line}"
     else line, state
 
@@ -59,11 +63,15 @@ let renumberClause state clause =
     let outLines, state = (state, clause.lines) ||> List.mapFold (renumberIfHeaderLine clause.name)
     {clause with lines = outLines}, state
 
-let renumber() =
+let build() =
     let clauses = readClauses()
-    let (outClauses: Clause list, _) = (initialState, clauses) ||> List.mapFold renumberClause
-    outClauses |> List.iter (fun clause -> File.WriteAllLines(specFilePath $"{clause.name}-out.md", clause.lines))
+    let (outClauses, state) = (initialState, clauses) ||> List.mapFold renumberClause
+    if state.errors.Length > 0 then
+        state.errors |> List.iter (printfn "%s")
+    else
+    let total = List.rev state.index @ List.collect (fun clause -> ""::clause.lines) outClauses
+    File.WriteAllLines(outFile, total)
 
-renumber()
+build()
 
 
