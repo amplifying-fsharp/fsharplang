@@ -11,7 +11,8 @@ type Clause = {name: string; lines: string list}
 type ClauseIndex = {MainBody: string list; Annexes: string list}
 type BuildState = {section: int list; index: string list; errors: string list}
 
-let initialState = {section = []; index = ["# Index"]; errors = []}
+let indexHead = List.rev ["# Index"; $"WIP {DateTime.Now}"; ""]
+let initialState = {section = []; index = indexHead; errors = []}
 
 let specDir = "spec"
 let specFilePath filename = $"{specDir}/{filename}"
@@ -54,8 +55,8 @@ let renumberIfHeaderLine clauseName state line =
             let s = $"""{List.last section}.{section |> List.rev |> List.tail |> List.map string |> String.concat "."}"""
             let headerText = m.Groups[2].Value
             let headerLine = $"{headerPrefix} {s} {headerText}"
-            let indexLine = String.replicate (level - 1) " " + $"{s} {headerText}"
-            headerLine, {state with section = section; index = indexLine:: state.index}
+            let indexLine = String.replicate (level - 1) "  " + $"- {s} {headerText}"
+            headerLine, {state with section = section; index = indexLine::state.index}
         else failwith $"unexpected regex failure: {line}"
     else line, state
 
