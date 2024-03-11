@@ -15,10 +15,11 @@ let indexHead = List.rev ["# Index"; $"WIP {DateTime.Now}"; ""]
 let initialState = {section = []; index = indexHead; errors = []}
 
 let specDir = "spec"
+let outDir = "artifacts"
 let specFilePath filename = $"{specDir}/{filename}"
 let clauseFilePath clauseName = specFilePath clauseName + ".md"
 let clausesFilePath = specFilePath "clauses.json"
-let outFile = "artifacts/spec.md"
+let outFile = $"{outDir}/spec.md"
 
 let readClauses() =
     try
@@ -82,7 +83,7 @@ let build() =
         state.errors |> List.iter (printfn "%s")
     else
     let total = List.rev state.index @ List.collect (fun clause -> ""::clause.lines) outClauses
-    if not <| Directory.Exists "artifacts" then Directory.CreateDirectory "artifacts" |> ignore
+    if not <| Directory.Exists outDir then Directory.CreateDirectory outDir |> ignore
     File.WriteAllLines(outFile, total)
     printfn $"created {outFile}"
 
