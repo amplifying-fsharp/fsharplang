@@ -58,7 +58,7 @@ let renumberIfHeaderLine clauseName state line =
         if m.Success then
             let section = newSection level state.section
             if section.IsEmpty then
-                let error = $"The header level jump in {clauseName} from {state.section.Length} to {level}: {line}"
+                let error = $"The header level jumps in {clauseName} from {state.section.Length} to {level}: {line}"
                 line, {state with errors = error::state.errors}
             else
             let rSection = List.rev section
