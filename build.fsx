@@ -82,6 +82,7 @@ let build() =
         state.errors |> List.iter (printfn "%s")
     else
     let total = List.rev state.index @ List.collect (fun clause -> ""::clause.lines) outClauses
+    if not <| Directory.Exists "artifacts" then Directory.CreateDirectory "artifacts" |> ignore
     File.WriteAllLines(outFile, total)
     printfn $"created {outFile}"
 
