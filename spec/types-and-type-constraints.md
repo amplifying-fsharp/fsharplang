@@ -231,9 +231,9 @@ A type of the form `typar :> type` is a type variable with a subtype constraint 
 A type of the form `#type` is an anonymous type with a subtype constraint and is equivalent to `'a
 when 'a :> type` , where `'a` is a fresh type inference variable.
 
-## 5.2 TYPE CONSTRAINTS
+## 5.2 Type Constraints
 
-A _type constraint_ limits the types that can be used to create an instance of a type parameter or type
+A `type constraint `limits the types that can be used to create an instance of a type parameter or type
 variable. F# supports the following type constraints:
 
 - Subtype constraints
@@ -249,265 +249,241 @@ variable. F# supports the following type constraints:
 
 ### 5.2.1 Subtype Constraints
 
-An _explicit subtype constraint_ has the following form:
+An `explicit subtype constraint` has the following form:
 
-```
+```fsgrammar
 typar :> type
 ```
 
-During checking, _typar_ is first checked as a variable type, _type_ is checked as a type, and the
+During checking, `typar` is first checked as a variable type, `type` is checked as a type, and the
 constraint is added to the current inference constraints. Subtype constraints affect type coercion as
-specified in §5.4.7.
+specified in (See 5.4.7)
 
 Note that subtype constraints also result implicitly from:
 
-- Expressions of the form expr :> type.
-
-### • Patterns of the form pattern :> type.
-
+- Expressions of the form `expr :> type`.
+- Patterns of the form `pattern :> type`.
 - The use of generic values, types, and members with constraints.
-- The implicit use of subsumption when using values and members (§14.4.3).
+- The implicit use of subsumption when using values and members (See 14.4.3).
 
 A type variable cannot be constrained by two distinct instantiations of the same named type. If two
 such constraints arise during constraint solving, the type instantiations are constrained to be equal.
-For example, during type inference, if a type variable is constrained by both IA<int> and IA<string>,
+For example, during type inference, if a type variable is constrained by both `IA<int>` and `IA<string>`,
 an error occurs when the type instantiations are constrained to be equal. This limitation is
 specifically necessary to simplify type inference, reduce the size of types shown to users, and help
 ensure the reporting of useful error messages.
 
 ### 5.2.2 Nullness Constraints
 
-An _explicit nullness constraint_ has the following form:
+An `explicit nullness constraint` has the following form:
 
-```
+```fsgrammar
 typar : null
 ```
 
-During checking, _typar_ is checked as a variable type and the constraint is added to the current
+During checking, `typar` is checked as a variable type and the constraint is added to the current
 inference constraints. The conditions that govern when a type satisfies a nullness constraint are
-specified in §5.4.8.
+specified in (See 5.4.8)
 
 In addition:
 
-- The _typar_ must be a statically resolved type variable of the form _^ident_. This limitation ensures
+- The `typar` must be a statically resolved type variable of the form `^ident`. This limitation ensures
   that the constraint is resolved at compile time, and means that generic code may not use this
-  constraint unless that code is marked inline (§14.6.7).
+  constraint unless that code is marked inline (See 14.6.7).
 
-```
-Note: Nullness constraints are primarily for use during type checking and are used
-relatively rarely in F# code.
-```
-
-```
-Nullness constraints also arise from expressions of the form null.
-```
+> [!NOTE]
+> Note: Nullness constraints are primarily for use during type checking and are used
+> relatively rarely in F# code.<br>
+>
+> Nullness constraints also arise from expressions of the form null.
 
 ### 5.2.3 Member Constraints
 
-An _explicit member constraint_ has the following form:
+An `explicit member constraint` has the following form:
 
-```
+```fsgrammar
 ( typar or ... or typar ) : ( member-sig )
 ```
 
 For example, the F# library defines the + operator with the following signature:
 
-```
+```fsharp
 val inline (+) : ^a -> ^b -> ^c
-when (^a or ^b) : (static member (+) : ^a * ^b -> ^c)
+    when (^a or ^b) : (static member (+) : ^a * ^b -> ^c)
 ```
 
-This definition indicates that each use of the + operator results in a constraint on the types that
-correspond to parameters ^a, ^b, and ^c. If these are named types, then either the named type for
-^a or the named type for ^b must support a static member called + that has the given signature.
+This definition indicates that each use of the `+` operator results in a constraint on the types that
+correspond to parameters `^a`, `^b`, and `^c`. If these are named types, then either the named type for
+`^a` or the named type for `^b` must support a static member called `+` that has the given signature.
 
 In addition:
 
-- Each _typar_ must be a statically resolved type variable (§5.1.2) in the form _^ident_. This ensures
+- Each `typar` must be a statically resolved type variable (See 5.1.2) in the form `^ident`. This ensures
   that the constraint is resolved at compile time against a corresponding named type. It also
-  means that generic code cannot use this constraint unless that code is marked inline (§14.6.7).
-- The _member-sig_ cannot be generic; that is, it cannot include explicit type parameter definitions.
-- The conditions that govern when a type satisfies a member constraint are specified in §14.5.4.
+  means that generic code cannot use this constraint unless that code is marked inline (See 14.6.7).
+- The `member-sig` cannot be generic; that is, it cannot include explicit type parameter definitions.
+- The conditions that govern when a type satisfies a member constraint are specified in (See 14.5.4).
 
-```
-Note: Member constraints are primarily used to define overloaded functions in the F#
-library and are used relatively rarely in F# code.
-```
-
-```
-Uses of overloaded operators do not result in generalized code unless definitions are
-marked as inline. For example, the function
-let f x = x + x
-```
-
-```
-results in a function f that can be used only to add one type of value, such as int or
+> [!NOTE]
+> Note: Member constraints are primarily used to define overloaded functions in the F#
+> library and are used relatively rarely in F# code.<br>
+> Uses of overloaded operators do not result in generalized code unless definitions are
+>marked as inline. For example, the function<br>
+> 
+> `let f x = x + x`<br>
+> 
+> results in a function f that can be used only to add one type of value, such as int or
 float. The exact type is determined by later constraints.
-```
+
 
 A type variable may not be involved in the support set of more than one member constraint that has
-the same name, staticness, argument arity, and support set (§14.5.4). If it is, the argument and
+the same name, staticness, argument arity, and support set (See 14.5.4). If it is, the argument and
 return types in the two member constraints are themselves constrained to be equal. This limitation
 is specifically necessary to simplify type inference, reduce the size of types shown to users, and
 ensure the reporting of useful error messages.
 
 ### 5.2. 4 Default Constructor Constraints
 
-An _explicit default constructor constraint_ has the following form:
+An `explicit default constructor constraint` has the following form:
 
-```
+```fshgrammar
 typar : (new : unit -> 'T)
 ```
 
-During constraint solving (§14.5), the constraint _type_ : (new : unit -> 'T) is met if _type_ has a
+During constraint solving (See 14.5), the constraint `type : (new : unit -> 'T)` is met if `type` has a
 parameterless object constructor.
 
-```
-Note: This constraint form exists primarily to provide the full set of constraints that CLI
-implementations allow. It is rarely used in F# programming.
-```
+> [!NOTE]
+> Note: This constraint form exists primarily to provide the full set of constraints that CLI
+> implementations allow. It is rarely used in F# programming.
 
 ### 5.2.5 Value Type Constraints
 
-An _explicit value type constraint_ has the following form:
+An `explicit value type constraint` has the following form:
 
-```
+```fsgrammar
 typar : struct
 ```
 
-During constraint solving (§14.5), the constraint _type_ : struct is met if _type_ is a value type other
-than the CLI type System.Nullable<_>.
+During constraint solving (See 14.5), the constraint `type` : struct is met if `type` is a value type other
+than the CLI type `System.Nullable<_>`.
 
-```
-Note: This constraint form exists primarily to provide the full set of constraints that CLI
-implementations allow. It is rarely used in F# programming.
-```
-
-```
-The restriction on System.Nullable is inherited from C# and other CLI languages, which
-give this type a special syntactic status. In F#, the type option<_> is similar to some uses
-of System.Nullable<_>. For various technical reasons the two types cannot be equated,
-notably because types such as System.Nullable<System.Nullable<_>> and
-System.Nullable<string> are not valid CLI types.
-```
+> [!NOTE]
+>This constraint form exists primarily to provide the full set of constraints that CLI
+> implementations allow. It is rarely used in F# programming.<br>
+> 
+> The restriction on `System.Nullable` is inherited from C# and other CLI languages, which
+> give this type a special syntactic status. In F#, the type `option<_>` is similar to some uses
+> of `System.Nullable<_>`. For various technical reasons the two types cannot be equated,
+> notably because types such as `System.Nullable<System.Nullable<_>>` and
+`System.Nullable<string>` are not valid CLI types.
 
 ### 5.2.6 Reference Type Constraints
 
-An _explicit reference type constraint_ has the following form:
+An `explicit reference type constraint` has the following form:
 
-```
+```fsgarmmar
 typar : not struct
 ```
 
-During constraint solving (§14.5), the constraint _type_ : not struct is met if _type_ is a reference type.
+During constraint solving (See 14.5), the constraint `type : not struct` is met if `type` is a reference type.
 
-```
-Note: This constraint form exists primarily to provide the full set of constraints that CLI
-implementations allow. It is rarely used in F# programming.
-```
+> [!NOTE]
+>This constraint form exists primarily to provide the full set of constraints that CLI
+>implementations allow. It is rarely used in F# programming.
 
 ### 5.2.7 Enumeration Constraints
 
-An _explicit enumeration constraint_ has the following form:
+An `explicit enumeration constraint` has the following form:
 
-```
+```fsgrammar
 typar : enum< underlying-type >
 ```
 
-During constraint solving (§14.5), the constraint _type_ : enum< _underlying-type_ > is met if type is a CLI
-or F# enumeration type that has constant literal values of type _underlying-type_.
+During constraint solving (See 14.5), the constraint `type : enum<underlying-type>` is met if `type` is a CLI
+or F# enumeration type that has constant literal values of type `underlying-type`.
 
-```
-Note: This constraint form exists primarily to allow the definition of library functions
-such as enum. It is rarely used directly in F# programming.
-```
-
-```
-The enum constraint does not imply anything about subtypes. For example, an enum
-constraint does not imply that the type is a subtype of System.Enum.
-```
+> [!NOTE]
+> This constraint form exists primarily to allow the definition of library functions
+> such as `enum`. It is rarely used directly in F# programming.<br>
+> 
+> The `enum` constraint does not imply anything about subtypes. For example, an `enum`
+> constraint does not imply that the type is a subtype of `System.Enum`.
 
 ### 5.2.8 Delegate Constraints
 
-An _explicit delegate constraint_ has the following form:
+An `explicit delegate constraint` has the following form:
 
-```
-typar : delegate< tupled-arg-type , return-type >
+```fsgrammar
+typar : delegate< tupled-arg-type , return-type>
 ```
 
-During constraint solving (§ 14 .5), the constraint _type_ : delegate< _tupled-arg-type_ , _return-types_ >
-is met if _type_ is a delegate type _D_ with declaration type _D_ = delegate of object * arg1 * ... *
-argN and _tupled-arg-type_ = _arg1_ * ... * _argN_. That is, the delegate must match the CLI design
+During constraint solving (See 14 .5), the constraint `type : delegate<tupled-arg-type, return-types>`
+is met if `type` is a delegate type `D` with declaration `type D = delegate of object * arg1 * ... *
+argN` and `tupled-arg-type = arg1 * ... * argN.` That is, the delegate must match the CLI design
 pattern where the sender object is the first argument to the event.
 
-```
-Note : This constraint form exists primarily to allow the definition of certain F# library
-functions that are related to event programming. It is rarely used directly in F#
-programming.
-```
-
-```
-The delegate constraint does not imply anything about subtypes. In particular, a
-‘delegate’ constraint does not imply that the type is a subtype of System.Delegate.
-```
-
-```
-The delegate constraint applies only to delegate types that follow the usual form for CLI
-event handlers, where the first argument is a “sender” object. The reason is that the
-purpose of the constraint is to simplify the presentation of CLI event handlers to the F#
-programmer.
-```
+> [!NOTE]
+> This constraint form exists primarily to allow the definition of certain F# library
+> functions that are related to event programming. It is rarely used directly in F#
+> programming.<br>
+> 
+> The `delegate` constraint does not imply anything about subtypes. In particular, a
+`delegate` constraint does not imply that the type is a subtype of `System.Delegate`.<br>
+>
+>The `delegate` constraint applies only to delegate types that follow the usual form for CLI
+> event handlers, where the first argument is a `sender` object. The reason is that the
+> purpose of the constraint is to simplify the presentation of CLI event handlers to the F#
+> programmer.
 
 ### 5.2.9 Unmanaged Constraints
 
-An _unmanaged constraint_ has the following form:
+An `unmanaged constraint` has the following form:
 
-```
+```fsgrammar
 typar : unmanaged
 ```
 
-During constraint solving (§14.5), the constraint _type_ : unmanaged is met if _type_ is unmanaged as
+During constraint solving (See 14.5), the constraint `type : unmanaged` is met if `type` is unmanaged as
 specified below:
 
-- Types sbyte, byte, char, nativeint, unativeint, float32, float, int16, uint16, int32, uint32,
-  int64, uint64, decimal are unmanaged_._
-- Type nativeptr< _type_ > is unmanaged_._
-
-
-- A non-generic struct type whose fields are all unmanaged types is unmanaged_._
+- Types sbyte, `byte, char, nativeint, unativeint, float32, float, int16, uint16, int32, uint32,
+  int64, uint64,` decimal are unmanaged.
+- Type `nativeptr<type>` is unmanaged.
+- A non-generic struct type whose fields are all unmanaged types is unmanaged.
 
 ### 5.2.10 Equality and Comparison Constraints
 
-_Equality constraints_ and _comparison constraints_ have the following forms, respectively:
+`Equality constraints` and `comparison constraints` have the following forms, respectively:
 
-```
+```fsgrammar
 typar : equality
 typar : comparison
 ```
 
-During constraint solving (§14.5), the constraint _type_ : equality is met if both of the following
+During constraint solving (See 14.5), the constraint `type : equality` is met if both of the following
 conditions are true:
 
 - The type is a named type, and the type definition does not have, and is not inferred to have, the
-  NoEquality attribute.
-- The type has _equality dependencies ty 1_ , ..., _tyn_ , each of which satisfies _tyi_ : equality.
+  `NoEquality` attribute.
+- The type has `equality` dependencies `ty1,..., tyn`, each of which satisfies `tyi: equality`.
 
-The constraint _type_ : comparison is a _comparison constraint_. Such a constraint is met if all the
+The constraint `type : comparison` is a `comparison constraint`. Such a constraint is met if all the
 following conditions hold:
 
 - If the type is a named type, then the type definition does not have, and is not inferred to have,
-  the NoComparison attribute, and the type definition implements System.IComparable or is an
-  array type or is System.IntPtr or is System.UIntPtr.
-- If the type has _comparison dependencies ty 1_ , ..., _tyn_ , then each of these must satisfy _tyi_ :
-  comparison
+  the `NoComparison` attribute, and the type definition implements `System.IComparable` or is an
+  array type or is `System.IntPtr` or is `System.UIntPtr`.
+- If the type has _comparison dependencies `ty1, ..., tyn` , then each of these must satisfy `tyi :
+  comparison`
 
 An equality constraint is a relatively weak constraint, because with two exceptions, all CLI types
-satisfy this constraint. The exceptions are F# types that are annotated with the NoEquality attribute
-and structural types that are inferred to have the NoEquality attribute. The reason is that in other
+satisfy this constraint. The exceptions are F# types that are annotated with the `NoEquality` attribute
+and structural types that are inferred to have the `NoEquality` attribute. The reason is that in other
 CLI languages, such as C#, it possible to use reference equality on all reference types.
 
 A comparison constraint is a stronger constraint, because it usually implies that a type must
-implement System.IComparable.
+implement `System.IComparable`.
 
 ## 5.3 TYPE PARAMETER DEFINITIONS
 
