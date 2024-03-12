@@ -96,7 +96,7 @@ the F# structural equality function `FSharp.Core.Operators.(=)` with the pattern
 constant as arguments. The match succeeds if this call returns true; otherwise, the match fails.
 
 
-> Note : The use of `FSharp.Core.Operators.(=)` means that CLI floating-point equality is
+> **Note**: The use of `FSharp.Core.Operators.(=)` means that CLI floating-point equality is
 used to match floating-point values, and CLI ordinal string equality is used to match
 strings.
 
