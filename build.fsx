@@ -61,13 +61,17 @@ let referenceable (s: string) =
     |]
 
 let renumberIfHeaderLine clauseName state line =
-    let m = Regex.Match(line, "^(#+) (\d[\.\d]+ .*)")
-    if m.Success then
+    let m = Regex.Match(line, "^(#+) (\d.*)")
+    if not m.Success then line, state
+    else
         let headerPrefix = m.Groups[1].Value
         let level = headerPrefix.Length
         let rest = m.Groups[2].Value
         let m = Regex.Match(rest, "(\d[\.\d]+) (.*)")
-        if m.Success then
+        if not m.Success then
+            let error = $"Headers must have a section number (for new sections add section number 0): {line}"
+            line, {state with errors = error::state.errors}
+        else
             let headerText = m.Groups[2].Value
             let section = newSection level state.section
             if section.IsEmpty then
@@ -79,8 +83,6 @@ let renumberIfHeaderLine clauseName state line =
                 let anchor = $"#{referenceable sectionText}-{referenceable headerText}"
                 let tocLine = String.replicate (level - 1) "  " + $"- [{sectionText} {headerText}]({anchor})"
                 headerLine, {state with section = section; toc = tocLine::state.toc}
-        else failwith $"unexpected regex failure: {line}"
-    else line, state
 
 let renumberClause state clause =
     let outLines, state = (state, clause.lines) ||> List.mapFold (renumberIfHeaderLine clause.name)
