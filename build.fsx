@@ -1,5 +1,5 @@
-// For now just creating the full doc with freshly numbered section headers and ToC
-// For now just a single script
+// For now just creating the full doc with freshly numbered section headers and ToC.
+// For now just a single script, at some point it should become a project with proper tests etc.
 // TODO: boilerplate, reference links, annexes ...
 
 open System
@@ -10,6 +10,7 @@ open System.IO
 type Clause = {name: string; lines: string list}
 type ClauseCatalog = {MainBody: string list; Annexes: string list}
 type BuildState = {section: int list; toc: string list; errors: string list}
+type BuildError = IoFailure of string | DocumentErrors of string list
 
 let tocHead = List.rev ["# Index"; $"WIP {DateTime.Now}"; ""]
 let initialState = {section = [0]; toc = tocHead; errors = []}
@@ -30,24 +31,26 @@ let readClauses() =
         printfn $"read {clauses.Length} files with a total of {clauses |> List.sumBy (_.lines >> List.length)} lines"
         Ok clauses
     with
-        e -> Error e.Message
+        e -> Error(IoFailure e.Message)
 
 let writeSpec (lines: string list) =
     try
         if not <| Directory.Exists outDir then Directory.CreateDirectory outDir |> ignore
         File.WriteAllLines(outFilePath, lines)
+        printfn $"created {outFilePath}"
         Ok ()
     with
-        e -> Error e.Message
+        e -> Error(IoFailure e.Message)
 
-let rec newSection level prevSection =
-    match List.rev prevSection with
-        | [] -> [1]
-        | h::t when prevSection.Length = level -> (h + 1)::t
-        | _::t when prevSection.Length > level -> newSection level t
-        | _ when prevSection.Length = level - 1 -> 1::prevSection
-        | _ -> []
-    |> List.rev
+let newSection level prevSection =
+    let rec newSectionR prevSectionR =
+        match prevSectionR with
+            | [] -> [1]
+            | h::t when prevSectionR.Length = level -> (h + 1)::t
+            | _::t when prevSectionR.Length > level -> newSectionR t
+            | _ when prevSectionR.Length = level - 1 -> 1::prevSectionR
+            | _ -> []
+    newSectionR (List.rev prevSection) |> List.rev
 
 let referenceable (s: string) =
     String [|
@@ -58,12 +61,12 @@ let referenceable (s: string) =
     |]
 
 let renumberIfHeaderLine clauseName state line =
-    let m = Regex.Match(line, "^(#+) (\d.*)")
+    let m = Regex.Match(line, "^(#+) (\d[\.\d]+ .*)")
     if m.Success then
         let headerPrefix = m.Groups[1].Value
         let level = headerPrefix.Length
         let rest = m.Groups[2].Value
-        let m = Regex.Match(rest, "([\.\d]*) ?(.*)")
+        let m = Regex.Match(rest, "(\d[\.\d]+) (.*)")
         if m.Success then
             let headerText = m.Groups[2].Value
             let section = newSection level state.section
@@ -84,30 +87,18 @@ let renumberClause state clause =
     {clause with lines = outLines}, state
 
 let processClauses clauses =
-    (initialState, clauses) ||> List.mapFold renumberClause
-
-let createSpec processedClauses state =
-    List.rev state.toc @ List.collect (fun clause -> ""::clause.lines) processedClauses
+    let (processedClauses, state) =(initialState, clauses) ||> List.mapFold renumberClause
+    if state.errors.IsEmpty then 
+        let specLines = List.rev state.toc @ List.collect (fun clause -> ""::clause.lines) processedClauses
+        Ok specLines
+    else
+        Error(DocumentErrors (List.rev state.errors))
 
 let build() =
-    match readClauses() with
-    | Error msg ->
-        printfn $"ERROR: {msg}"
-        1
-    | Ok clauses ->
-        let (processedClauses, state) = processClauses clauses
-        if state.errors.Length > 0 then
-            state.errors |> List.rev |> List.iter (printfn "%s")
-            2
-        else
-            let specLines = createSpec processedClauses state
-            match writeSpec specLines with
-            | Error msg ->
-                printfn $"ERROR: {msg}"
-                1
-            | Ok _ ->
-                printfn $"created {outFilePath}"
-                0
+    match readClauses() |> Result.bind processClauses |> Result.bind writeSpec with
+    | Ok () -> 0
+    | Error(IoFailure msg) -> printfn $"IO error: %s{msg}"; 1
+    | Error(DocumentErrors errors) -> errors |> List.iter (printfn "%s"); 2
 
 build()
 
