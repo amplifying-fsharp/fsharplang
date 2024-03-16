@@ -4,7 +4,7 @@ This section defines grammar elements that are used repeatedly in later sections
 
 ## Operator Names
 
-Several places in the grammar refer to an _`ident-or-op`_ rather than an _`ident`_ :
+Several places in the grammar refer to an `ident-or-op` rather than an `ident` :
 
 ```fsgrammar
 ident-or-op :=
@@ -27,14 +27,14 @@ In operator definitions, the operator name is placed in parentheses. For example
 ```fsgrammar
 let (+++) x y = (x, y)
 ```
-This example defines the binary operator `+++`. The text `(+++)` is an _`ident-or-op`_ that acts as an
+This example defines the binary operator `+++`. The text `(+++)` is an `ident-or-op` that acts as an
 identifier with associated text `+++`. Likewise, for active pattern definitions (§ 7), the active pattern
 case names are placed in parentheses, as in the following example:
 
 ```fsgrammar
 let (|A|B|C|) x = if x < 0 then A elif x = 0 then B else C
 ```
-Because an _`ident-or-op`_ acts as an identifier, such names can be used in expressions. For example:
+Because an `ident-or-op` acts as an identifier, such names can be used in expressions. For example:
 
 ```fsgrammar
 List.map ((+) 1) [ 1; 2; 3 ]
@@ -139,8 +139,8 @@ name `op_LessMultiply`:
 
 ## Long Identifiers
 
-Long identifiers _`long-ident`_ are sequences of identifiers that are separated by ‘`.`’ and optional
-whitespace. Long identifiers _`long-ident-or-op`_ are long identifiers that may terminate with an
+Long identifiers `long-ident` are sequences of identifiers that are separated by ‘`.`’ and optional
+whitespace. Long identifiers `long-ident-or-op` are long identifiers that may terminate with an
 operator name.
 
 ```fsgrammar
@@ -182,8 +182,8 @@ const :=
 
 ### Categorization of Symbolic Operators
 
-The following _`symbolic-op`_ tokens can be used to form prefix and infix expressions. The marker `OP`
-represents all _`symbolic-op`_ tokens that begin with the indicated prefix, except for tokens that appear
+The following `symbolic-op` tokens can be used to form prefix and infix expressions. The marker `OP`
+represents all `symbolic-op` tokens that begin with the indicated prefix, except for tokens that appear
 elsewhere in the table.
 
 ```fsgrammar
@@ -240,7 +240,7 @@ constructs. Higher precedence items are evaluated before lower precedence items.
 
 The following table shows the order of precedence, from highest to lowest, and indicates whether
 the operator or expression is associated with the token to its left or right. The `OP` marker represents
-the _`symbolic-op`_ tokens that begin with the specified prefix, except those listed elsewhere in the
+the `symbolic-op` tokens that begin with the specified prefix, except those listed elsewhere in the
 table. For example, `+OP` represents any token that begins with a plus sign, unless the token appears
 elsewhere in the table.
 
@@ -284,8 +284,8 @@ For example, consider the following token stream:
 ```fsharp
 a + b * c
 ```
-In this expression, the _`expr infix-op expr`_ rule for `b * c` takes precedence over the 
-_`expr infix-op expr`_ rule for `a + b`, because the `*` operator has higher precedence than the `+` operator. Thus, this
+In this expression, the `expr infix-op expr` rule for `b * c` takes precedence over the 
+`expr infix-op expr` rule for `a + b`, because the `*` operator has higher precedence than the `+` operator. Thus, this
 expression can be pictured as follows:
 
 ```fsharp

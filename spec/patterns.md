@@ -77,7 +77,7 @@ The decision tree is composed of the following constructs:
 
 ## Simple Constant Patterns
 
-The pattern _`const`_ is a _constant pattern_ which matches values equal to the given constant. For
+The pattern `const` is a _constant pattern_ which matches values equal to the given constant. For
 example:
 
 ```
@@ -110,11 +110,11 @@ Long-ident pat
 Long-ident pat-params pat
 ```
 
-If _`long-ident`_ is a single identifier that does not begin with an uppercase character, it is interpreted
+If `long-ident` is a single identifier that does not begin with an uppercase character, it is interpreted
 as a _variable pattern_. During checking, the variable is assigned the same value and type as the
 pattern input.
 
-If _`long-ident`_ is more than one-character long or begins with an uppercase character (that is, if
+If `long-ident` is more than one-character long or begins with an uppercase character (that is, if
 `System.Char.IsUpperInvariant` is `true` and `System.Char.IsLowerInvariant` is `false` on the first
 character), it is resolved by using _Name Resolution in Patterns_ ([§14.1.6](inference-procedures.md#name-resolution-in-patterns)). This algorithm produces one
 of the following:
@@ -124,7 +124,7 @@ of the following:
 - An active pattern case name
 - A literal value
 
-Otherwise, _`long-ident`_ must be a single uppercase identifier _`ident`_. In this case, _`pat`_ is a variable
+Otherwise, `long-ident` must be a single uppercase identifier `ident`. In this case, `pat` is a variable
 pattern. An F# implementation may optionally generate a warning if the identifier is uppercase. Such
 a warning is recommended if the length of the identifier is greater than two.
 
@@ -133,10 +133,10 @@ sections.
 
 ### Union Case Patterns
 
-If _`long-ident`_ from [§7.2](patterns.md#named-patterns) resolves to a union case, the pattern is a union case pattern. If _`long-ident`_
-resolves to a union case _`Case`_ , then _`long-ident`_ and _`long-ident pat`_ are patterns that match pattern
-inputs that have union case label _`Case`_. The _`long-ident`_ form is used if the corresponding case takes
-no arguments, and the _`long-ident pat`_ form is used if it takes arguments.
+If `long-ident` from [§7.2](patterns.md#named-patterns) resolves to a union case, the pattern is a union case pattern. If `long-ident`
+resolves to a union case `Case` , then `long-ident` and `long-ident pat` are patterns that match pattern
+inputs that have union case label `Case`. The `long-ident` form is used if the corresponding case takes
+no arguments, and the `long-ident pat` form is used if it takes arguments.
 
 At runtime, if the pattern input is an object that has the corresponding union case label, the data
 values carried by the union are matched against the given argument patterns.
@@ -176,7 +176,7 @@ let getArea (s: Shape) =
 ```
 ### Literal Patterns
 
-If _`long-ident`_ from [§7.2](patterns.md#named-patterns) resolves to a literal value, the pattern is a literal pattern. The pattern is
+If `long-ident` from [§7.2](patterns.md#named-patterns) resolves to a literal value, the pattern is a literal pattern. The pattern is
 equivalent to the corresponding constant pattern.
 
 In the following example, the `Literal` attribute ([§10.2.2](namespaces-and-modules.md#literal-definitions-in-modules)) is first used to define two literals, and these
@@ -199,33 +199,33 @@ In this case, `result` is given the value `"Case2”`.
 
 ### Active Patterns
 
-If _`long-ident`_ from [§7.2](patterns.md#named-patterns) resolves to an _active pattern case name `CaseNamei`_ then the pattern is an
-active pattern. The rules for name resolution in patterns ([§14.1.6](inference-procedures.md#name-resolution-in-patterns)) ensure that _`CaseNamei`_ is
+If `long-ident` from [§7.2](patterns.md#named-patterns) resolves to an _active pattern case name `CaseNamei`_ then the pattern is an
+active pattern. The rules for name resolution in patterns ([§14.1.6](inference-procedures.md#name-resolution-in-patterns)) ensure that `CaseNamei` is
 associated with an _active pattern function `f`_ in one of the following forms:
 
-- `(| _CaseName_ |) _inp_`
+- `(| CaseName |) inp`
 
   Single case. The function accepts one argument (the value being matched) and can return any
 type.
 
-- `(| _CaseName_ |_|) _inp_`
+- `(| CaseName |_|) inp`
 
   Partial. The function accepts one argument (the value being matched) and must return a value
 of type `FSharp.Core.option<_>`
 
-- `(| _CaseName 1_ | ...| _CaseNamen_ |) _inp_`
+- `(| CaseName1 | ...| CaseNamen |) inp`
 
   Multi-case. The function accepts one argument (the value being matched), and must return a
 value of type `FSharp.Core.Choice<_,...,_>` based on the number of case names. In F#, the
 limitation n ≤ 7 applies.
 
-- `(| _CaseName_ |) _arg 1_ ... _argn inp_`
+- `(| CaseName |) arg1 ... argn inp`
 
   Single case with parameters. The function accepts `n+1` arguments, where the last argument (`inp`)
 is the value to match, and can return any type.
 
 
-- `(| _CaseName_ |_|) _arg 1_ ... _argn inp_`
+- `(| CaseName |_|) arg1 ... argn inp`
 
   Partial with parameters. The function accepts n +1 arguments, where the last argument (`inp`) is
 the value to match, and must return a value of type `FSharp.Core.option<_>`.
@@ -237,14 +237,14 @@ the following are not permitted:
 (|CaseName1| ... |CaseNamen|_|)
 ```
 
-When an active pattern function takes arguments, the _`pat-params`_ are interpreted as expressions
-that are passed as arguments to the active pattern function. The _`pat-params`_ are converted to the
+When an active pattern function takes arguments, the `pat-params` are interpreted as expressions
+that are passed as arguments to the active pattern function. The `pat-params` are converted to the
 syntactically identical corresponding expression forms and are passed as arguments to the active
-pattern function _`f`_.
+pattern function `f`.
 
-At runtime, the function _`f`_ is applied to the pattern input, along with any parameters. The pattern
-matches if the active pattern function returns _`v`_ , _`ChoicekOfN v`_ , or Some _`v`_ , respectively, when applied
-to the pattern input. If the pattern argument _`pat`_ is present, it is then matched against _`v`_.
+At runtime, the function `f` is applied to the pattern input, along with any parameters. The pattern
+matches if the active pattern function returns `v` , `ChoicekOfN v` , or Some `v` , respectively, when applied
+to the pattern input. If the pattern argument `pat` is present, it is then matched against `v`.
 
 The following example shows how to define and use a partial active pattern function:
 
@@ -318,8 +318,8 @@ An “as” pattern is of the following form:
 ```
 pat as ident
 ```
-The “as” pattern defines _`ident`_ to be equal to the pattern input and matches the pattern input
-against _`pat`_. For example:
+The “as” pattern defines `ident` to be equal to the pattern input and matches the pattern input
+against `pat`. For example:
 
 ```
 let t1 = (1, 2)
@@ -388,7 +388,7 @@ both patterns.
 
 ## List Patterns
 
-The pattern _`pat :: pat`_ is a union case pattern that matches the “cons” union case of F# list values.
+The pattern `pat :: pat` is a union case pattern that matches the “cons” union case of F# list values.
 
 The pattern `[]` is a union case pattern that matches the “nil” union case of F# list values.
 
@@ -440,7 +440,7 @@ _Dynamic type-test patterns_ have the following two forms:
 :? type
 :? type as ident
 ```
-A dynamic type-test pattern matches any value whose runtime type is _`type`_ or a subtype of _`type`_. For
+A dynamic type-test pattern matches any value whose runtime type is `type` or a subtype of `type`. For
 example:
 
 ```
@@ -450,8 +450,8 @@ let message (x : System.Exception) =
     | :? System.ArgumentException -> "invalid argument"
     | _ -> "unknown error"
 ```
-If the type-test pattern is of the form `:? _type as ident_`, then the value is coerced to the given type
-and _`ident`_ is bound to the result. For example:
+If the type-test pattern is of the form `:? type as ident`, then the value is coerced to the given type
+and `ident` is bound to the result. For example:
 
 ```
 let findLength (x : obj) =
@@ -462,10 +462,10 @@ match x with
 
 In the example, the identifier `s` is bound to the value `x` with type `string`.
 
-If the pattern input has type _`tyin`_, pattern checking uses the same conditions as both a dynamic type-
-test expression _`e :? type`_ and a dynamic coercion expression _`e :?> type`_ where _`e`_ has type _`tyin`_. An
-error occurs if _`type`_ cannot be statically determined to be a subtype of the type of the pattern input.
-A warning occurs if the type test will always succeed based on _`type`_ and the static type of the pattern
+If the pattern input has type `tyin`, pattern checking uses the same conditions as both a dynamic type-
+test expression `e :? type` and a dynamic coercion expression `e :?> type` where `e` has type `tyin`. An
+error occurs if `type` cannot be statically determined to be a subtype of the type of the pattern input.
+A warning occurs if the type test will always succeed based on `type` and the static type of the pattern
 input.
 
 A warning is issued if an expression contains a redundant dynamic type-test pattern, after any
@@ -483,8 +483,8 @@ match box "3" with
 | _ -> 2
 ```
 At runtime, a dynamic type-test pattern succeeds if and only if the corresponding dynamic type-test
-expression _`e :? ty`_ would return true where _`e`_ is the pattern input. The value of the pattern is bound
-to the results of a dynamic coercion expression _`e :?> ty`_.
+expression `e :? ty` would return true where `e` is the pattern input. The value of the pattern is bound
+to the results of a dynamic coercion expression `e :?> ty`.
 
 ## Record Patterns
 
@@ -504,7 +504,7 @@ let totalSize data =
     | { Header = "UDP"; Size = size } -> size
     | _ -> failwith "unknown header"
 ```
-The _`long-identi`_ are resolved in the same way as field labels for record expressions and must
+The `long-identi` are resolved in the same way as field labels for record expressions and must
 together identify a single, unique F# record type. Not all record fields for the type need to be
 specified in the pattern.
 

@@ -83,13 +83,13 @@ However, whitespace can appear before the # character. A source line that contai
 or `#endif` directive can end with whitespace and a single-line comment. Multiple-line comments are
 not permitted on source lines that contain preprocessing directives.
 
-If an _`if-directive`_ token is matched during tokenization, text is recursively tokenized until a
-corresponding _`else-directive`_ or _`endif-directive`_. If the evaluation of the associated
-_`if-expression-text`_ when parsed as an _if-expression_ is true in the compilation environment defines
-(where each _`ident-text`_ is evaluataed according to the values given by command line options such
-as `–define`), the token stream includes the tokens between the _`if-directive`_ and the corresponding
-_`else-directive`_ or _`endif-directive`_. Otherwise, the tokens are discarded. The converse applies to
-the text between any corresponding _`else-directive`_ and the _`endif-directive`_.
+If an `if-directive` token is matched during tokenization, text is recursively tokenized until a
+corresponding `else-directive` or `endif-directive`. If the evaluation of the associated
+`if-expression-text` when parsed as an _if-expression_ is true in the compilation environment defines
+(where each `ident-text` is evaluataed according to the values given by command line options such
+as `–define`), the token stream includes the tokens between the `if-directive` and the corresponding
+`else-directive` or `endif-directive`. Otherwise, the tokens are discarded. The converse applies to
+the text between any corresponding `else-directive` and the `endif-directive`.
 
 - In skipped text, `#if ident /#else/#endif` sections can be nested.
 - Strings and comments are not treated as special
@@ -236,7 +236,7 @@ token triple-quoted-string = """ simple-or-escape-char* """
 ```
 
 To translate a string token to a string value, the F# parser concatenates all the Unicode characters
-for the _`string-char`_ elements within the string. Strings may include `\n` as a newline character.
+for the `string-char` elements within the string. Strings may include `\n` as a newline character.
 However, if a line ends with `\`, the newline character and any leading whitespace elements on the
 subsequent line are ignored. Thus, the following gives `s` the value `"abcdef"`:
 

@@ -3,11 +3,11 @@
 The inputs to the F# compiler or the F# Interactive dynamic compiler consist of:
 
 - Source code files, with extensions `.fs`, `.fsi`, `.fsx`, or `.fsscript`.
-    - Files with extension `.fs` must conform to grammar element _`implementation-file`_ in [§12.1](program-structure-and-execution.md#implementation-files).
-    - Files with extension `.fsi` must conform to grammar element _`signature-file`_ in [§12.2](program-structure-and-execution.md#signature-files).
-    - Files with extension `.fsx` or `.fsscript` must conform to grammar element _`script-file`_ in
+    - Files with extension `.fs` must conform to grammar element `implementation-file` in [§12.1](program-structure-and-execution.md#implementation-files).
+    - Files with extension `.fsi` must conform to grammar element `signature-file` in [§12.2](program-structure-and-execution.md#signature-files).
+    - Files with extension `.fsx` or `.fsscript` must conform to grammar element `script-file` in
       [§12.3](program-structure-and-execution.md#script-files).
-- Script fragments (for F# Interactive). These must conform to grammar element _`script-fragment`_.
+- Script fragments (for F# Interactive). These must conform to grammar element `script-fragment`.
   Script fragments can be separated by `;;` tokens.
 - Assembly references that are specified by command line arguments or interactive directives.
 - Compilation parameters that are specified by command line arguments or interactive directives.
