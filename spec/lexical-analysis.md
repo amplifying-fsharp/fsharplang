@@ -1,10 +1,10 @@
-# 3. Lexical Analysis
+# Lexical Analysis
 
 Lexical analysis converts an input stream of Unicode characters into a stream of tokens by iteratively
 processing the stream. If more than one token can match a sequence of characters in the source file,
 lexical processing always forms the longest possible lexical element. Some tokens, such as `block-comment-start`, are discarded after processing as described later in this section.
 
-## 3.1 Whitespace
+## Whitespace
 
 Whitespace consists of spaces and newline characters.
 
@@ -15,7 +15,7 @@ token whitespace-or-newline = whitespace | newline
 ```
 Whitespace tokens `whitespace-or-newline` are discarded from the returned token stream.
 
-## 3.2 Comments
+## Comments
 
 Block comments are delimited by `(*` and `*)` and may be nested. Single-line comments begin with
 two backslashes (`//`) and extend to the end of the line.
@@ -34,13 +34,13 @@ tokenized by the rules for `string`, `verbatim-string` , and `triple-quoted stri
 that are embedded in comments are tokenized in their entirety, without considering closing `*)`
 marks. As a result of this rule, the following is a valid comment:
 
-```
+```fsharp
 (* Here's a code snippet: let s = "*)" *)
 ```
 However, the following construct, which was valid in F# 2.0, now produces a syntax error because a
 closing comment token *) followed by a triple-quoted mark is parsed as part of a string:
 
-```
+```fsharp
 (* """ *)
 ```
 For the purposes of this specification, comment tokens are discarded from the returned lexical
@@ -49,7 +49,7 @@ delimiters are retained and are associated with the remaining elements to genera
 documentation.
 
 
-## 3.3 Conditional Compilation
+## Conditional Compilation
 
 The lexical preprocessing directives `#if ident /#else/#endif` delimit conditional compilation
 sections. The following describes the grammar for such sections:
@@ -94,7 +94,7 @@ the text between any corresponding _`else-directive`_ and the _`endif-directive`
 - In skipped text, `#if ident /#else/#endif` sections can be nested.
 - Strings and comments are not treated as special
 
-## 3.4 Identifiers and Keywords
+## Identifiers and Keywords
 
 Identifiers follow the specification in this section.
 
@@ -129,7 +129,7 @@ tabs, and double-backtick pairs themselves, is treated as an identifier. Note th
 used for the name of a types, union type case, module, or namespace, the following characters are
 not allowed even inside double-backtick marks:
 
-```
+```fsgrammar
 ‘.', '+', '$', '&', '[', ']', '/', '\\', '*', '\"', '`'
 ```
 All input files are currently assumed to be encoded as UTF-8. See the C# specification for a list of the
@@ -158,7 +158,7 @@ token reserved-ident-keyword =
 ```
 A future revision of the F# language may promote any of these identifiers to be full keywords.
 
-The following token forms are reserved, except when they are part of a symbolic keyword (§3.6).
+The following token forms are reserved, except when they are part of a symbolic keyword ([§3.6](lexical-analysis.md#symbolic-keywords)).
 
 ```fsgrammar
 token reserved-ident-formats =
@@ -168,7 +168,7 @@ In the remainder of this specification, we refer to the token that is generated 
 by using the text of the keyword itself.
 
 
-## 3.5 Strings and Characters
+## Strings and Characters
 
 String literals may be specified for two types:
 
@@ -283,7 +283,7 @@ let catalog = """
 </catalog>
 """
 ```
-## 3.6 Symbolic Keywords
+## Symbolic Keywords
 
 The following symbolic or partially symbolic character sequences are treated as keywords:
 
@@ -300,10 +300,10 @@ The following symbols are reserved for future use:
 token reserved-symbolic-sequence =
     ~ `
 ```
-## 3.7 Symbolic Operators
+## Symbolic Operators
 
 User-defined and library-defined symbolic operators are sequences of characters as shown below,
-except where the sequence of characters is a symbolic keyword (§3.6).
+except where the sequence of characters is a symbolic keyword ([§3.6](lexical-analysis.md#symbolic-keywords)).
 
 ```fsgrammar
 regexp first-op-char = !%&*+-./<=>@^|~
@@ -325,12 +325,12 @@ token symbolic-op =
 For example, `&&&` and `|||` are valid symbolic operators. Only the operators `?` and `?<-` may start with
 `?`.
 
-The `quote-op-left` and `quote-op-right` operators are used in quoted expressions (§6.8).
+The `quote-op-left` and `quote-op-right` operators are used in quoted expressions ([§6.8](expressions.md#quoted-expressions)).
 
 For details about the associativity and precedence of symbolic operators in expression forms, see
 §4.4.
 
-## 3.8 Numeric Literals
+## Numeric Literals
 
 The lexical specification of numeric literals is as follows:
 
@@ -377,7 +377,7 @@ token float =
     digit +. digit *
     digit + (. digit * )? (e|E) (+|-)? digit +
 ```
-### 3.8.1 Post-filtering of Adjacent Prefix Tokens
+### Post-filtering of Adjacent Prefix Tokens
 
 Negative integers are specified using the `–` token; for example, `-3`. The token steam is post-filtered
 according to the following rules:
@@ -407,7 +407,7 @@ according to the following rules:
       | ADJACENT_PREFIX_OP expr
 ```
 
-### 3.8.2 Post-filtering of Integers Followed by Adjacent “..”
+### Post-filtering of Integers Followed by Adjacent “..”
 
 Tokens of the form
 
@@ -420,7 +420,7 @@ This rule allows “`..`” to immediately follow an integer. This construction 
 form `[for x in 1..2 -> x + x ]`. Without this rule, the longest-match rule would consider this
 sequence to be a floating-point number followed by a “`.`”.
 
-### 3.8.3 Reserved Numeric Literal Forms
+### Reserved Numeric Literal Forms
 
 The following token forms are reserved for future numeric literal formats:
 
@@ -428,7 +428,7 @@ The following token forms are reserved for future numeric literal formats:
 token reserved-literal-formats =
     | (xint | ieee32 | ieee64) ident-char+
 ```
-### 3.8.4 Shebang
+### Shebang
 
 A shebang (#!) directive may exist at the beginning of F# source files. Such a line is treated as a
 comment. This allows F# scripts to be compatible with the Unix convention whereby a script
@@ -438,7 +438,7 @@ the #! directive.
 ```fsharp
 #!/bin/usr/env fsharpi --exec
 ```
-## 3.9 Line Directives
+## Line Directives
 
 Line directives adjust the source code filenames and line numbers that are reported in error
 messages, recorded in debugging symbols, and propagated to quoted expressions. F# supports the
@@ -456,13 +456,13 @@ token line-directive =
 A line directive applies to the line that immediately follows the directive. If no line directive is
 present, the first line of a file is numbered 1.
 
-## 3.10 Hidden Tokens
+## Hidden Tokens
 
 Some hidden tokens are inserted by lexical filtering (§ 15 ) or are used to replace existing tokens. See
 § 15 for a full specification and for the augmented grammar rules that take these into account.
 
 
-## 3.11 Identifier Replacements
+## Identifier Replacements
 
 The following table lists identifiers that are automatically replaced by expressions.
 

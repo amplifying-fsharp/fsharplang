@@ -1,4 +1,4 @@
-# 7. Patterns
+# Patterns
 
 Patterns are used to perform simultaneous case analysis and decomposition on values together with
 the `match`, `try...with`, `function`, `fun`, and `let` expression and declaration constructs. Rules are
@@ -75,7 +75,7 @@ The decision tree is composed of the following constructs:
 - Value definitions
 - An array of pattern-match targets referred to by index
 
-## 7.1 Simple Constant Patterns
+## Simple Constant Patterns
 
 The pattern _`const`_ is a _constant pattern_ which matches values equal to the given constant. For
 example:
@@ -88,7 +88,7 @@ let rotate3 x =
     | 2 -> "one"
     | _ -> failwith "rotate3"
 ```
-In this example, the constant patterns are 0, 1, and 2. Any constant listed in §6.3.1 may be used as a
+In this example, the constant patterns are 0, 1, and 2. Any constant listed in [§6.3.1](expressions.md#simple-constant-expressions) may be used as a
 constant pattern except for integer literals that have the suffixes `Q`, `R`, `Z`, `I`, `N`, `G`.
 
 Simple constant patterns have the corresponding simple type. Such patterns elaborate to a call to
@@ -100,7 +100,7 @@ constant as arguments. The match succeeds if this call returns true; otherwise, 
 used to match floating-point values, and CLI ordinal string equality is used to match
 strings.
 
-## 7.2 Named Patterns
+## Named Patterns
 
 Patterns in the following forms are _named patterns_ :
 
@@ -116,7 +116,7 @@ pattern input.
 
 If _`long-ident`_ is more than one-character long or begins with an uppercase character (that is, if
 `System.Char.IsUpperInvariant` is `true` and `System.Char.IsLowerInvariant` is `false` on the first
-character), it is resolved by using _Name Resolution in Patterns_ (§14.1.6). This algorithm produces one
+character), it is resolved by using _Name Resolution in Patterns_ ([§14.1.6](inference-procedures.md#name-resolution-in-patterns)). This algorithm produces one
 of the following:
 
 - A union case
@@ -131,9 +131,9 @@ a warning is recommended if the length of the identifier is greater than two.
 After name resolution, the subsequent treatment of the named pattern is described in the following
 sections.
 
-### 7.2.1 Union Case Patterns
+### Union Case Patterns
 
-If _`long-ident`_ from §7.2 resolves to a union case, the pattern is a union case pattern. If _`long-ident`_
+If _`long-ident`_ from [§7.2](patterns.md#named-patterns) resolves to a union case, the pattern is a union case pattern. If _`long-ident`_
 resolves to a union case _`Case`_ , then _`long-ident`_ and _`long-ident pat`_ are patterns that match pattern
 inputs that have union case label _`Case`_. The _`long-ident`_ form is used if the corresponding case takes
 no arguments, and the _`long-ident pat`_ form is used if it takes arguments.
@@ -174,12 +174,12 @@ let getArea (s: Shape) =
     | Rectangle (width = w; height = h) -> w*h
     | Square (width = w) -> w*w
 ```
-### 7.2.2 Literal Patterns
+### Literal Patterns
 
-If _`long-ident`_ from §7.2 resolves to a literal value, the pattern is a literal pattern. The pattern is
+If _`long-ident`_ from [§7.2](patterns.md#named-patterns) resolves to a literal value, the pattern is a literal pattern. The pattern is
 equivalent to the corresponding constant pattern.
 
-In the following example, the `Literal` attribute (§10.2.2) is first used to define two literals, and these
+In the following example, the `Literal` attribute ([§10.2.2](namespaces-and-modules.md#literal-definitions-in-modules)) is first used to define two literals, and these
 literals are used as identifiers in the match expression:
 
 ```
@@ -197,10 +197,10 @@ let result =
 ```
 In this case, `result` is given the value `"Case2”`.
 
-### 7.2.3 Active Patterns
+### Active Patterns
 
-If _`long-ident`_ from §7.2 resolves to an _active pattern case name `CaseNamei`_ then the pattern is an
-active pattern. The rules for name resolution in patterns (§14.1.6) ensure that _`CaseNamei`_ is
+If _`long-ident`_ from [§7.2](patterns.md#named-patterns) resolves to an _active pattern case name `CaseNamei`_ then the pattern is an
+active pattern. The rules for name resolution in patterns ([§14.1.6](inference-procedures.md#name-resolution-in-patterns)) ensure that _`CaseNamei`_ is
 associated with an _active pattern function `f`_ in one of the following forms:
 
 - `(| _CaseName_ |) _inp_`
@@ -311,7 +311,7 @@ An active pattern function may be executed multiple times against the same patte
 resolution of a single overall pattern match. The precise number of times that the active pattern
 function is executed against a particular pattern input is implementation-dependent.
 
-## 7.3 “As” Patterns
+## “As” Patterns
 
 An “as” pattern is of the following form:
 
@@ -328,7 +328,7 @@ printfn "%d-%d-%A" x y t2 // 1- 2 - (1, 2)
 ```
 This example binds the identifiers `x`, `y`, and `t1` to the values `1` , `2` , and `(1,2)`, respectively.
 
-## 7.4 Wildcard Patterns
+## Wildcard Patterns
 
 The pattern `_` is a wildcard pattern and matches any input. For example:
 
@@ -342,7 +342,7 @@ let categorize x =
 In the example, if `x` is `0`, the match returns `1`. If `x` has any other value, the match returns `0`.
 
 
-## 7.5 Disjunctive Patterns
+## Disjunctive Patterns
 
 A disjunctive pattern matches an input value against one or the other of two patterns:
 
@@ -366,7 +366,7 @@ let result = isYearLimit (Date (2010,12,31))
 In this example, `result` is given the value `true`, because the pattern input matches the second
 pattern.
 
-## 7.6 Conjunctive Patterns
+## Conjunctive Patterns
 
 A conjunctive pattern matches the pattern input against two patterns.
 
@@ -386,7 +386,7 @@ match 56 with
 In this example, `result` is given the value `22` (= 16 + 8), because the pattern input match matches
 both patterns.
 
-## 7.7 List Patterns
+## List Patterns
 
 The pattern _`pat :: pat`_ is a union case pattern that matches the “cons” union case of F# list values.
 
@@ -412,7 +412,7 @@ let result2 =
 ```
 In this example, both `result1` and `result2` are given the value `6`.
 
-## 7.8 Type-annotated Patterns
+## Type-annotated Patterns
 
 A _type-annotated pattern_ specifies the type of the value to match to a pattern.
 
@@ -432,7 +432,7 @@ Through type inference, this in turn implies that `xs` and `t` have static type 
 static type
 `int list -> int`.
 
-## 7.9 Dynamic Type-test Patterns
+## Dynamic Type-test Patterns
 
 _Dynamic type-test patterns_ have the following two forms:
 
@@ -486,7 +486,7 @@ At runtime, a dynamic type-test pattern succeeds if and only if the correspondin
 expression _`e :? ty`_ would return true where _`e`_ is the pattern input. The value of the pattern is bound
 to the results of a dynamic coercion expression _`e :?> ty`_.
 
-## 7.10 Record Patterns
+## Record Patterns
 
 The following is a _record pattern_ :
 
@@ -508,7 +508,7 @@ The _`long-identi`_ are resolved in the same way as field labels for record expr
 together identify a single, unique F# record type. Not all record fields for the type need to be
 specified in the pattern.
 
-## 7.11 Array Patterns
+## Array Patterns
 
 An _array pattern_ matches an array of a partciular length:
 
@@ -525,7 +525,7 @@ let checkPackets data =
     | [| "HeaderB"; data2; data1 |] -> (data1, data2)
     | _ -> failwith "unknown packet"
 ```
-## 7.12 Null Patterns
+## Null Patterns
 
 The _null pattern_ null matches values that are represented by the CLI value null. For example:
 
@@ -537,9 +537,9 @@ let path =
 ```
 Most F# types do not use `null` as a representation; consequently, the null pattern is generally used
 to check values passed in by CLI method calls and properties. For a list of F# types that use `null` as a
-representation, see §5.4.8.
+representation, see [§5.4.8](types-and-type-constraints.md#nullness).
 
-## 7.13 Guarded Pattern Rules
+## Guarded Pattern Rules
 
 _Guarded pattern rules_ have the following form:
 

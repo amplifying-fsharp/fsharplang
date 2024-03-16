@@ -3,10 +3,7 @@
         "introduction",
         "program-structure",
         "lexical-analysis",
-        "basic-grammar-elements",
-        "types-and-type-constraints",
-        "expressions",
-        "patterns"
+        "basic-grammar-elements"
     ],
     "Annexes": [
     ]

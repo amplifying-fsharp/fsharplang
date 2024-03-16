@@ -2193,7 +2193,7 @@ return types in the two member constraints are themselves constrained to be equa
 is specifically necessary to simplify type inference, reduce the size of types shown to users, and
 ensure the reporting of useful error messages.
 
-#### 5.2. 4 Default Constructor Constraints
+#### 5.2.4 Default Constructor Constraints
 
 An _explicit default constructor constraint_ has the following form:
 
@@ -3085,7 +3085,7 @@ form of type in this position are not permitted, and if such an instantiation oc
 code or CLI library metadata that is referenced by F# code, an F# implementation may
 report an error.
 ```
-#### 6.3. 3 List Expressions
+#### 6.3.3 List Expressions
 
 An expression of the form [ _expr 1_ ;...; _exprn_ ] is a _list expression_. The initial type of the expression is
 asserted to be FSharp.Collections.List< _ty_ > for a fresh type _ty_.
@@ -4716,7 +4716,7 @@ member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
 ?start3:int * ?end3:int * ?start4:int * ?end4:int *
 values:T[,,,] -> unit
 ```
-### 6.4. 8 Member Constraint Invocation Expressions
+### 6.4.8 Member Constraint Invocation Expressions
 
 An expression of the following form is a member constraint invocation expression:
 
@@ -5098,7 +5098,7 @@ printfn "I don't like Mondays"
 The overall type of the expression is unit. The expression _expr_ 1 is checked with initial type bool. A
 warning is reported if the body _expr_ 2 of the while loop cannot be asserted to have type unit.
 
-### 6.5. 9 Try-with Expressions
+### 6.5.9 Try-with Expressions
 
 A _try-with expression_ has the following form:
 
@@ -6501,7 +6501,7 @@ match 56 with
 In this example, result is given the value 22 (= 16 + 8 ), because the pattern input match matches
 both patterns.
 
-### 7. 7 LIST PATTERNS
+### 7.7 LIST PATTERNS
 
 The pattern _pat_ :: _pat_ is a union case pattern that matches the “cons” union case of F# list values.
 
@@ -10527,7 +10527,7 @@ names that are associated with _ident_ in the _ModulesAndNamespaces_ table.
 Module abbreviations may not be used to abbreviate namespaces.
 
 
-### 10 .5 ACCESSIBILITY ANNOTATIONS
+### 10.5 ACCESSIBILITY ANNOTATIONS
 
 Accessibilities may be specified on declaration elements in namespace declaration groups and
 modules, and on members in types. The table lists the accessibilities that can appear in user code:
@@ -11161,7 +11161,7 @@ for help.
 Requests the script execution
 environment to halt execution and exit.
 
-### 12 .5 PROGRAM EXECUTION
+### 12.5 PROGRAM EXECUTION
 
 Execution of F# code occurs in the context of an executing CLI program into which one or more
 compiled F# assemblies or script fragments is loaded. During execution, the CLI program can use the

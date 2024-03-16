@@ -1,8 +1,8 @@
-# 4. Basic Grammar Elements
+# Basic Grammar Elements
 
 This section defines grammar elements that are used repeatedly in later sections.
 
-## 4.1 Operator Names
+## Operator Names
 
 Several places in the grammar refer to an _`ident-or-op`_ rather than an _`ident`_ :
 
@@ -104,7 +104,7 @@ compiled form of F# programs. The compiled names are shown below.
 /=    op_DivisionAssignment
 ..    op_Range
 .. .. op_RangeStep
-
+```
 
 Compiled names for other symbolic operators are `op_N1` ... `Nn` where N1 to Nn are the names for the
 characters as shown in the table below. For example, the symbolic identifier `<*` has the compiled
@@ -137,7 +137,7 @@ name `op_LessMultiply`:
 ]   RBrack
 ```
 
-## 4.2 Long Identifiers
+## Long Identifiers
 
 Long identifiers _`long-ident`_ are sequences of identifiers that are separated by ‘`.`’ and optional
 whitespace. Long identifiers _`long-ident-or-op`_ are long identifiers that may terminate with an
@@ -149,10 +149,10 @@ long-ident-or-op :=
     | long-ident '.' ident-or-op
     | ident-or-op
 ```
-## 4.3 Constants
+## Constants
 
 The constants in the following table may be used in patterns and expressions. The individual lexical
-formats for the different constants are defined in § 3.
+formats for the different constants are defined in [§3.](lexical-analysis.md#lexical-analysis)
 
 ```fsgrammar
 const :=
@@ -178,9 +178,9 @@ const :=
     | false | true          -- Boolean constant of type "bool"
     | '(' ')'               -- unit constant of type "unit"
 ```
-## 4.4 Operators and Precedence
+## Operators and Precedence
 
-### 4.4.1 Categorization of Symbolic Operators
+### Categorization of Symbolic Operators
 
 The following _`symbolic-op`_ tokens can be used to form prefix and infix expressions. The marker `OP`
 represents all _`symbolic-op`_ tokens that begin with the indicated prefix, except for tokens that appear
@@ -233,7 +233,7 @@ The `::` operator is special. It represents the union case for the addition of a
 an immutable linked list, and cannot be redefined, although it may be used to form infix expressions.
 It always accepts arguments in tupled form — as do all union cases — rather than in curried form.
 
-### 4.4.2 Precedence of Symbolic Operators and Pattern/Expression Constructs
+### Precedence of Symbolic Operators and Pattern/Expression Constructs
 
 Rules of precedence control the order of evaluation for ambiguous expression and pattern
 constructs. Higher precedence items are evaluated before lower precedence items.
@@ -246,8 +246,8 @@ elsewhere in the table.
 
 | Operator or expression | Associativity | Comments |
 | --- | --- | --- |
-| f<types> | Left | High-precedence type application; see §15.3
-| f(x) | Left | High-precedence application; see §15.2
+| f<types> | Left | High-precedence type application; see [§15.3](lexical-filtering.md#lexical-analysis-of-type-applications)
+| f(x) | Left | High-precedence application; see [§15.2](lexical-filtering.md#high-precedence-application)
 | . | Left |
 | _prefix-op_ | Left | Applies to prefix uses of these symbols |
 | "| rule" | Right Pattern matching rules |
@@ -311,4 +311,4 @@ operators. For example, `.*` has the same precedence as `*.` This rule ensures t
 `.*`, which is frequently used for pointwise-operation on matrices, have the expected precedence.
 
 The table entries marked as “High-precedence application” and “High-precedence type application”
-are the result of the augmentation of the lexical token stream, as described in §15.2 and §15.3.
+are the result of the augmentation of the lexical token stream, as described in §15.2 and [§15.3](lexical-filtering.md#lexical-analysis-of-type-applications).
