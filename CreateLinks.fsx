@@ -61,11 +61,13 @@ let rec processLine state line =
         $"{head} {header}", state
     else
         // add links to §-references
-        let m = Regex.Match(line, "(.*[^[])§ ?(\d+\.(?:\d+(?:\.\d+)*)?)(.*)")
+        let m = Regex.Match(line, "([^§]*[^[]?)§ ?(\d+(?:\.\d+)*)(.*)")
         if m.Success then
             let pre, section, post = m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value
-            match Map.tryFind section state.targets with
+            let sectionToSearch = if section.Contains "." then section else section + "."
+            match Map.tryFind sectionToSearch state.targets with
             | Some target ->
+                printfn $"***** adding link for §{section}"
                 let post', state' = processLine state post
                 $"{pre}[§{section}]({target}){post'}", {state' with linkCount = state'.linkCount + 1}
             | None ->
