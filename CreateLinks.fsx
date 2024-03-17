@@ -67,7 +67,6 @@ let rec processLine state line =
             let sectionToSearch = if section.Contains "." then section else section + "."
             match Map.tryFind sectionToSearch state.targets with
             | Some target ->
-                printfn $"***** adding link for §{section}"
                 let post', state' = processLine state post
                 $"{pre}[§{section}]({target}){post'}", {state' with linkCount = state'.linkCount + 1}
             | None ->
