@@ -87,8 +87,10 @@ let checkCodeBlock state line =
     if not m.Success then state else
         if state.inCodeBlock then {state with inCodeBlock = false} else
             let infoString = m.Groups[1].Value
-            if infoString <> "fsharp" && infoString <> "fsgrammar" then
-                let error = mkError state "starting code block fences must be exactly '```fsharp' or '```fsgrammar'"
+            if infoString <> "fsharp" && infoString <> "fsgrammar" && infoString <> "fsother" then
+                let error =
+                    mkError state
+                        "starting code block fences must be exactly '```fsharp' or '```fsgrammar' or 'fsother'"
                 {state with inCodeBlock = true; errors = error::state.errors}
             else {state with inCodeBlock = true}
 
