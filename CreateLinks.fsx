@@ -61,7 +61,7 @@ let rec processLine state line =
         $"{head} {header}", state
     else
         // add links to §-references
-        let m = Regex.Match(line, "([^§]*[^[]?)§ ?(\d+(?:\.\d+)*)(.*)")
+        let m = Regex.Match(line, "^([^§\[]*)§ ?(\d+(?:\.\d+)*)(.*)")
         if m.Success then
             let pre, section, post = m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value
             let sectionToSearch = if section.Contains "." then section else section + "."
