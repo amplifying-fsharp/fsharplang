@@ -1585,7 +1585,6 @@ compiled form of F# programs. The compiled names are shown below.
 [] op_Nil
 :: op_ColonColon
 + op_Addition
-```
 - op_Subtraction
 * op_Multiply
   / op_Division
@@ -1632,6 +1631,7 @@ compiled form of F# programs. The compiled names are shown below.
 /= op_DivisionAssignment
 .. op_Range
 .. .. op_RangeStep
+```
 
 
 Compiled names for other symbolic operators are op_N 1 ...Nn where N 1 to Nn are the names for the
@@ -5365,8 +5365,7 @@ let line1 = inStream.ReadLine()
 let line2 = inStream.ReadLine()
 (line1,line2)
 ```
-The expression is first checked as an expression of form let _ident_ = _expr 1_ in _expr 2_ (§ **Error! R
-eference source not found.** ), which results in an elaborated expression of the following form:
+The expression is first checked as an expression of form let _ident_ = _expr 1_ in _expr 2_ (§6.6.1), which results in an elaborated expression of the following form:
 
 ```
 let ident 1 : ty 1 = expr 1 in expr 2.
@@ -5586,7 +5585,7 @@ forms:
 ```
 These are respectively strongly typed and weakly typed splicing operators.
 
-**6.8.3.1 Strongly Typed Expression Splices**
+#### 6.8.3.1 Strongly Typed Expression Splices**
 An expression of the following form is a _strongly typed expression splice_ :
 
 ```
@@ -5611,7 +5610,7 @@ Note: The rules in this section apply to any use of the prefix operator
 FSharp.Core.ExtraTopLevelOperators.(~%). Uses of this operator must be applied to an
 argument and may only appear in quoted expressions.
 ```
-**6.8.3.2 Weakly Typed Expression Splices**
+#### 6.8.3.2 Weakly Typed Expression Splices**
 An expression of the following form is a _weakly typed expression splice_ :
 
 ```
@@ -7439,7 +7438,7 @@ member v.Length = sqrt((qx-px)*(qx-px) + (qy-py)*(qy-py))
 When a primary constructor is evaluated, the inheritance and function and value definitions are
 evaluated in order.
 
-**8.6.1.1 Object References in Primary Constructors**
+#### 8.6.1.1 Object References in Primary Constructors**
 For types that have a primary constructor, the name of the object parameter can be bound and used
 in the non-static function, value, and member definitions of the type definition as follows:
 
@@ -7470,7 +7469,7 @@ let r = new C() // raises InvalidOperationException
 The exception is raised because an attempt may be made to access the value of the field y before
 initialization is complete.
 
-**8.6.1.2 Inheritance Declarations in Primary Constructors**
+#### 8.6.1.2 Inheritance Declarations in Primary Constructors**
 An inherit declaration specifies that the type being defined is an extension of an existing type. Such
 declarations have the following form:
 
@@ -7507,7 +7506,7 @@ member this.F() = printfn "hi, y = %A" y
 ```
 let r = new C() // does not raise InvalidOperationException
 ```
-**8.6.1.3 Instance Function and Value Definitions in Primary Constructors**
+#### 8.6.1.3 Instance Function and Value Definitions in Primary Constructors**
 Classes that have primary constructors may include function definitions, value definitions, and “do”
 statements. The following rules apply to these definitions:
 
@@ -7562,7 +7561,7 @@ member __.P = 1
 In this example, no field is generated for unused, and no corresponding compiled CLI attribute is
 generated.
 
-**8.6.1.4 Static Function and Value Definitions in Primary Constructors**
+#### 8.6.1.4 Static Function and Value Definitions in Primary Constructors**
 Classes that have primary constructors may have function definitions, value definitions, and “do”
 statements that are marked as static:
 
@@ -8685,7 +8684,7 @@ Otherwise, it has no effect and callers must provide all of the arguments.
 As described in _Method Application Resolution_ (see §14.4), three type-directed conversions are
 applied at method invocations.
 
-**8.13.7.1 Conversion to Delegates**
+#### 8.13.7.1 Conversion to Delegates**
 The first type-directed conversion converts anonymous function expressions and other function-
 valued arguments to delegate types. Given:
 
@@ -8712,7 +8711,7 @@ static member M(arg: 'T) = ()
 ```
 GenericClass<System.Action>.M(fun () -> ()) // allowed
 ```
-**8.13.7.2 Conversion to Reference Cells**
+#### 8.13.7.2 Conversion to Reference Cells**
 The second type-directed conversion enables an F# reference cell to be passed where a byref< _ty_ > is
 expected. Given:
 
@@ -8775,7 +8774,7 @@ let res2 = ref 0
 x.IntegerOutParam(res2);
 // res2.contents now equals 4
 ```
-**8.13.7.3 Conversion to Quotation Values**
+#### 8.13.7.3 Conversion to Quotation Values**
 The third type-directed conversion enables an F# expression to be implicitly quoted at a member
 call.
 
@@ -8846,7 +8845,7 @@ argument of the form <@ ... @> is always considered to have a type of the form E
 in the same way that caller arguments of the form (fun x -> ...) are always assumed to
 have type of the form `` -> _`` (i.e. a function type)
 ```
-**8.13.7.4 Conversion to LINQ Expressions**
+#### 8.13.7.4 Conversion to LINQ Expressions**
 The third type-directed conversion enables an F# expression to be implicitly converted to a LINQ
 expression at a method call. Conversion is driven by an argument of type
 System.Linq.Expressions.Expression.
@@ -9575,7 +9574,7 @@ library functions is defined by the pseudocode later in this section. This code 
 - Structural comparison for arrays
 - Natural ordering for native integers (which do not support System.IComparable)
 
-**8.15.6.1 Pseudocode for FSharp.Core.Operators.compare**
+#### 8.15.6.1 Pseudocode for FSharp.Core.Operators.compare**
 
 ```
 Note: In practice, fast (but semantically equivalent) code is emitted for direct calls to
@@ -9619,7 +9618,7 @@ String.CompareOrdinal(x, y)
 // Otherwise raise a runtime error
 | _ -> raise (new ArgumentException(...))
 ```
-**8.15.6.2 Pseudo code for FSharp.Core.Operators.(=)**
+#### 8.15.6.2 Pseudo code for FSharp.Core.Operators.(=)**
 
 ```
 Note: In practice, fast (but semantically equivalent) code is emitted for direct calls to
@@ -10788,7 +10787,7 @@ the signature and implementation must conform as follows:
     are considered identical up to renaming the generic parameters.
 - The arities must match, as described in the next section.
 
-**11.2.1.1 Arity Conformance for Functions and Values**
+#### 11.2.1.1 Arity Conformance for Functions and Values**
 Arities of functions and values must conform between implementation and signature. Arities of
 values are implicit in module signatures. A signature that contains the following results in the arity
 [ _A 1_ ... _An_ ] for F:
@@ -10860,7 +10859,7 @@ interoperability requires that F# functions compile to methods, rather than to f
 function values. Thus, signatures must contain enough information to reveal the desired arity of a
 method as it is revealed to other CLI programming languages.
 
-**11.2.1.2 Signature Conformance for Type Functions**
+#### 11.2.1.2 Signature Conformance for Type Functions**
 If a value is a type function, then its corresponding value signature must have explicit type
 arguments. For example, the implementation
 
@@ -12745,7 +12744,7 @@ member constraint that has the same name, staticness, argument arity, and suppor
 variable is in the support set of more than one such constraint, the argument and return types are
 themselves constrained to be equal.
 
-**14.5.4.1 Simulation of Solutions for Member Constraints**
+#### 14.5.4.1 Simulation of Solutions for Member Constraints**
 Certain types are assumed to implicitly define static members even though the actual CLI metadata
 for types does not define these operators. This mechanism is used to implement the extensible
 conversion and math functions of the F# library including sin, cos, int, float, (+), and (-). The
@@ -14160,7 +14159,7 @@ the case. However, undentation is permitted for the following constructs:
 - Branches of if/then/else expressions
 - Bodies of modules and module types
 
-**15.1.10.1 Undentation of Bodies of Function Expressions**
+#### 15.1.10.1 Undentation of Bodies of Function Expressions**
 The bodies of functions may be undented from the fun or function symbol. As a result, the compiler
 ignores the symbol when determining whether the body of the function satisfies the incremental
 indentation rule. For example, the printf expression in the following example is undented from the
@@ -14181,7 +14180,7 @@ s+n+z))
 ```
 Constructs enclosed in brackets may be undented.
 
-**15.1.10.2 Undentation of Branches of If/Then/Else Expressions**
+#### 15.1.10.2 Undentation of Branches of If/Then/Else Expressions**
 The body of a ( ... ) or begin ... end block in an if/then/else expression may be undented when the
 body of the block follows the then or else keyword but may not undent further than the if
 keyword. In this example, the parenthesized block follows then, so the body can be undented to the
@@ -14193,7 +14192,7 @@ if day = System.DayOfWeek.Monday then (
 printf "I don't like Mondays"
 )
 ```
-**15.1.10.3 Undentation of Bodies of Modules and Module Types**
+#### 15.1.10.3 Undentation of Bodies of Modules and Module Types**
 The bodies of modules and module types that are delimited by begin and end may be undented. For
 example, in the following example the two let statements that comprise the module body are
 undented from the =.
@@ -15876,7 +15875,7 @@ When lightweight syntax is disabled, whitespace can include tab characters:
 regexp whitespace = [ ' ' '\t' ]+
 ```
 
-## APPENDIX A: F# GRAMMAR SUMMARY
+# APPENDIX A: F# GRAMMAR SUMMARY
 
 This appendix summarizes the grammar of the F# language. The following table describes the
 notation conventions used in the grammar.
@@ -15913,9 +15912,9 @@ $token (^) Lexical analysis inserts _$token_ as a hidden
 symbol.
 $app
 
-### A.1 Lexical Grammar
+## A.1 Lexical Grammar
 
-##### A.1.1 Whitespace
+### A.1.1 Whitespace
 
 _whitespace_ : ' '+
 
@@ -15927,7 +15926,7 @@ _whitespace-or-newline_ :
 _whitespace
 newline_
 
-##### A.1.2 Comments
+### A.1.2 Comments
 
 _block-comment-start_ : "(*"
 
@@ -15936,16 +15935,16 @@ _block-comment-end_ : "*)"
 
 _end-of-line-comment_ : "//" [^'\n' '\r']*
 
-##### A.1.3 Conditional Compilation
+### A.1.3 Conditional Compilation
 
 ```
 if-directive : "#if" whitespace ident-text
 else-directive : "#else"
 endif-directive : "#endif"
 ```
-##### A.1.4 Identifiers and Keywords
+### A.1.4 Identifiers and Keywords
 
-A.1.4.1 Identifiers
+#### A.1.4.1 Identifiers
 _digit-char_ : [0-9]
 
 _letter-char_ :
@@ -15982,13 +15981,13 @@ _ident_ :
 _ident-text_
 `` ( [^'`' '\n' '\r' '\t'] | '`' [^ '`' '\n' '\r' '\t'] )+ ``
 
-A.1.4.2 Long Identifiers
+#### A.1.4.2 Long Identifiers
 _long-ident_ : _ident_ '.' ... '.' _ident
 long-ident-or-op_ :
 _long-ident_ '.' _ident-or-op
 ident-or-op_
 
-A.1.4.3 Keywords
+#### A.1.4.3 Keywords
 _ident-keyword_ : one of
 
 
@@ -16008,7 +16007,7 @@ recursive sealed tailcall trait virtual volatile**
 _reserved-ident-formats_ :
 _ident-text_ ( '!' | '#')
 
-A.1.4.4 Symbolic Keywords
+#### A.1.4.4 Symbolic Keywords
 _symbolic-keyword_ : one of
 **let! use! do! yield! return!**
 | -> <-. : ( ) [ ] [< >] [| |] { }
@@ -16018,7 +16017,7 @@ _? ?? (*) <@ @> <@@ @@>
 _reserved-symbolic-sequence_ :
 ~ `
 
-##### A.1.5 Strings and Characters
+### A.1.5 Strings and Characters
 
 _escape-char_ : '\' ["\'ntbr]
 
@@ -16080,7 +16079,7 @@ newline, return, tab, backspace,',\,"
 
 _triple-quoted-string_ : """ _simple-or-escape-char_ * """
 
-##### A.1.6 Numeric Literals
+### A.1.6 Numeric Literals
 
 _digit_ : [0-9]
 
@@ -16144,7 +16143,7 @@ _digit_ + (. _digit_ * )? (e|E) (+|-)? _digit_ +
 _reserved-literal-formats_ :
 ( **xint** | **ieee32** | **ieee64** ) _ident-char_ +
 
-##### A.1.7 Line Directives
+### A.1.7 Line Directives
 
 _line-directive_ :
 # _int_
@@ -16154,7 +16153,7 @@ _line-directive_ :
 **#line** _int string_
 **#line** _int verbatim-string_
 
-##### A.1.8 Identifier Replacements
+### A.1.8 Identifier Replacements
 
 **__SOURCE_DIRECTORY__
 __SOURCE_FILE__
@@ -16162,7 +16161,7 @@ __LINE__**
 
 ##### A.1.9 Operators
 
-A.1.9.1 Operator Names
+#### A.1.9.1 Operator Names
 _ident-or-op_ :
 _ident_
 ( _op-name_ )
@@ -16182,7 +16181,7 @@ a _ctive-pattern-op-name_ :
 | _ident_ | ... | _ident_ |
 | _ident_ | ... | _ident_ | _ |
 
-A.1.9.2 Symbolic Operators
+#### A.1.9.2 Symbolic Operators
 _first-op-char_ : one of
 !%&*+-./<=>@^|~
 
@@ -16203,7 +16202,7 @@ _first-op-char op-char_ *
 _quote-op-left
 quote-op-right_
 
-A.1.9.3 Infix and Prefix Operators
+#### A.1.9.3 Infix and Prefix Operators
 The OP marker represents all _symbolic-op_ tokens that begin with the indicated prefix, except for
 tokens that appear elsewhere in the table.
 
@@ -16226,7 +16225,7 @@ $
 **or**
 ?
 
-A.1.9.4 Constants
+#### A.1.9.4 Constants
 _const_ :
 _sbyte
 int16
@@ -16253,7 +16252,7 @@ bytechar_
 true**
 ()
 
-### A.2 Syntactic Grammar
+## A.2 Syntactic Grammar
 
 In general, this syntax summary describes full syntax. By default, however, .fs, .fsi, .fsx, and
 .fsscript files support lightweight syntax, in which indentation replaces **begin** / **end** and **done**
@@ -16269,7 +16268,7 @@ When lightweight syntax is disabled, whitespace can include tab characters:
 
 _whitespace_ : [ ' ' '\t' ]+
 
-**A.2.1 Program Format**
+### A.2.1 Program Format
 _implementation-file :
 namespace-decl-group_ ... _namespace-decl-group
 named-module
@@ -16293,7 +16292,7 @@ _anonymous-module-signature_ : _module-signature-elements_
 _script-fragment_ : _module-elems_
 
 
-A.2.1.1 Namespaces and Modules
+#### A.2.1.1 Namespaces and Modules
 _namespace-decl-group_ :
 **namespace** _long-ident module-elems_
 **namespace global** _module-elems_
@@ -16330,7 +16329,7 @@ _access_ :
 internal
 public**
 
-A.2.1.2 Namespace and Module Signatures
+#### A.2.1.2 Namespace and Module Signatures
 _namespace-decl-group-signature_ : **namespace** _long-ident module-signature-elements_
 
 _module-signature_ : **module** _ident_ = **beginopt** _module-signature-body_ **endopt**
@@ -16397,7 +16396,7 @@ _type-extension-signature_ : _type-name type-extension-elements-signature_
 
 _type-extension-elements-signature_ : **with** _type-elements-signature_ **end**
 
-##### A.2.2 Types and Type Constraints
+### A.2.2 Types and Type Constraints
 
 _type_ :
 ( _type_ )
@@ -16451,12 +16450,12 @@ _static-typars :_
 ^ _ident_
 (^ _ident_ **or** ... **or** ^ _ident_ )
 
-A.2.2.1 Equality and Comparison Constraints
+#### A.2.2.1 Equality and Comparison Constraints
 
 _typar_ : **equality**
 _typar_ : **comparison**
 
-A.2.2.2 Type Providers
+#### A.2.2.2 Type Providers
 
 _static-parameter =
 static-parameter-value
@@ -16583,7 +16582,7 @@ _object-members_ : **with** _member-defns_ **end**
 
 _member-defns_ : _member-defn_ ... _member-defn_
 
-A.2.3.1 Computation and Range Expressions
+#### A.2.3.1 Computation and Range Expressions
 
 _comp-or-range-expr_ :
 _comp-expr
@@ -16632,7 +16631,7 @@ expr_ ..
 expr_ .. _expr
 '*'_
 
-A.2.3.2 Computation Expressions
+#### A.2.3.2 Computation Expressions
 
 _expr_ { **for** ... }
 _expr_ { **let** ... }
@@ -16645,22 +16644,22 @@ _expr_ { **try** ... }
 _expr_ { **return** ... }
 _expr_ { **return!** ... }
 
-A.2.3.3 Sequence Expressions
+#### A.2.3.3 Sequence Expressions
 
 seq { _comp-expr_ }
 seq { _short-comp-expr_ }
 
 
-A.2.3.4 Range Expressions
+#### A.2.3.4 Range Expressions
 
 **seq** { _e1_ .. _e2_ }
 **seq** { _e1_ .. _e2 .. e3_ }
 
-A.2.3.5 Copy and Update Record Expression
+#### A.2.3.5 Copy and Update Record Expression
 
 { _expr_ **with** _field-label 1_ = _expr 1_ ; ... ; _field-labeln_ = _exprn_ }
 
-A.2.3.6 Dynamic Operator Expressions
+#### A.2.3.6 Dynamic Operator Expressions
 
 _expr_? _ident_ → (?) _expr_ " _ident_ "
 _expr1_? ( _expr2_ ) → (?) _expr1 expr2
@@ -16669,17 +16668,17 @@ expr1_? ( _expr2_ ) <- _expr3_ → (?<-) _expr1 expr2 expr3_
 
 " _ident_ " is a string literal that contains the text of _ident_.
 
-A.2.3.7 AddressOf Operators
+#### A.2.3.7 AddressOf Operators
 
 & _expr_
 && _expr_
 
-A.2.3.8 Lookup Expressions
+#### A.2.3.8 Lookup Expressions
 
 _e1_ .[ _eargs_ ] → _e1_ .get_Item( _eargs_ )
 _e1_ .[ _eargs_ ] <- _e3_ → _e1_ .set_Item( _eargs_ , _e3_ )
 
-A.2.3.9 Slice Expressions
+#### A.2.3.9 Slice Expressions
 
 _e1.[sliceArg1, ,,, sliceArgN] → e1.GetSlice( args1,...,argsN)
 e1.[sliceArg1, ,,, sliceArgN] <- expr → e1.SetSlice( args1,...,argsN, expr)_
@@ -16693,16 +16692,16 @@ e1.. → Some e1, None
 e1..e2 → Some e1, Some e2
 idx → idx
 ```
-A.2.3.10 Shortcut Operator Expressions
+#### A.2.3.10 Shortcut Operator Expressions
 
 _expr1_ && _expr2_ → if _expr1_ then _expr2_ else false
 _expr1_ || _expr2_ → if _expr1_ then true else _expr2_
 
-A.2.3.11 Deterministic Disposal Expressions
+#### A.2.3.11 Deterministic Disposal Expressions
 
 **use** _ident_ = _expr1_ **in** _expr2_
 
-##### A.2.4 Patterns
+### A.2.4 Patterns
 
 _rule_ : _pat pattern-guardopt_ - > _expr_
 
@@ -16764,7 +16763,7 @@ _field-pats_ : _field-pat_ ; ... ; _field-pat_
 
 _rules_ : '|' _opt rule_ '|' ... '|' _rule_
 
-##### A.2.5 Type Definitions
+### A.2.5 Type Definitions
 
 _type-defn_ :
 _abbrev-type-defn
@@ -16916,7 +16915,7 @@ _arg-name-spec_ :? _opt ident_ :
 
 _interface-spec_ : **interface** _type_
 
-A.2.5.1 Property Members
+#### A.2.5.1 Property Members
 
 static _opt_ **member** _ident_. _opt ident_ = _expr_
 static _opt_ **member** _ident_. _opt ident_ **with get** _pat_ = _expr_
@@ -16924,11 +16923,11 @@ static _opt_ **member** _ident_. _opt ident_ **with set** _patopt pat_ = _expr_
 static _opt_ **member** _ident_. _opt ident_ **with get** _pat_ = _expr_ **and set** _patopt pat_ = _expr_
 static _opt_ **member** _ident_. _opt ident_ **with set** _patopt pat_ = _expr_ **and get** _pat_ = _expr_
 
-A.2.5.2 Method Members
+#### A.2.5.2 Method Members
 
 **static** _opt_ **member** _ident_. _opt ident pat1_ ... _patn_ = _expr_
 
-A.2.5.3 Abstract Members
+##### A.2.5.3 Abstract Members
 
 **abstract** _accessopt member-sig_
 
@@ -16941,12 +16940,12 @@ _ident typar-defnsopt : curried-sig_ **with set, get**
 
 _curried-sig : args-spec 1_ - > _..._ - > _args-specn - > type_
 
-A.2.5.4 Implementation Members
+#### A.2.5.4 Implementation Members
 
 **override** _ident_. _ident pat1_ ... _patn_ = _expr_
 **default** _ident_. _ident pat1_ ... _patn_ = _expr_
 
-##### A.2.6 Units Of Measure
+### A.2.6 Units Of Measure
 
 _measure-literal-atom_ :
 _long-ident_
@@ -17006,7 +17005,7 @@ _measure_ :
 _
 _measure-simp_
 
-##### A.2.7 Custom Attributes and Reflection
+### A.2.7 Custom Attributes and Reflection
 
 _attribute_ : _attribute-target_ : _opt object-construction_
 
@@ -17026,15 +17025,15 @@ type
 constructor
 event**
 
-##### A.2.8 Compiler Directives
+### A.2.8 Compiler Directives
 
 Compiler directives in non-nested modules or namespace declaration groups:
 
 # _id string_ ... _string_
 
-### A.3 ML Compatibility Features
+## A.3 ML Compatibility Features
 
-##### A.3.1 Conditional Compilation
+### A.3.1 Conditional Compilation
 
 _start-fsharp-token_ :
 "(*IF-FSHARP"
@@ -17045,7 +17044,7 @@ _end-fsharp-token_ :
 _start-ml-token_ : "(*IF-OCAML*)"
 _end-ml-token_ : "(*ENDIF-OCAML*)"
 
-##### A.3.2 Extra Syntactic Forms
+### A.3.2 Extra Syntactic Forms
 
 _ocaml-ident-keyword_ : one of
 **asr land lor lsl lsr lxor mod**
@@ -17068,14 +17067,14 @@ _module-signature_ :
 **module** _ident_ : **sig** ... **end**
 
 
-##### A.3.3 Extra Operators
+### A.3.3 Extra Operators
 
 ```
 e 1 or e 2 → (or) e 1 e 2
 e 1 & e 2 → (&) e 1 e 2
 ```
 
-## REFERENCES
+# REFERENCES
 
 Ecma International. _Standard ECMA- 335 ,_ Common Language Infrastructure (CLI)
 [http://www.ecma-international.org/publications/standards/Ecma-335.htm](http://www.ecma-international.org/publications/standards/Ecma-335.htm)
@@ -17088,12 +17087,12 @@ Microsoft Corporation. _The C# Language Specification_
 [http://msdn.microsoft.com/library/ms228593.aspx](http://msdn.microsoft.com/library/ms228593.aspx)
 
 
-## GLOSSARY
+# GLOSSARY
 
 This section contains terminology that is specific to F#. It provides a reference for terms that are
 used elsewhere in this document.
 
-### A
+# A
 
 ```
 abstract member
@@ -17147,7 +17146,7 @@ automatic generalization
 A technique that, during type inference, automatically makes code generic when possible, which
 means that the code can be used on many types of data.
 ```
-### B
+## B
 
 ```
 base type declarations
@@ -17158,7 +17157,7 @@ Comments that are delimited by (* and *), can span more than one line, and can b
 block expression
 An expression in the form begin expr end.
 ```
-### C
+## C
 
 ```
 class type definition
@@ -17208,7 +17207,7 @@ A class that encapsulates information, often metadata that describes or suppleme
 declaration. Custom attributes derive from System.Attribute in the .NET framework and can be
 used in any language that targets the common language runtime.
 ```
-### D
+## D
 
 ```
 default constructor constraint
@@ -17232,7 +17231,7 @@ The patterns :? type and :? type as ident , which match any value whose runtime 
 given type or a subtype of the given type.
 ```
 
-### E
+## E
 
 ```
 elaborated expression
@@ -17254,7 +17253,7 @@ action such as a mouse click or timer tick. The F# library supports the
 FSharp.Control.IEvent<_,_> type and the FSharp.Control.Event module to support the use of
 events.
 ```
-### F
+## F
 
 ```
 F# Interactive
@@ -17278,7 +17277,7 @@ function value
 The value that results at runtime from the evaluation of function expressions.
 ```
 
-### G
+## G
 
 ```
 generic type definition
@@ -17289,7 +17288,7 @@ A rule of the form pat when expr that occurs as part of a pattern matching expre
 match expr 0 with rule 1 - > expr 1 | ... | rulen - > exprn. The guard expression expr is executed
 only if the value of expr 0 successfully matches the pattern pat.
 ```
-### I
+## I
 
 ```
 identifier
@@ -17317,14 +17316,14 @@ interface type definition
 A declaration that represents an encapsulated type that specifies groups of related members
 that other classes implement.
 ```
-### K
+## K
 
 ```
 keyword
 A word that has a defined meaning in F# and is used as part of the language itself.
 ```
 
-### L
+## L
 
 ```
 lambda expression
@@ -17355,7 +17354,7 @@ literal constant expression
 An expression that consists of a simple constant expression or a simple compile-time
 computation.
 ```
-### M
+## M
 
 ```
 member
@@ -17383,7 +17382,7 @@ module signature
 A description of the contents of a module that the F# compiler generates during type inference.
 The module signature describes the externally visible elements of the module.
 ```
-### N
+## N
 
 ```
 name resolution environment
@@ -17413,7 +17412,7 @@ The pattern null, which matches the values that the CLI value null represents.
 numeric literal
 A sequence of Unicode characters or an unsigned byte array that represents a numeric value.
 ```
-### O
+## O
 
 ```
 object construction expression
@@ -17438,7 +17437,7 @@ an if/then/else construct.
 offside rule
 Another term for lightweight or indentation-aware syntax.
 ```
-### P
+## P
 
 ```
 parenthesized expression
@@ -17451,14 +17450,14 @@ pipeline.
 property member
 A function in a type that gets or sets data about the type.
 ```
-### Q
+## Q
 
 ```
 quoted expression
 An expression that is delimited in such a way that it is not compiled as part of your program, but
 instead is compiled into an object that represents an F# expression.
 ```
-### R
+## R
 
 ```
 range expression
@@ -17487,7 +17486,7 @@ An object of type System.Type that is the runtime representation of some or all 
 information carried in type definitions and static types. The runtime type associated with an
 objects is accessed by using the obj.GetType() method, which is available on all F# values.
 ```
-### S
+## S
 
 ```
 script
@@ -17551,7 +17550,7 @@ The form of a type specification that appears in program source code, such as th
 “option<_>”. Syntactic types are converted to static types during the process of type checking
 and inference.
 ```
-### T
+## T
 
 ```
 tuple
@@ -17598,7 +17597,7 @@ information sources.
 type variable
 A variable that represents a type, rather than data.
 ```
-### U
+## U
 
 ```
 undentation
@@ -17627,7 +17626,7 @@ generic structure whose fields are all unmanaged types.
 unmanaged constraint
 An addition to a type parameter that limits the type to an unmanaged type.
 ```
-### V
+## V
 
 ```
 value signature
@@ -17641,15 +17640,16 @@ A constraint of the form typar : struct, which limits the type of typar to a .NE
 variable type
 A type of the form 'ident, which represents the name of another type.
 ```
-### W
+## W
 
 ```
 wildcard pattern
 The underscore character _, which matches any input.
 ```
 
-## INDEX
+# INDEX
 
+```
 # flexible type symbol, 150
 #indent, 317
 #load directive, 224
@@ -17697,8 +17697,6 @@ optional, 176
 required unnamed, 176
 arity, 274
 conformance in value signatures, 218
-
-```
 array expressions, 71, 122
 array sequence expression, 92
 array type, 46
