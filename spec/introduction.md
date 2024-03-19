@@ -54,7 +54,7 @@ The first line in our sample simply declares a list of numbers from one through 
     let numbers = [1 .. 10]
 ```
 
-An F# list is an immutable linked list, which is a type of data used extensively in functional programming. Some operators that are related to lists include :: to add an item to the front of a list and @ to concatenate two lists. If we try these operators in F# Interactive, we see the following
+An F# list is an immutable linked list, which is a type of data used extensively in functional programming. Some operators that are related to lists include `::` to add an item to the front of a list and `@` to concatenate two lists. If we try these operators in F# Interactive, we see the following
 results:
 
     > let vowels = ['e'; 'i'; 'o'; 'u'];;
@@ -181,7 +181,7 @@ The next line of the sample program prints text in the console window.
     printfn "N^2 = %A" squares
 ```
 
-The F# library function printfn is a simple and type-safe way to print text in the console window. Consider this example, which prints an integer, a floating-point number, and a string:
+The F# library function `printfn` is a simple and type-safe way to print text in the console window. Consider this example, which prints an integer, a floating-point number, and a string:
 
     > printfn "%d * %f = %s" 5 0.75 ((5.0 * 0.75).ToString());;
     5 * 0.750000 = 3.75
@@ -272,7 +272,7 @@ The `Measure` attribute tells F# that `kg`, `s`, and `m` are not really types in
 
 ### Object-Oriented Programming and Code Organization
 
-The sample program shown at the start of this chapter is a `script`. Although scripts are excellent for rapid prototyping, they are not suitable for larger software components. F# supports the transition from scripting to structured code through several techniques.
+The sample program shown at the start of this chapter is a _script_. Although scripts are excellent for rapid prototyping, they are not suitable for larger software components. F# supports the transition from scripting to structured code through several techniques.
 
 The most important of these is *object-oriented programming* through the use of *class type definitions*, *interface type definitions*, and *object expressions*. Object-oriented programming is a primary application programming interface (API) design technique for controlling the complexity of large software projects. For example, here is a class definition for an encoder/decoder object.
 
@@ -354,7 +354,7 @@ Both object expressions and type definitions can implement interface types. For 
     System.Console.ReadKey(true)
 ```
 
-Modules are also used in the F# library design to associate extra functionality with types. For example, `List.map´ is a function in a module.
+Modules are also used in the F# library design to associate extra functionality with types. For example, `List.map` is a function in a module.
 
 Other mechanisms aimed at supporting software engineering include *signatures*, which can be used to give explicit types to components, and namespaces, which serve as a way of organizing the name hierarchies for larger APIs.
 
@@ -427,4 +427,4 @@ Regular expressions are typically used to specify tokens.
 
     token token-name = regexp
 
-In the grammar rules, the notation `element-nameopt` indicates an optional element. The notation `...` indicates repetition of the preceding non-terminal construct and the separator token. For example, `expr ',' ... ',' expr` means a sequence of one or more `expr` elements separated by commas.
+In the grammar rules, the notation `element-name~opt` indicates an optional element. The notation `...` indicates repetition of the preceding non-terminal construct and the separator token. For example, `expr ',' ... ',' expr` means a sequence of one or more `expr` elements separated by commas.

@@ -93,7 +93,7 @@ constant pattern except for integer literals that have the suffixes `Q`, `R`, `Z
 
 Simple constant patterns have the corresponding simple type. Such patterns elaborate to a call to
 the F# structural equality function `FSharp.Core.Operators.(=)` with the pattern input and the
-constant as arguments. The match succeeds if this call returns true; otherwise, the match fails.
+constant as arguments. The match succeeds if this call returns `true`; otherwise, the match fails.
 
 
 > **Note**: The use of `FSharp.Core.Operators.(=)` means that CLI floating-point equality is
@@ -147,11 +147,9 @@ For example:
 type Data =
     | Kind1 of int * int
     | Kind2 of string * string
-```
-```
+
 let data = Kind1(3, 2)
-```
-```
+
 let result =
     match data with
     | Kind1 (a, b) -> a + b
@@ -167,8 +165,7 @@ example
 type Shape =
     | Rectangle of width: float * height: float
     | Square of width: float
-```
-```
+
 let getArea (s: Shape) =
     match s with
     | Rectangle (width = w; height = h) -> w*h
@@ -195,7 +192,7 @@ let result =
     | Case2 -> "Case 2 "
     | _ -> "Some other case"
 ```
-In this case, `result` is given the value `"Case2”`.
+In this case, `result` is given the value `Case2`.
 
 ### Active Patterns
 
@@ -393,7 +390,7 @@ The pattern `pat :: pat` is a union case pattern that matches the “cons” uni
 The pattern `[]` is a union case pattern that matches the “nil” union case of F# list values.
 
 The pattern `[ _pat 1 ; ... ; patn_ ]` is shorthand for a series of `::` and empty list patterns
-`_pat 1 :: ... :: patn_ :: []`.
+`pat1 :: ... :: patn :: []`.
 
 For example:
 
@@ -491,7 +488,7 @@ to the results of a dynamic coercion expression `e :?> ty`.
 The following is a _record pattern_ :
 
 ```
-{ long-ident 1 = pat 1 ; ... ; long-identn = patn }
+{ long-ident1 = pat1 ; ... ; long-identn = patn }
 ```
 For example:
 

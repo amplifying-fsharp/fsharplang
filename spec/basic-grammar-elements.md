@@ -106,7 +106,7 @@ compiled form of F# programs. The compiled names are shown below.
 .. .. op_RangeStep
 ```
 
-Compiled names for other symbolic operators are `op_N1` ... `Nn` where N1 to Nn are the names for the
+Compiled names for other symbolic operators are `op_N1` ... `Nn` where `N1` to `Nn` are the names for the
 characters as shown in the table below. For example, the symbolic identifier `<*` has the compiled
 name `op_LessMultiply`:
 

@@ -180,8 +180,8 @@ rather than an escape sequence. In a UTF-8-encoded file, you can directly embed 
 string in the same way as in C#:
 
 - Unicode characters, such as “`\u0041bc`”
-- Identifiers, as described in the previous section, such as “abc”
-- Trigraph specifications of Unicode characters, such as “`\067`” which represents “C”
+- Identifiers, as described in the previous section, such as “`abc`”
+- Trigraph specifications of Unicode characters, such as “`\067`” which represents “`C`”
 
 ```fsgrammar
 regexp escape-char = '\' ["\'ntbrafv]
