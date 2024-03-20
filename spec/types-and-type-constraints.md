@@ -1,4 +1,4 @@
-# 5. Types and Type Constraints
+# Types and Type Constraints
 
 The notion of _type_ is central to both the static checking of F# programs and to dynamic type tests
 and reflection at runtime. The word is used with four distinct but related meanings:
@@ -80,16 +80,16 @@ In a type instantiation, the type name and the opening angle bracket must be syn
 with no intervening whitespace, as determined by lexical filtering (15). Specifically:
 
 ```fsharp
-array<int>
+    array<int>
 ```
 
 and not
 
 ```fsharp
-array < int >
+    array < int >
 ```
 
-## 5.1 Checking Syntactic Types
+## Checking Syntactic Types
 
 Syntactic types are checked and converted to static types as they are encountered. Static types are a
 specification device used to describe
@@ -109,13 +109,13 @@ environment (14.1), a floating type variable environment, which is a mapping fro
 variables, and a type inference environment (14.5).
 
 The phrase “fresh type” means a static type that is formed from a _fresh type inference variable_. Type
-inference variables are either solved or generalized by type inference (§14.5). During conversion and
+inference variables are either solved or generalized by type inference ([§14.5](inference-procedures.md#constraint-solving)). During conversion and
 throughout the checking of types, expressions, declarations, and entire files, a set of _current
 inference constraints_ is maintained. That is, each static type is processed under input constraints _Χ_ ,
 and results in output constraints _Χ’_. Type inference variables and constraints are progressively
-_simplified_ and _eliminated_ based on these equations through _constraint solving_ (§14.5).
+_simplified_ and _eliminated_ based on these equations through _constraint solving_ ([§14.5](inference-procedures.md#constraint-solving)).
 
-### 5.1.1 Named Types
+### Named Types
 
 _Named types_ have several forms, as listed in the following table.
 
@@ -136,14 +136,14 @@ Named types are converted to static types as follows:
   formal constraints _C_ are added to the current inference constraints for the new type inference
   variables; and constraints `tyi = ty'i` are added to the current inference constraints.
 
-### 5.1.2 Variable Types
+### Variable Types
 
 A type of the form `'ident` is a variable type. For example, the following are all variable types:
 
 ```fsharp
-'a
-'T
-'Key
+    'a
+    'T
+    'Key
 ```
 
 During checking, Name Resolution (14.1) is applied to the identifier.
@@ -171,7 +171,7 @@ equated with the `^ident` type in a type inference equation.
 > Note: This specification generally uses uppercase identifiers such as `'T` or `'Key` for user-declared generic type parameters,
  and uses lowercase identifiers such as `'a` or `'b` for compiler-inferred generic parameters.
 
-### 5.1.3 Tuple Types
+### Tuple Types
 
 A tuple type has the following form:
 
@@ -180,13 +180,13 @@ ty 1 * ... * tyn
 ```
 
 The elaborated form of a tuple type is shorthand for a use of the family of F# library types
-`System.Tuple<_,...,_>`. (see §6.3.2) for the details of this encoding.
+`System.Tuple<_,...,_>`. (see [§6.3.2](expressions.md#tuple-expressions)) for the details of this encoding.
 
 When considered as static types, tuple types are distinct from their encoded form. However, the
 encoded form of tuple types is visible in the F# type system through runtime types. For example,
 `typeof<int * int>` is equivalent to `typeof<System.Tuple<int,int>>`.
 
-### 5.1.4 Array Types
+### Array Types
 
 Array types have the following forms:
 
@@ -202,26 +202,24 @@ Except where specified otherwise in this document, these array types are treated
 if they are an instantiation of a fictitious type definition `System.Arrayn<ty>` where `n` corresponds to
 the rank of the array type.
 
-> [!NOTE]
-> The type `int[][,]` in F# is the same as the type `int[,][]` in C# although the
-> dimensions are swapped. This ensures consistency with other postfix type names in F#
-> such as int list list.
+> Note: The type `int[][,]` in F# is the same as the type `int[,][]` in C# although the
+dimensions are swapped. This ensures consistency with other postfix type names in F# such as `int list list`.
 
 ```
 F# supports multidimensional array types only up to rank 4.
 ```
 
-### 5.1.5 Constrained Types
+### Constrained Types
 
 A type with constraints has the following form:
 
-```
+```fsgrammar
 type when constraints
 ```
 
 During checking, `type` is first checked and converted to a static type, then `constraints` are checked
 and added to the current inference constraints. The various forms of constraints are described
-in (see §5.2)
+in (see [§5.2](types-and-type-constraints.md#type-constraints))
 
 A type of the form `typar :> type` is a type variable with a subtype constraint and is equivalent to
 `typar when typar :> type`.
@@ -229,7 +227,7 @@ A type of the form `typar :> type` is a type variable with a subtype constraint 
 A type of the form `#type` is an anonymous type with a subtype constraint and is equivalent to `'a
 when 'a :> type` , where `'a` is a fresh type inference variable.
 
-## 5.2 Type Constraints
+## Type Constraints
 
 A `type constraint `limits the types that can be used to create an instance of a type parameter or type
 variable. F# supports the following type constraints:
@@ -245,7 +243,7 @@ variable. F# supports the following type constraints:
 - Unmanaged constraints
 - Equality and comparison constraints
 
-### 5.2.1 Subtype Constraints
+### Subtype Constraints
 
 An `explicit subtype constraint` has the following form:
 
@@ -255,14 +253,14 @@ typar :> type
 
 During checking, `typar` is first checked as a variable type, `type` is checked as a type, and the
 constraint is added to the current inference constraints. Subtype constraints affect type coercion as
-specified in (see §5.4.7)
+specified in (see [§5.4.7](types-and-type-constraints.md#subtyping-and-coercion))
 
 Note that subtype constraints also result implicitly from:
 
 - Expressions of the form `expr :> type`.
 - Patterns of the form `pattern :> type`.
 - The use of generic values, types, and members with constraints.
-- The implicit use of subsumption when using values and members (see §14.4.3).
+- The implicit use of subsumption when using values and members (see [§14.4.3](inference-procedures.md#implicit-insertion-of-flexibility-for-uses-of-functions-and-members)).
 
 A type variable cannot be constrained by two distinct instantiations of the same named type. If two
 such constraints arise during constraint solving, the type instantiations are constrained to be equal.
@@ -271,7 +269,7 @@ an error occurs when the type instantiations are constrained to be equal. This l
 specifically necessary to simplify type inference, reduce the size of types shown to users, and help
 ensure the reporting of useful error messages.
 
-### 5.2.2 Nullness Constraints
+### Nullness Constraints
 
 An `explicit nullness constraint` has the following form:
 
@@ -281,19 +279,19 @@ typar : null
 
 During checking, `typar` is checked as a variable type and the constraint is added to the current
 inference constraints. The conditions that govern when a type satisfies a nullness constraint are
-specified in (see §5.4.8)
+specified in (see [§5.4.8](types-and-type-constraints.md#nullness))
 
 In addition:
 
 - The `typar` must be a statically resolved type variable of the form `^ident`. This limitation ensures
   that the constraint is resolved at compile time, and means that generic code may not use this
-  constraint unless that code is marked inline (see §14.6.7).
+  constraint unless that code is marked inline (see [§14.6.7](inference-procedures.md#generalization)).
 
 > Note: Nullness constraints are primarily for use during type checking and are used relatively rarely in F# code.
 <br>
 Nullness constraints also arise from expressions of the form null.
 
-### 5.2.3 Member Constraints
+### Member Constraints
 
 An `explicit member constraint` has the following form:
 
@@ -304,8 +302,8 @@ An `explicit member constraint` has the following form:
 For example, the F# library defines the + operator with the following signature:
 
 ```fsharp
-val inline (+) : ^a -> ^b -> ^c
-    when (^a or ^b) : (static member (+) : ^a * ^b -> ^c)
+    val inline (+) : ^a -> ^b -> ^c
+        when (^a or ^b) : (static member (+) : ^a * ^b -> ^c)
 ```
 
 This definition indicates that each use of the `+` operator results in a constraint on the types that
@@ -314,23 +312,23 @@ correspond to parameters `^a`, `^b`, and `^c`. If these are named types, then ei
 
 In addition:
 
-- Each `typar` must be a statically resolved type variable (see §5.1.2) in the form `^ident`. This ensures
+- Each `typar` must be a statically resolved type variable (see [§5.1.2](types-and-type-constraints.md#variable-types)) in the form `^ident`. This ensures
   that the constraint is resolved at compile time against a corresponding named type. It also
-  means that generic code cannot use this constraint unless that code is marked inline (see §14.6.7).
+  means that generic code cannot use this constraint unless that code is marked inline (see [§14.6.7](inference-procedures.md#generalization)).
 - The `member-sig` cannot be generic; that is, it cannot include explicit type parameter definitions.
-- The conditions that govern when a type satisfies a member constraint are specified in (see §14.5.4).
+- The conditions that govern when a type satisfies a member constraint are specified in (see [§14.5.4](inference-procedures.md#solving-member-constraints)).
 
 > Note: Member constraints are primarily used to define overloaded functions in the F# library and are used relatively rarely in F# code.<br>
 Uses of overloaded operators do not result in generalized code unless definitions are marked as inline. For example, the function<br><br> `let f x = x + x`<br><br>
 results in a function `f` that can be used only to add one type of value, such as `int` or `float`. The exact type is determined by later constraints.
 
 A type variable may not be involved in the support set of more than one member constraint that has
-the same name, staticness, argument arity, and support set (see §14.5.4). If it is, the argument and
+the same name, staticness, argument arity, and support set (see [§14.5.4](inference-procedures.md#solving-member-constraints)). If it is, the argument and
 return types in the two member constraints are themselves constrained to be equal. This limitation
 is specifically necessary to simplify type inference, reduce the size of types shown to users, and
 ensure the reporting of useful error messages.
 
-### 5.2. 4 Default Constructor Constraints
+### 4 Default Constructor Constraints
 
 An `explicit default constructor constraint` has the following form:
 
@@ -338,12 +336,12 @@ An `explicit default constructor constraint` has the following form:
 typar : (new : unit -> 'T)
 ```
 
-During constraint solving (see §14.5), the constraint `type : (new : unit -> 'T)` is met if `type` has a
+During constraint solving (see [§14.5](inference-procedures.md#constraint-solving)), the constraint `type : (new : unit -> 'T)` is met if `type` has a
 parameterless object constructor.
 
 > Note: This constraint form exists primarily to provide the full set of constraints that CLI implementations allow. It is rarely used in F# programming.
 
-### 5.2.5 Value Type Constraints
+### Value Type Constraints
 
 An `explicit value type constraint` has the following form:
 
@@ -351,20 +349,17 @@ An `explicit value type constraint` has the following form:
 typar : struct
 ```
 
-During constraint solving (see §14.5), the constraint `type` : struct is met if `type` is a value type other
+During constraint solving (see [§14.5](inference-procedures.md#constraint-solving)), the constraint `type` : struct is met if `type` is a value type other
 than the CLI type `System.Nullable<_>`.
 
-> [!NOTE]
->This constraint form exists primarily to provide the full set of constraints that CLI
-> implementations allow. It is rarely used in F# programming.<br>
-> 
-> The restriction on `System.Nullable` is inherited from C# and other CLI languages, which
-> give this type a special syntactic status. In F#, the type `option<_>` is similar to some uses
-> of `System.Nullable<_>`. For various technical reasons the two types cannot be equated,
-> notably because types such as `System.Nullable<System.Nullable<_>>` and
-`System.Nullable<string>` are not valid CLI types.
+> Note: This constraint form exists primarily to provide the full set of constraints that CLI
+implementations allow. It is rarely used in F# programming.<br><br>
+The restriction on `System.Nullable` is inherited from C# and other CLI languages, which
+give this type a special syntactic status. In F#, the type `option<_>` is similar to some uses
+of `System.Nullable<_>`. For various technical reasons the two types cannot be equated,
+notably because types such as `System.Nullable<System.Nullable<_>>` and `System.Nullable<string>` are not valid CLI types.
 
-### 5.2.6 Reference Type Constraints
+### Reference Type Constraints
 
 An `explicit reference type constraint` has the following form:
 
@@ -372,13 +367,11 @@ An `explicit reference type constraint` has the following form:
 typar : not struct
 ```
 
-During constraint solving (see §14.5), the constraint `type : not struct` is met if `type` is a reference type.
+During constraint solving (see [§14.5](inference-procedures.md#constraint-solving)), the constraint `type : not struct` is met if `type` is a reference type.
 
-> [!NOTE]
->This constraint form exists primarily to provide the full set of constraints that CLI
->implementations allow. It is rarely used in F# programming.
+> Note: This constraint form exists primarily to provide the full set of constraints that CLI implementations allow. It is rarely used in F# programming.
 
-### 5.2.7 Enumeration Constraints
+### Enumeration Constraints
 
 An `explicit enumeration constraint` has the following form:
 
@@ -386,17 +379,13 @@ An `explicit enumeration constraint` has the following form:
 typar : enum< underlying-type >
 ```
 
-During constraint solving (see §14.5), the constraint `type : enum<underlying-type>` is met if `type` is a CLI
+During constraint solving (see [§14.5](inference-procedures.md#constraint-solving)), the constraint `type : enum<underlying-type>` is met if `type` is a CLI
 or F# enumeration type that has constant literal values of type `underlying-type`.
 
-> [!NOTE]
-> This constraint form exists primarily to allow the definition of library functions
-> such as `enum`. It is rarely used directly in F# programming.<br>
-> 
-> The `enum` constraint does not imply anything about subtypes. For example, an `enum`
-> constraint does not imply that the type is a subtype of `System.Enum`.
+> Note: This constraint form exists primarily to allow the definition of library functions such as `enum`. It is rarely used directly in F# programming.<br>
+The `enum` constraint does not imply anything about subtypes. For example, an `enum` constraint does not imply that the type is a subtype of `System.Enum`.
 
-### 5.2.8 Delegate Constraints
+### Delegate Constraints
 
 An `explicit delegate constraint` has the following form:
 
@@ -404,25 +393,22 @@ An `explicit delegate constraint` has the following form:
 typar : delegate< tupled-arg-type , return-type>
 ```
 
-During constraint solving (see §14 .5), the constraint `type : delegate<tupled-arg-type, return-types>`
+During constraint solving (see [§14](inference-procedures.md#inference-procedures) .5), the constraint `type : delegate<tupled-arg-type, return-types>`
 is met if `type` is a delegate type `D` with declaration `type D = delegate of object * arg1 * ... *
 argN` and `tupled-arg-type = arg1 * ... * argN.` That is, the delegate must match the CLI design
 pattern where the sender object is the first argument to the event.
 
-> [!NOTE]
-> This constraint form exists primarily to allow the definition of certain F# library
-> functions that are related to event programming. It is rarely used directly in F#
-> programming.<br>
-> 
-> The `delegate` constraint does not imply anything about subtypes. In particular, a
-`delegate` constraint does not imply that the type is a subtype of `System.Delegate`.<br>
->
->The `delegate` constraint applies only to delegate types that follow the usual form for CLI
-> event handlers, where the first argument is a `sender` object. The reason is that the
-> purpose of the constraint is to simplify the presentation of CLI event handlers to the F#
-> programmer.
+> Note: This constraint form exists primarily to allow the definition of certain F# library
+functions that are related to event programming. It is rarely used directly in F#
+programming.<br><br>
+The `delegate` constraint does not imply anything about subtypes. In particular, a
+`delegate` constraint does not imply that the type is a subtype of `System.Delegate`.<br><br>
+The `delegate` constraint applies only to delegate types that follow the usual form for CLI
+event handlers, where the first argument is a `sender` object. The reason is that the
+purpose of the constraint is to simplify the presentation of CLI event handlers to the F#
+programmer.
 
-### 5.2.9 Unmanaged Constraints
+### Unmanaged Constraints
 
 An `unmanaged constraint` has the following form:
 
@@ -430,7 +416,7 @@ An `unmanaged constraint` has the following form:
 typar : unmanaged
 ```
 
-During constraint solving (see §14.5), the constraint `type : unmanaged` is met if `type` is unmanaged as
+During constraint solving (see [§14.5](inference-procedures.md#constraint-solving)), the constraint `type : unmanaged` is met if `type` is unmanaged as
 specified below:
 
 - Types sbyte, `byte, char, nativeint, unativeint, float32, float, int16, uint16, int32, uint32,
@@ -438,7 +424,7 @@ specified below:
 - Type `nativeptr<type>` is unmanaged.
 - A non-generic struct type whose fields are all unmanaged types is unmanaged.
 
-### 5.2.10 Equality and Comparison Constraints
+### Equality and Comparison Constraints
 
 `Equality constraints` and `comparison constraints` have the following forms, respectively:
 
@@ -447,7 +433,7 @@ typar : equality
 typar : comparison
 ```
 
-During constraint solving (see §14.5), the constraint `type : equality` is met if both of the following
+During constraint solving (see [§14.5](inference-procedures.md#constraint-solving)), the constraint `type : equality` is met if both of the following
 conditions are true:
 
 - The type is a named type, and the type definition does not have, and is not inferred to have, the
@@ -471,7 +457,7 @@ CLI languages, such as C#, it possible to use reference equality on all referenc
 A comparison constraint is a stronger constraint, because it usually implies that a type must
 implement `System.IComparable`.
 
-## 5.3 TYPE PARAMETER DEFINITIONS
+## TYPE PARAMETER DEFINITIONS
 
 Type parameter definitions can occur in the following locations:
 
@@ -482,33 +468,30 @@ Type parameter definitions can occur in the following locations:
 
 For example, the following defines the type parameter ‘T in a function definition:
 
-```
-let id<'T> (x:'T) = x
+```fsharp
+    let id<'T> (x:'T) = x
 ```
 
 Likewise, in a type definition:
 
-```
-type Funcs<'T1,'T2> =
-{ Forward: 'T1 -> 'T2;
-```
-
-```
-Backward : 'T2 -> 'T2 }
+```fsharp
+    type Funcs<'T1,'T2> =
+        { Forward: 'T1 -> 'T2
+          Backward : 'T2 -> 'T2 }
 ```
 
 Likewise, in a signature file:
 
-```
-val id<'T> : 'T -> 'T
+```fsharp
+    val id<'T> : 'T -> 'T
 ```
 
 Explicit type parameter definitions can include _explicit constraint declarations_. For example:
 
-```
-let dispose2<'T when 'T :> System.IDisposable> (x: 'T, y: 'T) =
-x.Dispose()
-y.Dispose()
+```fsharp
+    let dispose2<'T when 'T :> System.IDisposable> (x: 'T, y: 'T) =
+    x.Dispose()
+    y.Dispose()
 ```
 
 The constraint in this example requires that 'T be a type that supports the IDisposable interface.
@@ -516,22 +499,21 @@ The constraint in this example requires that 'T be a type that supports the IDis
 However, in most circumstances, declarations that imply subtype constraints on arguments can be
 written more concisely:
 
-```
-let throw (x: Exception) = raise x
+```fsharp
+    let throw (x: Exception) = raise x
 ```
 
 Multiple explicit constraint declarations use and:
 
-```
-let multipleConstraints<'T when 'T :> System.IDisposable and
-'T :> System.IComparable > (x: 'T, y: 'T) =
-if x.CompareTo(y) < 0 then x.Dispose() else y.Dispose()
+```fsharp
+    let multipleConstraints<'T when 'T :> System.IDisposable and 'T :> System.IComparable > (x: 'T, y: 'T) =
+        if x.CompareTo(y) < 0 then x.Dispose() else y.Dispose()
 ```
 
 Explicit type parameter definitions can declare custom attributes on type parameter definitions
-(see §13.1).
+(see [§13.1](custom-attributes-and-reflection.md#custom-attributes)).
 
-## 5.4 LOGICAL PROPERTIES OF TYPES
+## LOGICAL PROPERTIES OF TYPES
 
 During type checking and elaboration, syntactic types and constraints are processed into a reduced
 form composed of:
@@ -541,38 +523,36 @@ form composed of:
   _n-_ tuple types.
 - Type variables ' _ident_.
 
-### 5.4.1 Characteristics of Type Definitions
+### Characteristics of Type Definitions
 
 Type definitions include CLI type definitions such as System.String and types that are defined in F#
-code (see §8). The following terms are used to describe type definitions:
+code (see [§8](type-definitions.md#type-definitions)). The following terms are used to describe type definitions:
 
 - Type definitions may be _generic_ , with one or more type parameters; for example,
   System.Collections.Generic.Dictionary<'Key,'Value>.
 - The generic parameters of type definitions may have associated _formal type constraints_.
-- Type definitions may have _custom attributes_ (see §13.1), some of which are relevant to checking and
+- Type definitions may have _custom attributes_ (see [§13.1](custom-attributes-and-reflection.md#custom-attributes)), some of which are relevant to checking and
   inference.
-- Type definitions may be _type abbreviations_ (see §8.3). These are eliminated for the purposes of
-  checking and inference (see §5.4.2).
+- Type definitions may be _type abbreviations_ (see [§8.3](type-definitions.md#type-abbreviations)). These are eliminated for the purposes of
+  checking and inference (see [§5.4.2](types-and-type-constraints.md#expanding-abbreviations-and-inference-equations)).
 
 
-- Type definitions have a _kind_ which is one of the following:
-    - _Class_
-    - _Interface_
-    - _Delegate_
-    - _Struct_
-    - _Record_
-    - _Union_
-    - _Enum_
-    - _Measure_
-    - _Abstract_
+- Type definitions have a `kind` which is one of the following:
+    - `Class`
+    - `Interface`
+    - `Delegate`
+    - `Struct`
+    - `Record`
+    - `Union`
+    - `Enum`
+    - `Measure`
+    - `Abstract`
 
-```
-The kind is determined at the point of declaration by Type Kind Inference (see §8.2) if it is not
+The kind is determined at the point of declaration by Type Kind Inference (see [§8.2](type-definitions.md#type-kind-inference)) if it is not
 specified explicitly as part of the type definition. The kind of a type refers to the kind of its
 outermost named type definition, after expanding abbreviations. For example, a type is a class
 type if it is a named type C< types > where C is of kind class. Thus,
 System.Collections.Generic.List<int> is a class type.
-```
 
 - Type definitions may be _sealed._ Record, union, function, tuple, struct, delegate, enum, and array
   types are all sealed, as are class types that are marked with the SealedAttribute attribute.
@@ -589,13 +569,13 @@ type definitions.
 
 Struct types are _value types_.
 
-### 5.4.2 Expanding Abbreviations and Inference Equations
+### Expanding Abbreviations and Inference Equations
 
 Two static types are considered equivalent and indistinguishable if they are equivalent after taking
 into account both of the following:
 
-- The inference equations that are inferred from the current inference constraints (see §14.5).
-- The expansion of type abbreviations (see §8.3).
+- The inference equations that are inferred from the current inference constraints (see [§14.5](inference-procedures.md#constraint-solving)).
+- The expansion of type abbreviations (see [§8.3](type-definitions.md#type-abbreviations)).
 
 For example, static types may refer to type abbreviations such as int, which is an abbreviation for
 System.Int32and is declared by the F# library:
@@ -629,7 +609,7 @@ reporting types and errors to users. This typically means that type abbreviation
 be preserved in the logical structure of types throughout the checking process.
 ```
 
-### 5.4.3 Type Variables and Definition Sites
+### Type Variables and Definition Sites
 
 Static types may be type variables. During type inference, static types may be _partial_ , in that they
 contain type inference variables that have not been solved or generalized. Type variables may also
@@ -645,7 +625,7 @@ type C<'T> = 'T * 'T
 Type variables that do not have a binding site are `inference variables`. If an expression is composed
 of multiple sub-expressions, the resulting constraint set is normally the union of the constraints that
 result from checking all the sub-expressions. However, for some constructs (notably function, value
-and member definitions), the checking process applies `generalization` (see §14.6.7). Consequently, some
+and member definitions), the checking process applies `generalization` (see [§14.6.7](inference-procedures.md#generalization)). Consequently, some
 intermediate inference variables and constraints are factored out of the intermediate constraint sets
 and new implicit definition site(s) are assigned for these variables.
 
@@ -664,10 +644,10 @@ let id <'a> x 'a = x 'a
 ```
 
 Here, 'a represents a generic type parameter that is inferred by applying type inference and
-generalization to the original source code (see §14.6.7), and the annotation represents the definition site
+generalization to the original source code (see [§14.6.7](inference-procedures.md#generalization)), and the annotation represents the definition site
 of the type variable.
 
-### 5.4.4 Base Type of a Type
+### Base Type of a Type
 
 The _base type_ for the static types is shown in the table. These types are defined in the CLI
 specifications and corresponding implementation documentation.
@@ -687,7 +667,7 @@ Struct types System.ValueType^
 Union types System.Object^
 Variable types System.Object^
 
-### 5.4.5 Interfaces Types of a Type
+### Interfaces Types of a Type
 
 The _interface types_ of a named type C< _type-inst_ > are defined by the transitive closure of the
 interface declarations of C and the interface types of the base type of C, where formal generic
@@ -697,7 +677,7 @@ The interface types for single dimensional array types _ty_ [] include the trans
 from the interface System.Collections.Generic.IList< _ty_ >, which includes
 System.Collections.Generic.ICollection< _ty_ > and System.Collections.Generic.IEnumerable< _ty_ >.
 
-### 5.4.6 Type Equivalence
+### Type Equivalence
 
 Two static types _ty_ 1 and _ty_ 2 are _definitely equivalent_ (with respect to a set of current inference
 constraints) if either of the following is true:
@@ -718,7 +698,7 @@ Two static types _ty_ 1 and _ty_ 2 are _feasibly equivalent_ if _ty_ 1 and _ty_ 
 further constraints are added to the current inference constraints. Thus list<int> and list<'a> are
 feasibly equivalent for the empty constraint set.
 
-### 5.4.7 Subtyping and Coercion
+### Subtyping and Coercion
 
 A static type _ty_ 2 _coerces to_ static type _ty_ 1 (with respect to a set of current inference constraints X), if
 _ty_ 1 is in the transitive closure of the base types and interface types of _ty_ 2. Static coercion is written
@@ -733,9 +713,9 @@ form 'T :> _ty_ 2 , and _ty_ is in the inclusive transitive closure of the base 
 
 A static type _ty_ 2 _feasibly coerces to_ static type _ty_ 1 if _ty_ 2 _coerces to ty 1_ may hold through the addition
 of further constraints to the current inference constraints. The result of adding constraints is defined
-in _Constraint Solving_ (see §14.5).
+in _Constraint Solving_ (see [§14.5](inference-procedures.md#constraint-solving)).
 
-### 5.4.8 Nullness
+### Nullness
 
 The design of F# aims to greatly reduce the use of null literals in common programming tasks,
 because they generally result in error-prone code. However:
@@ -768,7 +748,7 @@ For types in this category, the use of the null literal is not directly allowed.
 speaking, it is possible to generate a null value for these types by using certain functions such as
 Unchecked.defaultof< type >. For these types, null is considered an abnormal value. Operations
 differ in their use and treatment of null values; for details about evaluation of expressions that
-might include null values, see (see §6.9).
+might include null values, see (see [§6.9](expressions.md#evaluation-of-elaborated-forms)).
 ```
 
 - **Types with null as a representation value.** These types do not permit the null literal but use
@@ -790,7 +770,7 @@ A static type _ty satisfies a nullness constraint ty_ : null if it:
 - Has an outermost named type that has the null literal.
 - Is a variable type with a _typar_ : null constraint.
 
-### 5.4.9 Default Initialization
+### Default Initialization
 
 Related to nullness is the _default initialization_ of values of some types to _zero values_. This technique
 is common in some programming languages, but the design of F# deliberately de-emphasizes it.
@@ -808,7 +788,7 @@ The following types _permit default initialization_ :
 - Primitive value types.
 - Struct types whose field types all permit default initialization.
 
-### 5.4.10 Dynamic Conversion Between Types
+### Dynamic Conversion Between Types
 
 A runtime type _vty dynamically converts to_ a static type _ty_ if any of the following are true:
 
