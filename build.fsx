@@ -25,7 +25,7 @@ let docHead = [$"WIP {DateTime.Now}"; "# Table of Contents"]
 let initialState = {
     clauseName = ""
     lineNumber = 0
-    sectionNumber = [0]
+    sectionNumber = []
     inCodeBlock = false
     toc = Map.empty
     errors = []
@@ -80,7 +80,7 @@ let referenceable (s: string) =
             if c = ' ' then yield '-'
     |]
 
-let mkError state msg = $"{state.clauseName}({state.lineNumber}): {msg}"
+let mkError state msg = $"{state.clauseName}.md({state.lineNumber}): {msg}"
 
 let checkCodeBlock state line =
     let m = Regex.Match(line, "```(.*)")
@@ -88,10 +88,8 @@ let checkCodeBlock state line =
         if state.inCodeBlock then {state with inCodeBlock = false} else
             let infoString = m.Groups[1].Value
             if infoString <> "fsharp" && infoString <> "fsgrammar" && infoString <> "fsother" then
-                let error =
-                    mkError state
-                        "starting code block fences must be exactly '```fsharp' or '```fsgrammar' or 'fsother'"
-                {state with inCodeBlock = true; errors = error::state.errors}
+                let msg = "starting code block fences must be exactly '```fsharp' or '```fsgrammar' or 'fsother'"
+                {state with inCodeBlock = true; errors = (mkError state msg)::state.errors}
             else {state with inCodeBlock = true}
 
 let renumberIfHeaderLine state line =
@@ -105,13 +103,13 @@ let renumberIfHeaderLine state line =
         let heading = m.Groups[2].Value
         let m = Regex.Match(heading, "^\d")
         if m.Success then
-            let error = mkError state "Headers must not start with digits"
-            line, {state with errors = error::state.errors}
+            let msg = "Headers must not start with digits"
+            line, {state with errors = (mkError state msg)::state.errors}
         else
             let sectionNumber = newSection level state.sectionNumber
             if sectionNumber.IsEmpty then
-                let e = mkError state $"The header level jumps from {state.sectionNumber.Length} to {level}"
-                line, {state with errors = e::state.errors}
+                let msg = $"The header level jumps from {state.sectionNumber.Length} to {level}"
+                line, {state with errors = (mkError state msg)::state.errors}
             else
                 let headerLine = $"{headerPrefix} {sectionText sectionNumber} {heading}"
                 headerLine, {state with sectionNumber = sectionNumber; toc = state.toc.Add(sectionNumber, heading)}
@@ -128,22 +126,25 @@ let tocLines toc =
         String.replicate (number.Length - 1) "  " + $"- [{sText} {heading}]({anchor})"
     toc |> Map.toList |> List.map tocLine
 
-let rec adjustLinks state line =
-    let m = Regex.Match(line, "(.*)\[§(\d+\.[\.\d]*)\]\(([^#)]+)#([^)]+)\)(.*)")
-    if m.Success then
-        let pre, sText, filename, anchor, post =
-            m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value, m.Groups[5].Value
-        match Map.tryPick (fun n heading -> if sectionText n = sText then Some heading else None) state.toc with
-        | Some _ ->
-            let post', state' = adjustLinks state post
-            $"{pre}[§{sText}](#{referenceable sText}-{anchor}){post'}", state'
-        | None ->
-            let message = mkError state $"unknown link target {filename}#{anchor} ({sText})"
-            if warningsAsErrors then
-                line, {state with errors = message::state.errors}
-            else
-                line, {state with warnings = message::state.warnings}
-    else line, state
+let adjustLinks state line = 
+    let state = {state with lineNumber = state.lineNumber + 1}
+    let rec adjustLinks' state lineFragment =
+        let m = Regex.Match(lineFragment, "(.*)\[§(\d+\.[\.\d]*)\]\(([^#)]+)#([^)]+)\)(.*)")
+        if m.Success then
+            let pre, sText, filename, anchor, post =
+                m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value, m.Groups[5].Value
+            match Map.tryPick (fun n heading -> if sectionText n = sText then Some heading else None) state.toc with
+            | Some _ ->
+                let post', state' = adjustLinks' state post
+                $"{pre}[§{sText}](#{referenceable sText}-{anchor}){post'}", state'
+            | None ->
+                let msg = $"unknown link target {filename}#{anchor} ({sText})"
+                if warningsAsErrors then
+                    lineFragment, {state with errors = (mkError state msg)::state.errors}
+                else
+                    lineFragment, {state with warnings = (mkError state msg)::state.warnings}
+        else lineFragment, state
+    adjustLinks' state line
 
 let processClauses clauses =
     // Add section numbers to the headers and collect the ToC information
@@ -151,11 +152,11 @@ let processClauses clauses =
     // Create the ToC and build the complete spec
     let lines = docHead @ tocLines state.toc @ List.collect _.lines processedClauses
     // Adjust the reference links to point to the correct header of the new spec
-    let (lines, state) = (state, lines) ||> List.mapFold adjustLinks
+    let (lines, state) = ({state with clauseName = outFilePath; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
     if not state.errors.IsEmpty then
         Error(DocumentErrors (List.rev state.errors))
     else
-        state.warnings |> List.iter (printfn "Warning: %s")
+        state.warnings |> List.rev |> List.iter (printfn "Warning: %s")
         Ok lines
 
 let build() =
