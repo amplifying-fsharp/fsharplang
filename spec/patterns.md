@@ -5,7 +5,7 @@ the `match`, `try...with`, `function`, `fun`, and `let` expression and declarati
 attempted in order from top to bottom and left to right. The syntactic forms of patterns are shown
 in the subsequent table.
 
-```
+```fsgrammar
 rule :=
     pat pattern-guardopt - > expr -- pattern, optional guard and action
 
@@ -80,7 +80,7 @@ The decision tree is composed of the following constructs:
 The pattern `const` is a _constant pattern_ which matches values equal to the given constant. For
 example:
 
-```
+```fsharp
 let rotate3 x =
     match x with
     | 0 -> "two"
@@ -104,7 +104,7 @@ strings.
 
 Patterns in the following forms are _named patterns_ :
 
-```
+```fsgrammar
 Long-ident
 Long-ident pat
 Long-ident pat-params pat
@@ -143,7 +143,7 @@ values carried by the union are matched against the given argument patterns.
 
 For example:
 
-```
+```fsharp
 type Data =
     | Kind1 of int * int
     | Kind2 of string * string
@@ -161,7 +161,7 @@ When a union case has named fields, these names may be referenced in a union cas
 using pattern matching with multiple fields, semicolons are used to delimit the named fields. For
 example
 
-```
+```fsharp
 type Shape =
     | Rectangle of width: float * height: float
     | Square of width: float
@@ -179,7 +179,7 @@ equivalent to the corresponding constant pattern.
 In the following example, the `Literal` attribute ([§10.2.2](namespaces-and-modules.md#literal-definitions-in-modules)) is first used to define two literals, and these
 literals are used as identifiers in the match expression:
 
-```
+```fsharp
 [<Literal>]
 let Case1 = 1
 
@@ -230,7 +230,7 @@ the value to match, and must return a value of type `FSharp.Core.option<_>`.
 Other active pattern functions are not permitted. In particular, multi-case, partial functions such as
 the following are not permitted:
 
-```
+```fsharp
 (|CaseName1| ... |CaseNamen|_|)
 ```
 
@@ -245,7 +245,7 @@ to the pattern input. If the pattern argument `pat` is present, it is then match
 
 The following example shows how to define and use a partial active pattern function:
 
-```
+```fsharp
 let (|Positive|_|) inp = if inp > 0 then Some(inp) else None
 let (|Negative|_|) inp = if inp < 0 then Some(-inp) else None
 
@@ -256,7 +256,7 @@ match 3 with
 ```
 The following example shows how to define and use a multi-case active pattern function:
 
-```
+```fsharp
 let (|A|B|C|) inp = if inp < 0 then A elif inp = 0 then B else C
 
 match 3 with
@@ -266,7 +266,7 @@ match 3 with
 ```
 The following example shows how to define and use a parameterized active pattern function:
 
-```
+```fsharp
 let (|MultipleOf|_|) n inp = if inp%n = 0 then Some (inp / n) else None
 
 match 16 with
@@ -276,7 +276,7 @@ match 16 with
 An active pattern function is executed only if a left-to-right, top-to-bottom reading of the entire
 pattern indicates that execution is required. For example, consider the following active patterns:
 
-```
+```fsharp
 let (|A|_|) x =
     if x = 2 then failwith "x is two"
     elif x = 1 then Some()
@@ -297,7 +297,7 @@ let f x =
 ```
 These patterns evaluate as follows:
 
-```
+```fsharp
 f 0 // 0
 f 1 // 1
 f 2 // failwith "x is two"
@@ -312,13 +312,13 @@ function is executed against a particular pattern input is implementation-depend
 
 An “as” pattern is of the following form:
 
-```
+```fsgrammar
 pat as ident
 ```
 The “as” pattern defines `ident` to be equal to the pattern input and matches the pattern input
 against `pat`. For example:
 
-```
+```fsharp
 let t1 = (1, 2)
 let (x, y) as t2 = t1
 printfn "%d-%d-%A" x y t2 // 1- 2 - (1, 2)
@@ -329,7 +329,7 @@ This example binds the identifiers `x`, `y`, and `t1` to the values `1` , `2` , 
 
 The pattern `_` is a wildcard pattern and matches any input. For example:
 
-```
+```fsharp
 let categorize x =
     match x with
     | 1 - > 0
@@ -343,14 +343,14 @@ In the example, if `x` is `0`, the match returns `1`. If `x` has any other value
 
 A disjunctive pattern matches an input value against one or the other of two patterns:
 
-```
+```fsgrammar
 pat | pat
 ```
 At runtime, the patterm input is matched against the first pattern. If that fails, the pattern input is
 matched against the second pattern. Both patterns must bind the same set of variables with the
 same types. For example:
 
-```
+```fsharp
 type Date = Date of int * int * int
 
 let isYearLimit date =
@@ -367,12 +367,12 @@ pattern.
 
 A conjunctive pattern matches the pattern input against two patterns.
 
-```
-pat 1 & pat 2
+```fsgrammar
+pat1 & pat2
 ```
 For example:
 
-```
+```fsharp
 let (|MultipleOf|_|) n inp = if inp%n = 0 then Some (inp / n) else None
 
 let result =
@@ -389,18 +389,18 @@ The pattern `pat :: pat` is a union case pattern that matches the “cons” uni
 
 The pattern `[]` is a union case pattern that matches the “nil” union case of F# list values.
 
-The pattern `[ _pat 1 ; ... ; patn_ ]` is shorthand for a series of `::` and empty list patterns
+The pattern `[ pat1 ; ... ; patn ]` is shorthand for a series of `::` and empty list patterns
 `pat1 :: ... :: patn :: []`.
 
 For example:
 
-```
+```fsharp
 let rec count x =
     match x with
     | [] -> 0
     | h :: t -> h + count t
 
-let result 1 = count [1;2;3]
+let result1 = count [1;2;3]
 
 let result2 =
     match [1;2;3] with
@@ -413,12 +413,12 @@ In this example, both `result1` and `result2` are given the value `6`.
 
 A _type-annotated pattern_ specifies the type of the value to match to a pattern.
 
-```
+```fsgrammar
 pat : type
 ```
 For example:
 
-```
+```fsharp
 let rec sum xs =
     match xs with
     | [] -> 0
@@ -433,14 +433,14 @@ static type
 
 _Dynamic type-test patterns_ have the following two forms:
 
-```
+```fsgrammar
 :? type
 :? type as ident
 ```
 A dynamic type-test pattern matches any value whose runtime type is `type` or a subtype of `type`. For
 example:
 
-```
+```fsharp
 let message (x : System.Exception) =
     match x with
     | :? System.OperationCanceledException -> "cancelled"
@@ -450,7 +450,7 @@ let message (x : System.Exception) =
 If the type-test pattern is of the form `:? type as ident`, then the value is coerced to the given type
 and `ident` is bound to the result. For example:
 
-```
+```fsharp
 let findLength (x : obj) =
 match x with
     | :? string as s -> s.Length
@@ -468,7 +468,7 @@ input.
 A warning is issued if an expression contains a redundant dynamic type-test pattern, after any
 coercion is applied. For example:
 
-```
+```fsharp
 match box "3" with
 | :? string -> 1
 | :? string -> 1 // a warning is reported that this rule is "never matched"
@@ -487,12 +487,12 @@ to the results of a dynamic coercion expression `e :?> ty`.
 
 The following is a _record pattern_ :
 
-```
+```fsgrammar
 { long-ident1 = pat1 ; ... ; long-identn = patn }
 ```
 For example:
 
-```
+```fsharp
 type Data = { Header:string; Size: int; Names: string list }
 
 let totalSize data =
@@ -509,13 +509,13 @@ specified in the pattern.
 
 An _array pattern_ matches an array of a partciular length:
 
-```
+```fsgrammar
 [| pat ; ... ; pat |]
 ```
 
 For example:
 
-```
+```fsharp
 let checkPackets data =
     match data with
     | [| "HeaderA"; data1; data2 |] -> (data1, data2)
@@ -526,7 +526,7 @@ let checkPackets data =
 
 The _null pattern_ null matches values that are represented by the CLI value null. For example:
 
-```
+```fsharp
 let path =
     match System.Environment.GetEnvironmentVariable("PATH") with
     | null -> failwith "no path set!"
@@ -540,12 +540,12 @@ representation, see [§5.4.8](types-and-type-constraints.md#nullness).
 
 _Guarded pattern rules_ have the following form:
 
-```
+```fsgrammar
 pat when expr
 ```
 For example:
 
-```
+```fsharp
 let categorize x =
     match x with
     | _ when x < 0 -> - 1
@@ -555,7 +555,7 @@ let categorize x =
 The guards on a rule are executed only after the match value matches the corresponding pattern.
 For example, the following evaluates to `2` with no output.
 
-```
+```fsharp
 match (1, 2) with
 | (3, x) when (printfn "not printed"; true) -> 0
 | (_, y) -> y
