@@ -5585,7 +5585,7 @@ forms:
 ```
 These are respectively strongly typed and weakly typed splicing operators.
 
-#### 6.8.3.1 Strongly Typed Expression Splices**
+#### 6.8.3.1 Strongly Typed Expression Splices
 An expression of the following form is a _strongly typed expression splice_ :
 
 ```
@@ -5610,7 +5610,7 @@ Note: The rules in this section apply to any use of the prefix operator
 FSharp.Core.ExtraTopLevelOperators.(~%). Uses of this operator must be applied to an
 argument and may only appear in quoted expressions.
 ```
-#### 6.8.3.2 Weakly Typed Expression Splices**
+#### 6.8.3.2 Weakly Typed Expression Splices
 An expression of the following form is a _weakly typed expression splice_ :
 
 ```
@@ -7438,7 +7438,7 @@ member v.Length = sqrt((qx-px)*(qx-px) + (qy-py)*(qy-py))
 When a primary constructor is evaluated, the inheritance and function and value definitions are
 evaluated in order.
 
-#### 8.6.1.1 Object References in Primary Constructors**
+#### 8.6.1.1 Object References in Primary Constructors
 For types that have a primary constructor, the name of the object parameter can be bound and used
 in the non-static function, value, and member definitions of the type definition as follows:
 
@@ -7469,7 +7469,7 @@ let r = new C() // raises InvalidOperationException
 The exception is raised because an attempt may be made to access the value of the field y before
 initialization is complete.
 
-#### 8.6.1.2 Inheritance Declarations in Primary Constructors**
+#### 8.6.1.2 Inheritance Declarations in Primary Constructors
 An inherit declaration specifies that the type being defined is an extension of an existing type. Such
 declarations have the following form:
 
@@ -7506,7 +7506,7 @@ member this.F() = printfn "hi, y = %A" y
 ```
 let r = new C() // does not raise InvalidOperationException
 ```
-#### 8.6.1.3 Instance Function and Value Definitions in Primary Constructors**
+#### 8.6.1.3 Instance Function and Value Definitions in Primary Constructors
 Classes that have primary constructors may include function definitions, value definitions, and “do”
 statements. The following rules apply to these definitions:
 
@@ -7561,7 +7561,7 @@ member __.P = 1
 In this example, no field is generated for unused, and no corresponding compiled CLI attribute is
 generated.
 
-#### 8.6.1.4 Static Function and Value Definitions in Primary Constructors**
+#### 8.6.1.4 Static Function and Value Definitions in Primary Constructors
 Classes that have primary constructors may have function definitions, value definitions, and “do”
 statements that are marked as static:
 
@@ -8684,7 +8684,7 @@ Otherwise, it has no effect and callers must provide all of the arguments.
 As described in _Method Application Resolution_ (see §14.4), three type-directed conversions are
 applied at method invocations.
 
-#### 8.13.7.1 Conversion to Delegates**
+#### 8.13.7.1 Conversion to Delegates
 The first type-directed conversion converts anonymous function expressions and other function-
 valued arguments to delegate types. Given:
 
@@ -8711,7 +8711,7 @@ static member M(arg: 'T) = ()
 ```
 GenericClass<System.Action>.M(fun () -> ()) // allowed
 ```
-#### 8.13.7.2 Conversion to Reference Cells**
+#### 8.13.7.2 Conversion to Reference Cells
 The second type-directed conversion enables an F# reference cell to be passed where a byref< _ty_ > is
 expected. Given:
 
@@ -8774,7 +8774,7 @@ let res2 = ref 0
 x.IntegerOutParam(res2);
 // res2.contents now equals 4
 ```
-#### 8.13.7.3 Conversion to Quotation Values**
+#### 8.13.7.3 Conversion to Quotation Values
 The third type-directed conversion enables an F# expression to be implicitly quoted at a member
 call.
 
@@ -8845,7 +8845,7 @@ argument of the form <@ ... @> is always considered to have a type of the form E
 in the same way that caller arguments of the form (fun x -> ...) are always assumed to
 have type of the form `` -> _`` (i.e. a function type)
 ```
-#### 8.13.7.4 Conversion to LINQ Expressions**
+#### 8.13.7.4 Conversion to LINQ Expressions
 The third type-directed conversion enables an F# expression to be implicitly converted to a LINQ
 expression at a method call. Conversion is driven by an argument of type
 System.Linq.Expressions.Expression.
@@ -9574,7 +9574,7 @@ library functions is defined by the pseudocode later in this section. This code 
 - Structural comparison for arrays
 - Natural ordering for native integers (which do not support System.IComparable)
 
-#### 8.15.6.1 Pseudocode for FSharp.Core.Operators.compare**
+#### 8.15.6.1 Pseudocode for FSharp.Core.Operators.compare
 
 ```
 Note: In practice, fast (but semantically equivalent) code is emitted for direct calls to
@@ -9618,7 +9618,7 @@ String.CompareOrdinal(x, y)
 // Otherwise raise a runtime error
 | _ -> raise (new ArgumentException(...))
 ```
-#### 8.15.6.2 Pseudo code for FSharp.Core.Operators.(=)**
+#### 8.15.6.2 Pseudo code for FSharp.Core.Operators.(=)
 
 ```
 Note: In practice, fast (but semantically equivalent) code is emitted for direct calls to
@@ -10787,7 +10787,7 @@ the signature and implementation must conform as follows:
     are considered identical up to renaming the generic parameters.
 - The arities must match, as described in the next section.
 
-#### 11.2.1.1 Arity Conformance for Functions and Values**
+#### 11.2.1.1 Arity Conformance for Functions and Values
 Arities of functions and values must conform between implementation and signature. Arities of
 values are implicit in module signatures. A signature that contains the following results in the arity
 [ _A 1_ ... _An_ ] for F:
@@ -10859,7 +10859,7 @@ interoperability requires that F# functions compile to methods, rather than to f
 function values. Thus, signatures must contain enough information to reveal the desired arity of a
 method as it is revealed to other CLI programming languages.
 
-#### 11.2.1.2 Signature Conformance for Type Functions**
+#### 11.2.1.2 Signature Conformance for Type Functions
 If a value is a type function, then its corresponding value signature must have explicit type
 arguments. For example, the implementation
 
@@ -12744,7 +12744,7 @@ member constraint that has the same name, staticness, argument arity, and suppor
 variable is in the support set of more than one such constraint, the argument and return types are
 themselves constrained to be equal.
 
-#### 14.5.4.1 Simulation of Solutions for Member Constraints**
+#### 14.5.4.1 Simulation of Solutions for Member Constraints
 Certain types are assumed to implicitly define static members even though the actual CLI metadata
 for types does not define these operators. This mechanism is used to implement the extensible
 conversion and math functions of the F# library including sin, cos, int, float, (+), and (-). The
@@ -14159,7 +14159,7 @@ the case. However, undentation is permitted for the following constructs:
 - Branches of if/then/else expressions
 - Bodies of modules and module types
 
-#### 15.1.10.1 Undentation of Bodies of Function Expressions**
+#### 15.1.10.1 Undentation of Bodies of Function Expressions
 The bodies of functions may be undented from the fun or function symbol. As a result, the compiler
 ignores the symbol when determining whether the body of the function satisfies the incremental
 indentation rule. For example, the printf expression in the following example is undented from the
@@ -14180,7 +14180,7 @@ s+n+z))
 ```
 Constructs enclosed in brackets may be undented.
 
-#### 15.1.10.2 Undentation of Branches of If/Then/Else Expressions**
+#### 15.1.10.2 Undentation of Branches of If/Then/Else Expressions
 The body of a ( ... ) or begin ... end block in an if/then/else expression may be undented when the
 body of the block follows the then or else keyword but may not undent further than the if
 keyword. In this example, the parenthesized block follows then, so the body can be undented to the
@@ -14192,7 +14192,7 @@ if day = System.DayOfWeek.Monday then (
 printf "I don't like Mondays"
 )
 ```
-#### 15.1.10.3 Undentation of Bodies of Modules and Module Types**
+#### 15.1.10.3 Undentation of Bodies of Modules and Module Types
 The bodies of modules and module types that are delimited by begin and end may be undented. For
 example, in the following example the two let statements that comprise the module body are
 undented from the =.
