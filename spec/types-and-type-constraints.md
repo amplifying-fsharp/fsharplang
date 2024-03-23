@@ -80,13 +80,13 @@ In a type instantiation, the type name and the opening angle bracket must be syn
 with no intervening whitespace, as determined by lexical filtering (15). Specifically:
 
 ```fsharp
-    array<int>
+array<int>
 ```
 
 and not
 
 ```fsharp
-    array < int >
+array < int >
 ```
 
 ## Checking Syntactic Types
@@ -141,9 +141,9 @@ Named types are converted to static types as follows:
 A type of the form `'ident` is a variable type. For example, the following are all variable types:
 
 ```fsharp
-    'a
-    'T
-    'Key
+'a
+'T
+'Key
 ```
 
 During checking, Name Resolution (14.1) is applied to the identifier.
@@ -302,8 +302,8 @@ An `explicit member constraint` has the following form:
 For example, the F# library defines the + operator with the following signature:
 
 ```fsharp
-    val inline (+) : ^a -> ^b -> ^c
-        when (^a or ^b) : (static member (+) : ^a * ^b -> ^c)
+val inline (+) : ^a -> ^b -> ^c
+    when (^a or ^b) : (static member (+) : ^a * ^b -> ^c)
 ```
 
 This definition indicates that each use of the `+` operator results in a constraint on the types that
@@ -469,29 +469,29 @@ Type parameter definitions can occur in the following locations:
 For example, the following defines the type parameter ‘T in a function definition:
 
 ```fsharp
-    let id<'T> (x:'T) = x
+let id<'T> (x:'T) = x
 ```
 
 Likewise, in a type definition:
 
 ```fsharp
-    type Funcs<'T1,'T2> =
-        { Forward: 'T1 -> 'T2
-          Backward : 'T2 -> 'T2 }
+type Funcs<'T1,'T2> =
+    { Forward: 'T1 -> 'T2
+      Backward : 'T2 -> 'T2 }
 ```
 
 Likewise, in a signature file:
 
 ```fsharp
-    val id<'T> : 'T -> 'T
+val id<'T> : 'T -> 'T
 ```
 
 Explicit type parameter definitions can include _explicit constraint declarations_. For example:
 
 ```fsharp
-    let dispose2<'T when 'T :> System.IDisposable> (x: 'T, y: 'T) =
-    x.Dispose()
-    y.Dispose()
+let dispose2<'T when 'T :> System.IDisposable> (x: 'T, y: 'T) =
+x.Dispose()
+y.Dispose()
 ```
 
 The constraint in this example requires that 'T be a type that supports the IDisposable interface.
@@ -500,14 +500,14 @@ However, in most circumstances, declarations that imply subtype constraints on a
 written more concisely:
 
 ```fsharp
-    let throw (x: Exception) = raise x
+let throw (x: Exception) = raise x
 ```
 
 Multiple explicit constraint declarations use and:
 
 ```fsharp
-    let multipleConstraints<'T when 'T :> System.IDisposable and 'T :> System.IComparable > (x: 'T, y: 'T) =
-        if x.CompareTo(y) < 0 then x.Dispose() else y.Dispose()
+let multipleConstraints<'T when 'T :> System.IDisposable and 'T :> System.IComparable > (x: 'T, y: 'T) =
+    if x.CompareTo(y) < 0 then x.Dispose() else y.Dispose()
 ```
 
 Explicit type parameter definitions can declare custom attributes on type parameter definitions
@@ -669,118 +669,113 @@ Variable types System.Object^
 
 ### Interfaces Types of a Type
 
-The _interface types_ of a named type C< _type-inst_ > are defined by the transitive closure of the
-interface declarations of C and the interface types of the base type of C, where formal generic
-parameters are substituted for the actual type instantiation _type-inst_.
+The `interface types` of a named type `C<type-inst>` are defined by the transitive closure of the
+interface declarations of C and the interface types of the base type of `C`, where formal generic
+parameters are substituted for the actual type instantiation `type-inst`.
 
-The interface types for single dimensional array types _ty_ [] include the transitive closure that starts
-from the interface System.Collections.Generic.IList< _ty_ >, which includes
-System.Collections.Generic.ICollection< _ty_ > and System.Collections.Generic.IEnumerable< _ty_ >.
+The interface types for single dimensional array types `ty[]` include the transitive closure that starts
+from the interface `System.Collections.Generic.IList<ty>`, which includes
+`System.Collections.Generic.ICollection<ty>` and `System.Collections.Generic.IEnumerable<ty>`.
 
 ### Type Equivalence
 
-Two static types _ty_ 1 and _ty_ 2 are _definitely equivalent_ (with respect to a set of current inference
+Two static types `ty1` and `ty2` are definitely equivalent (with respect to a set of current inference
 constraints) if either of the following is true:
 
-- _ty_ 1 has form _op_ < _ty_ 11 _, ..., ty_ 1n>, _ty_ 2 has form _op_ < _ty_ 21 _, ..., ty_ 2n> and each _ty1i_ is
-  definitely
-  equivalent to _ty2i_ for all _1_ <= _i_ <= _n_.
+- `ty1` has form `op<ty11, ..., ty1n>`, `ty2` has form `op<ty21, ..., ty2n>` and each `ty1i` is
+  definitely equivalent to `ty2i` for all `1` <= `i` <= `n`.
 
-—OR—
+**OR**
 
-- _ty_ 1 and _ty_ 2 are both variable types, and they both refer to the same definition site or are the
+- `ty1` and `ty2` are both variable types, and they both refer to the same definition site or are the
   same type inference variable.
 
 This means that the addition of new constraints may make types definitely equivalent where
-previously they were not. For example, given Χ = { 'a = int }, we have list<int> = list<'a>.
+previously they were not. For example, given `Χ = { 'a = int }`, we have `list<int>` = `list<'a>`.
 
-Two static types _ty_ 1 and _ty_ 2 are _feasibly equivalent_ if _ty_ 1 and _ty_ 2 may become definitely equivalent if
-further constraints are added to the current inference constraints. Thus list<int> and list<'a> are
+Two static types `ty1` and `ty2` are feasibly equivalent if `ty1` and `ty2` may become definitely equivalent if
+further constraints are added to the current inference constraints. Thus `list<int>` and `list<'a>` are
 feasibly equivalent for the empty constraint set.
 
 ### Subtyping and Coercion
 
-A static type _ty_ 2 _coerces to_ static type _ty_ 1 (with respect to a set of current inference constraints X), if
-_ty_ 1 is in the transitive closure of the base types and interface types of _ty_ 2. Static coercion is written
-with the :> symbol:
+A static type `ty2` coerces to static type `ty1` (with respect to a set of current inference constraints X), if
+`ty1` is in the transitive closure of the base types and interface types of `ty2`. Static coercion is written
+with the `:>` symbol:
 
+```fsharp
+ty2 :> ty1
 ```
-ty 2 :> ty 1 ,
-```
 
-Variable types 'T coerce to all types _ty_ if the current inference constraints include a constraint of the
-form 'T :> _ty_ 2 , and _ty_ is in the inclusive transitive closure of the base and interface types of _ty_ 2.
+Variable types `'T` coerce to all types `ty` if the current inference constraints include a constraint of the
+form `'T :> ty2`, and `ty` is in the inclusive transitive closure of the base and interface types of `ty2`.
 
-A static type _ty_ 2 _feasibly coerces to_ static type _ty_ 1 if _ty_ 2 _coerces to ty 1_ may hold through the addition
+A static type `ty2` feasibly coerces to static type `ty1` if `ty2` coerces to `ty1` may hold through the addition
 of further constraints to the current inference constraints. The result of adding constraints is defined
-in _Constraint Solving_ (see [§14.5](inference-procedures.md#constraint-solving)).
+in `Constraint Solving` (see [§14.5](inference-procedures.md#constraint-solving)).
 
 ### Nullness
 
 The design of F# aims to greatly reduce the use of null literals in common programming tasks,
 because they generally result in error-prone code. However:
 
-- The use of some null literals is required for interoperation with CLI libraries.
-- The appearance of null values during execution cannot be completely precluded for technical
+- The use of some `null` literals is required for interoperation with CLI libraries.
+- The appearance of `null` values during execution cannot be completely precluded for technical
   reasons related to the CLI and CLI libraries.
 
-As a result, F# types differ in their treatment of the null literal and null values. All named types and
+As a result, F# types differ in their treatment of the `null` literal and `null` values. All named types and
 type definitions fall into one of the following categories:
 
-- **Types with the null literal.** These types have null as an “extra” value. The following types are in
+- **Types with the `null` literal.** These types have `null` as an “extra” value. The following types are in
   this category:
     - All CLI reference types that are defined in other CLI languages.
-    - All types that are defined in F# and annotated with the AllowNullLiteral attribute.
+    - All types that are defined in F# and annotated with the `AllowNullLiteral` attribute.
 
-```
-For example, System.String and other CLI reference types satisfy this constraint, and these types
-permit the direct use of the null literal.
-```
+For example, `System.String` and other CLI reference types satisfy this constraint, and these types
+permit the direct use of the `null` literal.
 
-- **Types with null as an abnormal value.** These types do not permit the null literal, but do have
-  null as an abnormal value. The following types are in this category:
+- **Types with `null` as an abnormal value.** These types do not permit the `null` literal, but do have
+  `null` as an abnormal value. The following types are in this category:
     - All F# list, record, tuple, function, class, and interface types.
-    - All F# union types except those that have null as a normal value, as discussed in the next
+    - All F# union types except those that have `null` as a normal value, as discussed in the next
       bullet point.
 
-```
-For types in this category, the use of the null literal is not directly allowed. However, strictly
-speaking, it is possible to generate a null value for these types by using certain functions such as
-Unchecked.defaultof< type >. For these types, null is considered an abnormal value. Operations
-differ in their use and treatment of null values; for details about evaluation of expressions that
-might include null values, see (see [§6.9](expressions.md#evaluation-of-elaborated-forms)).
-```
+For types in this category, the use of the `null` literal is not directly allowed. However, strictly
+speaking, it is possible to generate a `null` value for these types by using certain functions such as
+`Unchecked.defaultof<type>`. For these types, `null` is considered an abnormal value. Operations
+differ in their use and treatment of `null` values; for details about evaluation of expressions that
+might include `null` values, see (see [§6.9](expressions.md#evaluation-of-elaborated-forms)).
 
-- **Types with null as a representation value.** These types do not permit the null literal but use
-  the null value as a representation.
+- **Types with `null` as a representation value.** These types do not permit the `null` literal but use
+  the `null` value as a representation.
   For these types, the use of the null literal is not directly permitted. However, one or all of the
   “normal” values of the type is represented by the null value. The following types are in this
   category:
-    - The unit type. The null value is used to represent all values of this type.
+    - The unit type. The `null` value is used to represent all values of this type.
     - Any union type that has the
-      FSharp.Core.CompilationRepresentation(CompilationRepresentationFlags.UseNullAsTrueV
-      alue) attribute flag and a single null union case. The null value represents this case. In
-      particular, null represents None in the F# option<_> type.
-- **Types without null.** These types do not permit the null literal and do not have the null value.
+      `FSharp.Core.CompilationRepresentation(CompilationRepresentationFlags.UseNullAsTrueV
+      alue)` attribute flag and a single null union case. The null value represents this case. In
+      particular, `null` represents `None` in the F# `option<_>` type.
+- **Types without `null`.** These types do not permit the `null` literal and do not have the null value.
   All value types are in this category, including primitive integers, floating-point numbers, and any
-  value of a CLI or F# struct type.
+  value of a CLI or F# `struct` type.
 
-A static type _ty satisfies a nullness constraint ty_ : null if it:
+A static type `ty` satisfies a nullness constraint `ty : null` if it:
 
-- Has an outermost named type that has the null literal.
-- Is a variable type with a _typar_ : null constraint.
+- Has an outermost named type that has the `null` literal.
+- Is a variable type with a `typar : null` constraint.
 
 ### Default Initialization
 
-Related to nullness is the _default initialization_ of values of some types to _zero values_. This technique
+Related to nullness is the `default initialization` of values of some types to `zero values`. This technique
 is common in some programming languages, but the design of F# deliberately de-emphasizes it.
 However, default initialization is allowed in some circumstances:
 
 - Checked default initialization may be used when a type is known to have a valid and “safe”
-  default zero value. For example, the types of fields that are labeled with DefaultValue(true) are
+  default zero value. For example, the types of fields that are labeled with `DefaultValue(true)` are
   checked to ensure that they allow default initialization.
 - CLI libraries sometimes perform unchecked default initialization, as do the F# library primitives
-  Unchecked.defaultof<_> and Array.zeroCreate.
+  `Unchecked.defaultof<_>` and `Array.zeroCreate`.
 
 The following types _permit default initialization_ :
 
@@ -790,56 +785,58 @@ The following types _permit default initialization_ :
 
 ### Dynamic Conversion Between Types
 
-A runtime type _vty dynamically converts to_ a static type _ty_ if any of the following are true:
+A runtime type `vty` dynamically converts to a static type `ty` if any of the following are true:
 
-- _vty_ coerces to _ty_.
-- _vty_ is int32[]and _ty_ is uint32[](or conversely). Likewise for sbyte[]/byte[], int16[]/uint16[],
-  int64[]/uint64[], and nativeint[]/unativeint[].
-
-
-- _vty_ is _enum_ [] where _enum_ has underlying type _underlying_ , and _ty_ is _underlying_ [] (or conversely),
-  or the (un)signed equivalent of _underlying_ [] by the immediately preceding rule.
-- _vty_ is _elemty 1_ [], _ty_ is _elemty 2_ [], _elemty 1_ is a reference type, and _elemty 1_ converts to _elemty 2_.
-- _ty_ is System.Nullable< _vty_ >.
+- `vty` coerces to `ty`.
+- `vty` is `int32[]` and `ty` is `uint32[]`(or conversely). Likewise for `sbyte[]`/`byte[]`, `int16[]`/`uint16[]`,
+  `int64[]`/`uint64[]`, and `nativeint[]`/`unativeint[]`.
+- `vty` is `enum[]` where `enum` has underlying type `underlying` , and `ty` is `underlying[]` (or conversely),
+  or the (un)signed equivalent of `underlying[]` by the immediately preceding rule.
+- `vty` is `elemty1[]`, `ty` is `elemty2[]`, `elemty1` is a reference type, and `elemty1` converts to `elemty2`.
+- `ty` is `System.Nullable<vty>`.
 
 Note that this specification does not define the full algebra of the conversions of runtime types to
 static types because the information that is available in runtime types is implementation dependent.
 However, the specification does state the conditions under which objects are guaranteed to have a
 runtime type that is compatible with a particular static type.
 
-```
-Note : This specification covers the additional rules of CLI dynamic conversions, all of
+> Note: This specification covers the additional rules of CLI dynamic conversions, all of
 which apply to F# types. For example:
+
+```fsharp
 let x = box [| System.DayOfWeek.Monday |]
 let y = x :? int32[]
 printf "%b" y // true
 ```
 
-```
-In the previous code, the type System.DayOfWeek.Monday[] does not statically coerce to
-int32[], but the expression x :? int32[] evaluates to true.
+In the previous code, the type `System.DayOfWeek.Monday[]` does not statically coerce to
+`int32[]`, but the expression `x :? int32[]` evaluates to true.
+
+```fsharp
 let x = box [| 1 |]
 let y = x :? uint32 []
 printf "%b" y // true
 ```
 
-```
-In the previous code, the type int32[] does not statically coerce to uint32[], but the
-expression x :? uint32 [] evaluates to true.
+In the previous code, the type `int32[]` does not statically coerce to `uint32[]`, but the
+expression `x :? uint32 []` evaluates to true.
+
+```fsharp
 let x = box [| "" |]
 let y = x :? obj []
 printf "%b" y // true
 ```
 
-```
-In the previous code, the type string[] does not statically coerce to obj[], but the
-expression x :? obj []evaluates to true.
+
+In the previous code, the type `string[]` does not statically coerce to `obj[]`, but the
+expression `x :? obj []` evaluates to true.
+
+```fsharp
 let x = box 1
 let y = x :? System.Nullable<int32>
 printf "%b" y // true
 ```
 
-```
-In the previous code, the type int32 does not coerce to System.Nullable<int32>, but the
-expression x :? System.Nullable<int32> evaluates to true.
-```
+In the previous code, the type `int32` does not coerce to `System.Nullable<int32>`, but the
+expression `x :? System.Nullable<int32>` evaluates to true.
+
