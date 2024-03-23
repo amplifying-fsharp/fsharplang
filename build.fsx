@@ -83,7 +83,7 @@ let referenceable (s: string) =
 let mkError state msg = $"{state.clauseName}.md({state.lineNumber}): {msg}"
 
 let checkCodeBlock state line =
-    let m = Regex.Match(line, "```(.*)")
+    let m = Regex.Match(line, " *```(.*)")
     if not m.Success then state else
         if state.inCodeBlock then {state with inCodeBlock = false} else
             let infoString = m.Groups[1].Value
