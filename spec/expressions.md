@@ -4,59 +4,59 @@ The expression forms and related elements are as follows:
 
 ```fsgrammar
 expr :=
-    const -- a constant value
-    ( expr ) -- block expression
-    begin expr end -- block expression
-    long-ident-or-op -- lookup expression
-    expr '.' long-ident-or-op -- dot lookup expression
-    expr expr -- application expression
-    expr ( expr ) -- high precedence application
-    expr < types > -- type application expression
-    expr infix-op expr -- infix application expression
-    prefix-op expr -- prefix application expression
-    expr .[ expr ] -- indexed lookup expression
-    expr .[ slice-ranges ] -- slice expression
-    expr <- expr -- assignment expression
-    expr , ... , expr -- tuple expression
-    new type expr -- simple object expression
+    const                               -- a constant value
+    ( expr )                            -- block expression
+    begin expr end                      -- block expression
+    long-ident-or-op                    -- lookup expression
+    expr '.' long-ident-or-op           -- dot lookup expression
+    expr expr                           -- application expression
+    expr ( expr )                       -- high precedence application
+    expr < types >                      -- type application expression
+    expr infix-op expr                  -- infix application expression
+    prefix-op expr                      -- prefix application expression
+    expr .[ expr ]                      -- indexed lookup expression
+    expr .[ slice-ranges ]              -- slice expression
+    expr <- expr                        -- assignment expression
+    expr , ... , expr                   -- tuple expression
+    new type expr                       -- simple object expression
     { new base-call object-members interface-impls } -- object expression
-    { field-initializers } -- record expression
-    { expr with field-initializers } -- record cloning expression
-    [ expr ; ... ; expr ] -- list expression
-    [| expr ; ... ; expr |] -- array expression
-    expr { comp-or-range-expr } -- computation expression
-    [ comp-or-range-expr ] -- computed list expression
-    [| comp-or-range-expr |] -- computed array expression
-    lazy expr -- delayed expression
-    null -- the "null" value for a reference type
-    expr : type -- type annotation
-    expr :> type -- static upcast coercion
-    expr :? type -- dynamic type test
-    expr :?> type -- dynamic downcast coercion
-    upcast expr -- static upcast expression
-    downcast expr -- dynamic downcast expression
-    let function-defn in expr – - function definition expression
-    let value-defn in expr – - value definition expression
+    { field-initializers }              -- record expression
+    { expr with field-initializers }    -- record cloning expression
+    [ expr ; ... ; expr ]               -- list expression
+    [| expr ; ... ; expr |]             -- array expression
+    expr { comp-or-range-expr }         -- computation expression
+    [ comp-or-range-expr ]              -- computed list expression
+    [| comp-or-range-expr |]            -- computed array expression
+    lazy expr                           -- delayed expression
+    null                                -- the "null" value for a reference type
+    expr : type                         -- type annotation
+    expr :> type                        -- static upcast coercion
+    expr :? type                        -- dynamic type test
+    expr :?> type                       -- dynamic downcast coercion
+    upcast expr                         -- static upcast expression
+    downcast expr                       -- dynamic downcast expression
+    let function-defn in expr           -- function definition expression
+    let value-defn in expr              -- value definition expression
     let rec function-or-value-defns in expr -- recursive definition expression
-    use ident = expr in expr – - deterministic disposal expression
-    fun argument-pats - > expr -- function expression
-    function rules -- matching function expression
-    expr ; expr -- sequential execution expression
-    match expr with rules -- match expression
-    try expr with rules -- try/with expression
-    try expr finally expr -- try/finally expression
-    if expr then expr elif-branchesopt else-branch opt -- conditional expression
-    while expr do expr done -- while loop
+    use ident = expr in expr            -- deterministic disposal expression
+    fun argument-pats - > expr          -- function expression
+    function rules                      -- matching function expression
+    expr ; expr                         -- sequential execution expression
+    match expr with rules               -- match expression
+    try expr with rules                 -- try/with expression
+    try expr finally expr               -- try/finally expression
+    if expr then expr elif-branches~opt else-branch opt -- conditional expression
+    while expr do expr done             -- while loop
     for ident = expr to expr do expr done -- simple for loop
     for pat in expr - or-range-expr do expr done -- enumerable for loop
-    assert expr -- assert expression
-    <@ expr @> -- quoted expression
-    <@@ expr @@> -- quoted expression
+    assert expr                         -- assert expression
+    <@ expr @>                          -- quoted expression
+    <@@ expr @@>                        -- quoted expression
 
-    % expr -- expression splice
-    %%expr -- weakly typed expression splice
+    %expr                              -- expression splice
+    %%expr                              -- weakly typed expression splice
 
-    ( static-typars : ( member-sig ) expr) - – static member invocation
+    (static-typars : (member-sig) expr) -– static member invocation
 ```
 
 Expressions are defined in terms of patterns and other entities that are discussed later in this
@@ -80,10 +80,10 @@ function-or-value-defn :=
     value-defn
 
 function-defn :=
-    inline opt accessopt ident-or-op typar-defnsopt argument-pats return-typeopt = expr
+    inline opt access~opt ident-or-op typar-defns~opt argument-pats return-type~opt = expr
 
 value-defn :=
-    mutable opt accessopt pat typar-defnsopt return-typeopt = expr
+    mutable~opt access~opt pat typar-defns~opt return-type~opt = expr
 
 return-type :=
     : type
@@ -100,16 +100,16 @@ field-initializers := field-initializer ; ... ; field-initializer
 
 object-construction :=
     type expr -- construction expression
-    type -- interface construction expression
+    type      -- interface construction expression
 
 base-call :=
-    object-construction -- anonymous base construction
+    object-construction          -- anonymous base construction
     object-construction as ident -- named base construction
 
 interface-impls := interface-impl ... interface-impl
 
 interface-impl :=
-    interface type object-membersopt -- interface implementation
+    interface type object-members~opt -- interface implementation
 
 object-members := with member-defns end
 
@@ -125,20 +125,20 @@ comp-or-range-expr :=
     range-expr
 
 comp-expr :=
-    let! pat = expr in comp-expr -- binding computation
+    let! pat = expr in comp-expr    -- binding computation
     let pat = expr in comp-expr
-    do! expr in comp-expr -- sequential computation
+    do! expr in comp-expr           -- sequential computation
     do expr in comp-expr
-    use! pat = expr in comp-expr -- auto cleanup computation
+    use! pat = expr in comp-expr    -- auto cleanup computation
     use pat = expr in comp-expr
-    yield! expr -- yield computation
-    yield expr -- yield result
-    return! expr -- return computation
-    return expr -- return result
-    if expr then comp - expr -- control flow or imperative action
+    yield! expr                     -- yield computation
+    yield expr                      -- yield result
+return! expr                        -- return computation
+    return expr                     -- return result
+    if expr then comp - expr        -- control flow or imperative action
     if expr then expr else comp-expr
-    match expr with pat -> comp-expr | ... | pat - > comp-expr
-    try comp - expr with pat -> comp-expr | ... | pat - > comp-expr
+    match expr with pat -> comp-expr | ... | pat -> comp-expr
+    try comp - expr with pat -> comp-expr | ... | pat -> comp-expr
     try comp - expr finally expr
     while expr do comp - expr done
     for ident = expr to expr do comp - expr done
@@ -147,20 +147,20 @@ comp-expr :=
     expr
 
 short-comp-expr :=
-    for pat in expr-or-range-expr - > expr -- yield result
+    for pat in expr-or-range-expr -> expr -- yield result
 
 range-expr :=
-    expr .. expr -- range sequence
-    expr .. expr .. expr -- range sequence with skip
+    expr .. expr                    -- range sequence
+    expr .. expr .. expr            -- range sequence with skip
 
 slice-ranges := slice-range , ... , slice-range
 
 slice-range :=
-    expr -- slice of one element of dimension
-    expr .. -- slice from index to end
-    .. expr -- slice from start to index
-    expr .. expr -- slice from index to index
-    '*' -- slice from start to end
+    expr                            -- slice of one element of dimension
+    expr ..                         -- slice from index to end
+    .. expr                         -- slice from start to index
+    expr .. expr                    -- slice from index to index
+    '*'                             -- slice from start to end
 ```
 ## Some Checking and Inference Terminology
 
@@ -174,7 +174,7 @@ information available to resolve method overloading and other language construct
 following terminology:
 
 - The phrase “the type `ty1` is asserted to be equal to the type `ty2`” or simply “`ty1 = ty2` is asserted”
-    indicates that the constraint “`ty 1 = ty2`” is added to the current inference constraints.
+    indicates that the constraint “`ty1 = ty2`” is added to the current inference constraints.
 
 
 - The phrase “`ty1` is asserted to be a subtype of `ty2`” or simply “`ty1 :> ty2` is asserted” indicates
@@ -220,7 +220,7 @@ form. This specification uses the following elaborated forms:
 - Sequencing: `expr; expr`
 - Try-with: `try expr with expr`
 - Try-finally: `try expr finally expr`
-- The constructs required for the elaboration of pattern matching (§7).
+- The constructs required for the elaboration of pattern matching ([§7](patterns.md#patterns)).
     - Null tests
     - Switches on integers and other types
     - Switches on union cases
@@ -363,9 +363,8 @@ defined by:
     type is `ty1 * ... * tyN`
 <br>- For the runtime type `Tuple<ty1, ..., Tuple<tyN>>` when `n = 8`, the corresponding F#
     tuple type is `ty1 * ... * ty8`
-<br>- For the runtime type `Tuple<ty1, ..., ty7, ty8n> , if `ty8n` corresponds to the F# tuple
-    type `ty8 * ... * tyN`, then the corresponding runtime type is `ty1 * ... * tyN`.
-<br>Runtime types of other forms do not have a corresponding tuple type. In particular,
+<br>- For the runtime type `Tuple<ty1, ..., ty7, ty8n>` , if `ty8n` corresponds to the F# tuple
+    type `ty8 * ... * tyN`, then the corresponding runtime type is `ty1 * ... * tyN`.<br>Runtime types of other forms do not have a corresponding tuple type. In particular,
 runtime types that are instantiations of the eight-tuple type `Tuple<_, _, _, _, _, _, _, _ >`
 must always have `Tuple<_>` in the final position. Syntactic types that have some other
 form of type in this position are not permitted, and if such an instantiation occurs in F#
@@ -375,7 +374,7 @@ report an error.
 ### List Expressions
 
 An expression of the form `[expr1 ; ...; exprn]` is a _list expression_. The initial type of the expression is
-asserted to be `FSharp.Collections.List<_ty_>` for a fresh type `ty`.
+asserted to be `FSharp.Collections.List<ty>` for a fresh type `ty`.
 
 If `ty` is a named type, each expression `expri` is checked using a fresh type `ty'` as its initial type, with
 the constraint `ty' :> ty`. Otherwise, each expression `expri` is checked using `ty` as its initial type.
@@ -386,7 +385,7 @@ union cases with symbolic names `::` and `[]` respectively.
 
 ### Array Expressions
 
-An expression of the form `[|expr1; ...; exprn|] is an _array expression_. The initial type of the
+An expression of the form `[|expr1; ...; exprn|]` is an _array expression_. The initial type of the
 expression is asserted to be `ty[]` for a fresh type `ty`.
 
 If this assertion determines that `ty` is a named type, each expression `expri` is checked using a fresh
@@ -402,7 +401,7 @@ binary representation based on a call to
 
 ### Record Expressions
 
-An expression of the form `{field-initializer1; ... ; field-initializern} is a _record
+An expression of the form `{field-initializer1; ... ; field-initializern}` is a _record
 construction expression_. For example:
 
 ```fsharp
@@ -476,7 +475,7 @@ type C =
     new() = { x = 1; y = 2 }
 ```
 > Note: The following record initialization form is deprecated:
-<br>`{ new type with Field 1 = expr 1 and ... and Fieldn = exprn }`
+<br>`{ new type with Field1 = expr1 and ... and Fieldn = exprn }`
 <br>The F# implementation allows the use of this form only with uppercase identifiers.
 <br>F# code should not use this expression form. A future version of the F# language will
 issue a deprecation warning.
@@ -504,7 +503,7 @@ let data2 = { data1 with Name = "Bill"; Height = 176.0 }
 The expression `expr` is first checked with the same initial type as the overall expression. Next, the
 field definitions are resolved by using the same technique as for record expressions. Each field label
 must resolve to a field `Fi` in a single record type `R` , all of whose fields are accessible. After all field
-labels are resolved, the overall record expression is asserted to be of type `R<ty1, ..., tyN> for fresh
+labels are resolved, the overall record expression is asserted to be of type `R<ty1, ..., tyN>` for fresh
 types `ty1, ..., tyN`. Each `expri` is then checked in turn with initial type that results from the following
 procedure:
 
@@ -535,7 +534,7 @@ expressions that involve non-variable patterns elaborate as if they had been wri
 
 ```fsharp
 fun v1 ... vn ->
-    let pat 1 = v 1
+    let pat1 = v 1
     ...
     let patn = vn
     expr
@@ -557,7 +556,7 @@ let z = g 3 // MatchFailureException is raised
 An expression of the following form is an _object expression_ :
 
 ```fsharp
-{ new ty0 args-expr opt object-members
+{ new ty0 args-expr~opt object-members
   interface ty1 object-members1
   ...
   interface tyn object-membersn }
@@ -566,7 +565,7 @@ In the case of the interface declarations, the `object-members` are optional and
 if absent. Each set of `object-members` has the form:
 
 ```fsgrammar
-with member-defns endopt
+with member-defns end~opt
 ```
 Lexical filtering inserts simulated `$end` tokens when lightweight syntax is used.
 
@@ -645,24 +644,24 @@ let anon =
 ```
 ### Delayed Expressions
 
-An expression of the form lazy `expr` is a `delayed expression`. For example:
+An expression of the form `lazy expr` is a _delayed expression_. For example:
 
-```
+```fsharp
 lazy (printfn "hello world")
 ```
 is syntactic sugar for
 
-```
+```fsharp
 new System.Lazy (fun () -> expr )
 ```
-The behavior of the System.Lazy library type ensures that expression `expr` is evaluated on demand in
-response to a .Value operation on the lazy value.
+The behavior of the `System.Lazy` library type ensures that expression `expr` is evaluated on demand in
+response to a `.Value` operation on the lazy value.
 
 ### Computation Expressions
 
-The following expression forms are all c `omputation expressions` :
+The following expression forms are all _computation expressions_ :
 
-```
+```fsgrammar
 expr { for ... }
 expr { let ... }
 expr { let! ... }
@@ -676,59 +675,62 @@ expr { return! ... }
 ```
 More specifically, computation expressions have the following form:
 
-```
+```fsgrammar
 builder-expr { cexpr }
 ```
-where cexpr is, syntactically, the grammar of expressions with the additional constructs that are
-defined in comp-expr. Computation expressions are used for sequences and other non-standard
-interpretations of the F# expression syntax. For a fresh variable b, the expression
+where `cexpr` is, syntactically, the grammar of expressions with the additional constructs that are
+defined in `comp-expr`. Computation expressions are used for sequences and other non-standard
+interpretations of the F# expression syntax. For a fresh variable `b`, the expression
 
-```
+```fsgrammar
 builder-expr { cexpr }
 ```
 translates to
 
-```
+```fsgrammar
 let b = builder-expr in {| cexpr |}C
 ```
-The type of b must be a named type after the checking of builder-expr. The subscript indicates that
-custom operations (C) are acceptable but are not required.
+The type of `b` must be a named type after the checking of builder-expr. The subscript indicates that
+custom operations (`C`) are acceptable but are not required.
 
-If the inferred type of b has one or more of the Run, Delay, or Quote methods when builder-expr is
+If the inferred type of `b` has one or more of the `Run`, `Delay`, or `Quote` methods when `builder-expr` is
 checked, the translation involves those methods. For example, when all three methods exist, the
 same expression translates to:
 
 
-```
+```fsgrammar
 let b = builder-expr in b.Run (<@ b.Delay(fun () -> {| cexpr |}C) >@)
 ```
-If a **Run** method does not exist on the inferred type of b, the call to **Run** is omitted. Likewise, if no
-**Delay** method exists on the type of b, that call and the inner lambda are omitted, so the expression
+If a `Run` method does not exist on the inferred type of b, the call to `Run` is omitted. Likewise, if no
+`Delay` method exists on the type of `b`, that call and the inner lambda are omitted, so the expression
 translates to the following:
 
-```
+```fsgrammar
 let b = builder-expr in b.Run (<@ {| cexpr |}C >@)
 ```
-Similarly, if a Quote method exists on the inferred type of b, at-signs <@ @> are placed around {| cexpr
-|}C or b.Delay(fun () -> {| cexpr |}C) if a Delay method also exists.
+Similarly, if a `Quote` method exists on the inferred type of `b`, at-signs `<@ @>` are placed around `{| cexpr |}C` 
+or `b.Delay(fun () -> {| cexpr |}C)` if a `Delay` method also exists.
 
-The translation {| `cexpr` |}C , which rewrites computation expressions to core language expressions,
+The translation `{| cexpr |}C` , which rewrites computation expressions to core language expressions,
 is defined recursively according to the following rules:
 
-{| `cexpr` |}C ≡ **T** (cexpr, [], fun v -> v, true)
+`{| cexpr |}C = T (cexpr, [], fun v -> v, true)`
 
-During the translation, we use the helper function {| cexpr |} 0 to denote a translation that does not
+During the translation, we use the helper function {| cexpr |}0 to denote a translation that does not
 involve custom operations:
 
-{| `cexpr` |} 0 ≡ **T** (cexpr, [], fun v -> v, false)
+`{| cexpr |}0 = T (cexpr, [], fun v -> v, false)`
 
-```
+```fsgrammar
 T (e, V , C , q) where e : the computation expression being translated
-V : a set of scoped variables
-C : continuation (or context where “e” occurs,
-up to a hole to be filled by the result of translating “e”)
-q : Boolean that indicates whether a custom operator is allowed
+                       V : a set of scoped variables
+                       C : continuation (or context where “e” occurs,
+                           up to a hole to be filled by the result of translating “e”)
+                       q : Boolean that indicates whether a custom operator is allowed
 ```
+
+<!-- start of weird section -->
+
 Then, T is defined for each computation expression e:
 
 **T** (let p = e in ce, **V** , **C** , q) = **T** (ce, **V**  `var` (p), v. **C** (let p = e in v), q)
@@ -760,15 +762,15 @@ Assert(not q); **C** (b.TryFinally(b.Delay(fun () -> {| `ce` |} 0 ), fun () -> e
 **T** (if e then ce, **V** , **C** , q) = **T** (ce, **V** , v. **C** (if e then v else b.Zero()), q)
 
 
-**T** (if e then ce 1 else ce 2 , **V** , **C** , q) = Assert(not q); **C** (if e then {| `ce` 1 |} 0 ) else {| `ce` 2 |} 0 )
+**T** (if e then ce1 else ce2 , **V** , **C** , q) = Assert(not q); **C** (if e then {| `ce` 1 |} 0 ) else {| `ce` 2 |} 0 )
 
-**T** (for x = e 1 to e 2 do ce, **V** , **C** , q) = **T** (for x in e 1 .. e 2 do ce, **V** , **C** , q)
+**T** (for x = e1 to e2 do ce, **V** , **C** , q) = **T** (for x in e1 .. e2 do ce, **V** , **C** , q)
 
-**T** (for p 1 in e 1 do joinOp p 2 in e 2 onWord (e 3 `eop` e 4 ) ce, **V** , **C** , q) =
-Assert(q); **T** (for `pat` ( **V** ) in b.Join( `src` (e 1 ), `src` (e 2 ), p 1 .e 3 , p 2 .e 4 ,
-p 1. p 2 .(p 1 ,p 2 )) do ce, **V** , **C** , q)
+**T** (for p1 in e1 do joinOp p2 in e2 onWord (e3 `eop` e4 ) ce, **V** , **C** , q) =
+Assert(q); **T** (for `pat` ( **V** ) in b.Join( `src` (e1 ), `src` (e2 ), p1 .e3 , p2 .e4 ,
+p1. p2 .(p1 ,p2 )) do ce, **V** , **C** , q)
 
-**T** (for p 1 in e 1 do groupJoinOp p 2 in e 2 onWord (e 3 `eop` e4) into p 3 ce, **V** , **C** , q) =
+**T** (for p1 in e1 do groupJoinOp p2 in e2 onWord (e3 `eop` e4) into p3 ce, **V** , **C** , q) =
 Assert(q); **T** (for `pat` ( **V** ) in b.GroupJoin( `src` (e1),
 `src` (e2), p1.e3, p2.e4, p1. p3.(p1,p3)) do ce, **V** , **C** , q)
 
@@ -778,11 +780,11 @@ Assert(q); **T** (for `pat` ( **V** ) in b.GroupJoin( `src` (e1),
 
 **T** (do! e in ce, **V** , **C** , q) = **T** (let! () = e in ce, **V** , **C** , q)
 
-**T** (joinOp p 2 in e 2 on (e 3 `eop` e4) ce, **V** , **C** , q) =
-**T** (for `pat` ( **V** ) in **C** ({| yield `exp` ( **V** ) |}0) do join p 2 in e 2 onWord (e 3 `eop` e4) ce, **V** , v.v, q)
+**T** (joinOp p2 in e2 on (e3 `eop` e4) ce, **V** , **C** , q) =
+**T** (for `pat` ( **V** ) in **C** ({| yield `exp` ( **V** ) |}0) do join p2 in e2 onWord (e3 `eop` e4) ce, **V** , v.v, q)
 
-**T** (groupJoinOp p 2 in e 2 onWord (e 3 eop e4) into p 3 ce, **V** , **C** , q) =
-**T** (for `pat` ( **V** ) in **C** ({| yield `exp` ( **V** ) |}0) do groupJoin p 2 in e 2 on (e 3 `eop` e4) into p 3 ce,
+**T** (groupJoinOp p2 in e2 onWord (e3 eop e4) into p3 ce, **V** , **C** , q) =
+**T** (for `pat` ( **V** ) in **C** ({| yield `exp` ( **V** ) |}0) do groupJoin p2 in e2 on (e3 `eop` e4) into p3 ce,
 **V** , v.v, q)
 
 **T** ([<CustomOperator("Cop")>]cop arg, **V** , **C** , q) = Assert (q); [| cop arg, **C** (b.Yield `exp` ( **V** )) |] **V**
@@ -793,7 +795,7 @@ Assert (q); **CL** (cop arg; e, **V** , **C** (b.Return `exp` ( **V** )), false)
 **T** ([<CustomOperator("Cop")>]cop arg; e, **V** , **C** , q) =
 Assert (q); **CL** (cop arg; e, **V** , **C** (b.Yield `exp` ( **V** )), false)
 
-**T** (ce1; ce2, **V** , **C** , q) = **C** (b.Combine({| ce 1 |}0, b.Delay(fun () -> {| ce 2 |}0)))
+**T** (ce1; ce2, **V** , **C** , q) = **C** (b.Combine({| ce1 |}0, b.Delay(fun () -> {| ce2 |}0)))
 
 **T** (do! e;, **V** , **C** , q) = **T** (let! () = `src` (e) in b.Return(), **V** , **C** , q)
 
@@ -802,22 +804,22 @@ Assert (q); **CL** (cop arg; e, **V** , **C** (b.Yield `exp` ( **V** )), false)
 The following notes apply to the translations:
 
 - The lambda expression (fun f x -> b) is represented by x.b.
-- The auxiliary function `var` (p) denotes a set of variables that are introduced by a pattern p. For
+- The auxiliary function var (p) denotes a set of variables that are introduced by a pattern p. For
     example:
     var(x) = {x}, var((x,y)) = {x,y} or var(S (x,y)) = {x,y}
     where S is a type constructor.
 -  is an update operator for a set V to denote extended variable spaces. It updates the existing
     variables. For example, {x,y}  var((x,z)) becomes {x,y,z} where the second x replaces the
     first x.
-- The auxiliary function `pat` ( **V** ) denotes a pattern tuple that represents a set of variables in **V**. For
+- The auxiliary function pat ( **V** ) denotes a pattern tuple that represents a set of variables in **V**. For
     example, pat({x,y}) becomes (x,y), where x and y represent pattern expressions.
-- The auxiliary function `exp` ( **V** ) denotes a tuple expression that represents a set of variables in **V**.
-    For example, `exp` ({x,y}) becomes (x,y), where x and y represent variable expressions.
+- The auxiliary function exp ( **V** ) denotes a tuple expression that represents a set of variables in **V**.
+    For example, exp ({x,y}) becomes (x,y), where x and y represent variable expressions.
 
 
-- The auxiliary function `src` (e) denotes b.Source(e) if the innermost ForEach is from the user
+- The auxiliary function src (e) denotes b.Source(e) if the innermost ForEach is from the user
     code instead of generated by the translation, and a builder b contains a Source method.
-    Otherwise, `src` (e) denotes e.
+    Otherwise, src (e) denotes e.
 - Assert() checks whether a custom operator is allowed. If not, an error message is reported.
     Custom operators may not be used within try/with, try/finally, if/then/else, use, match, or
     sequential execution expressions such as (e1;e2). For example, you cannot use if/then/else in
@@ -832,52 +834,37 @@ The following notes apply to the translations:
     IsLikeGroupJoin=true, JoinConditionWord="on")>] declares “groupJoin” and “on”.
 - The auxiliary translation **CL** is defined as follows:
 
-```
+```fsgrammar
 CL (e1, V, e2, bind) where e1: the computation expression being translated
 V : a set of scoped variables
-e 2 : the expression that will be translated after e 1 is
-done
-bind: indicator if it is for Bind (true) or iterator
-(false).
+e2 : the expression that will be translated after e1 is done
+bind: indicator if it is for Bind (true) or iterator (false).
 ```
-```
+
 The following shows translations for the uses of CL in the preceding computation expressions:
-```
-```
+
+```fsgrammar
 CL (cop arg, V , e’, bind) = [| cop arg, e’ |] V
 CL ([<MaintainsVariableSpaceUsingBind=true>]cop arg into p; e, V , e’, bind) =
 T (let! p = e’ in e, [], v.v, true)
-```
-```
 CL (cop arg into p; e, V , e’, bind) = T (for p in e’ do e, [], v.v, true)
-```
-```
 CL ([<MaintainsVariableSpace=true>]cop arg; e, V , e’, bind) =
 CL (e, V , [| cop arg, e’ |] V , true)
 CL ([<MaintainsVariableSpaceUsingBind=true>]cop arg; e, V , e’, bind) =
 CL (e, V , [| cop arg, e’ |] V , true)
 CL (cop arg; e, V , e’, bind) = CL (e, [], [| cop arg, e’ |] V , false)
-```
-```
 CL (e, V , e’, true) = T (let! pat ( V ) = e’ in e, V , v.v, true)
-```
-```
 CL (e, V , e’, false) = T (for pat ( V ) in e’ do e, V , v.v, true)
 ```
 - The auxiliary translation [| e1, e2 |]V is defined as follows:
 
 [|[ e1, e2 |] **V** where e1: the custom operator available in a build
-e 2 : the context argument that will be passed to a custom operator
+e2 : the context argument that will be passed to a custom operator
 **V** : a list of bound variables
 
-```
+```fsgrammar
 [|[<CustomOperator(" Cop")>] cop [<ProjectionParameter>] arg, e |] V =
-```
-
-```
 b.Cop (e, fun pat ( V) - > arg)
-```
-```
 [|[<CustomOperator("Cop")>] cop arg, e |] V = b.Cop (e, arg)
 ```
 - The final two translation rules (for do! e; and do! e;) apply only for the final expression in the
@@ -885,496 +872,461 @@ b.Cop (e, fun pat ( V) - > arg)
 
 The following attributes specify custom operations:
 
-- CustomOperationAttribute indicates that a member of a builder type implements a custom
+- `CustomOperationAttribute` indicates that a member of a builder type implements a custom
     operation in a computation expression. The attribute has one parameter: the name of the
     custom operation. The operation can have the following properties:
-    - MaintainsVariableSpace indicates that the custom operation maintains the variable space of
+    - `MaintainsVariableSpace` indicates that the custom operation maintains the variable space of
        a computation expression.
-    - MaintainsVariableSpaceUsingBind indicates that the custom operation maintains the
+    - `MaintainsVariableSpaceUsingBind` indicates that the custom operation maintains the
        variable space of a computation expression through the use of a bind operation.
-    - AllowIntoPattern indicates that the custom operation supports the use of ‘into’ immediately
+    - `AllowIntoPattern` indicates that the custom operation supports the use of ‘into’ immediately
        following the operation in a computation expression to consume the result of the operation.
-    - IsLikeJoin indicates that the custom operation is similar to a join in a sequence
+    - `IsLikeJoin` indicates that the custom operation is similar to a join in a sequence
        computation, which supports two inputs and a correlation constraint.
-    - IsLikeGroupJoin indicates that the custom operation is similar to a group join in a sequence
+    - `IsLikeGroupJoin` indicates that the custom operation is similar to a group join in a sequence
        computation, which support two inputs and a correlation constraint, and generates a group.
-    - JoinConditionWord indicates the names used for the ‘on’ part of the custom operator for
+    - `JoinConditionWord` indicates the names used for the ‘on’ part of the custom operator for
        join-like operators.
-- ProjectionParameterAttribute indicates that, when a custom operation is used in a
+- `ProjectionParameterAttribute` indicates that, when a custom operation is used in a
     computation expression, a parameter is automatically parameterized by the variable space of
     the computation expression.
+
+<!-- end of weird section -->
 
 The following examples show how the translation works. Assume the following simple sequence
 builder:
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-member __.Yield (item:'a) : seq<'a> = seq { yield item }
-```
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Yield (item:'a) : seq<'a> = seq { yield item }
+
 let myseq = SimpleSequenceBuilder()
 ```
 Then, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-yield i*i
-}
+    for i in 1 .. 10 do
+    yield i*i
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.For([1..10], fun i ->
-b.Yield(i*i))
+    b.Yield(i*i))
 ```
 
-CustomOperationAttribute allows us to define custom operations. For example, the simple sequence
+`CustomOperationAttribute` allows us to define custom operations. For example, the simple sequence
 builder can have a custom operator, “where”:
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-member __.Yield (item:'a) : seq<'a> = seq { yield item }
-[<CustomOperation("where")>]
-member __.Where (source : seq<'a>, f: 'a -> bool) : seq<'a> = Seq.filter f source
-```
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Yield (item:'a) : seq<'a> = seq { yield item }
+    [<CustomOperation("where")>]
+    member __.Where (source : seq<'a>, f: 'a -> bool) : seq<'a> = Seq.filter f source
+
 let myseq = SimpleSequenceBuilder()
 ```
 Then, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-where (fun x -> x > 5)
-}
+    for i in 1 .. 10 do
+    where (fun x -> x > 5)
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
-b.Where(
-b.For([1..10], fun i ->
-b.Yield (i)),
-fun x -> x > 5)
+    b.Where(
+        b.For([1..10], fun i ->
+            b.Yield (i)),
+        fun x -> x > 5)
 ```
-ProjectionParameterAttribute automatically adds a parameter from the variable space of the
-computation expression. For example, ProjectionParameterAttribute can be attached to the second
-argument of the where operator:
+`ProjectionParameterAttribute` automatically adds a parameter from the variable space of the
+computation expression. For example, `ProjectionParameterAttribute` can be attached to the second
+argument of the `where` operator:
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-member __.Yield (item:'a) : seq<'a> = seq { yield item }
-[<CustomOperation("where")>]
-member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
-Seq.filter f source
-```
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Yield (item:'a) : seq<'a> = seq { yield item }
+    [<CustomOperation("where")>]
+    member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
+        Seq.filter f source
+
 let myseq = SimpleSequenceBuilder()
 ```
 Then, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-where (i > 5)
-}
+    for i in 1 .. 10 do
+    where (i > 5)
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.Where(
+    b.For([1..10], fun i ->
+        b.Yield (i)),
+    fun i -> i > 5)
 ```
-
-```
-b.For([1..10], fun i ->
-b.Yield (i)),
-fun i -> i > 5)
-```
-ProjectionParameterAttribute is useful when a let binding appears between ForEach and the
+`ProjectionParameterAttribute` is useful when a let binding appears between `ForEach` and the
 custom operators. For example, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-let j = i * i
-where (i > 5 && j < 49)
-}
+    for i in 1 .. 10 do
+    let j = i * i
+    where (i > 5 && j < 49)
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.Where(
-b.For([1..10], fun i ->
-let j = i * i
-b.Yield (i,j)),
-fun (i,j) -> i > 5 && j < 49)
+    b.For([1..10], fun i ->
+        let j = i * i
+        b.Yield (i,j)),
+    fun (i,j) -> i > 5 && j < 49)
 ```
-Without ProjectionParameterAttribute, a user would be required to write “fun (i,j) ->” explicitly.
+Without `ProjectionParameterAttribute`, a user would be required to write “`fun (i,j) ->`” explicitly.
 
-Now, assume that we want to write the condition “where (i > 5 && j < 49)” in the following
+Now, assume that we want to write the condition “`where (i > 5 && j < 49)`” in the following
 syntax:
 
-```
+```fsharp
 where (i > 5)
 where (j < 49)
 ```
-To support this style, the where custom operator should produce a computation that has the same
-variable space as the input computation. That is, j should be available in the second where. The
-following example uses the MaintainsVariableSpace property on the custom operator to specify this
+To support this style, the `where` custom operator should produce a computation that has the same
+variable space as the input computation. That is, `j` should be available in the second `where`. The
+following example uses the `MaintainsVariableSpace` property on the custom operator to specify this
 behavior:
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-member __.Yield (item:'a) : seq<'a> = seq { yield item }
-[<CustomOperation("where", MaintainsVariableSpace=true)>]
-member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
-Seq.filter f source
-```
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Yield (item:'a) : seq<'a> = seq { yield item }
+    [<CustomOperation("where", MaintainsVariableSpace=true)>]
+    member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
+        Seq.filter f source
+
 let myseq = SimpleSequenceBuilder()
 ```
 Then, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-let j = i * i
-where (i > 5)
-where (j < 49)
-```
-
-```
-}
+    for i in 1 .. 10 do
+    let j = i * i
+    where (i > 5)
+    where (j < 49)
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.Where(
-b.Where(
-b.For([1..10], fun i ->
-let j = i * i
-b.Yield (i,j)),
-fun (i,j) -> i > 5),
-fun (i,j) -> j < 49)
+    b.Where(
+        b.For([1..10], fun i ->
+            let j = i * i
+            b.Yield (i,j)),
+        fun (i,j) -> i > 5),
+    fun (i,j) -> j < 49)
 ```
 When we may not want to produce the variable space but rather want to explicitly express the chain
-of the where operator, we can design this simple sequence builder in a slightly different way. For
+of the `where` operator, we can design this simple sequence builder in a slightly different way. For
 example, we can express the same expression in the following way:
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-where (i > 5) into j
-where (j*j < 49)
-}
+    for i in 1 .. 10 do
+    where (i > 5) into j
+    where (j*j < 49)
+    }
 ```
-In this example, instead of having a let-binding (for j in the previous example) and passing variable
-space (including j) down to the chain, we can introduce a special syntax that captures a value into a
+In this example, instead of having a let-binding (for `j` in the previous example) and passing variable
+space (including `j`) down to the chain, we can introduce a special syntax that captures a value into a
 pattern variable and passes only this variable down to the chain, which is arguably more readable.
-For this case, AllowIntoPattern allows the custom operation to have an into syntax:
+For this case, `AllowIntoPattern` allows the custom operation to have an `into` syntax:
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-member __.Yield (item:'a) : seq<'a> = seq { yield item }
-```
-```
-[<CustomOperation("where", AllowIntoPattern=true)>]
-member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
-Seq.filter f source
-```
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Yield (item:'a) : seq<'a> = seq { yield item }
+
+    [<CustomOperation("where", AllowIntoPattern=true)>]
+    member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
+        Seq.filter f source
+
 let myseq = SimpleSequenceBuilder()
 ```
 Then, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-where (i > 5) into j
-where (j*j < 49)
-}
+    for i in 1 .. 10 do
+    where (i > 5) into j
+    where (j*j < 49)
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.Where(
-b.For(
+    b.For(
+        b.Where(
+            b.For([1..10], fun i -> b.Yield (i))
+            fun i -> i>5),
+        fun j -> b.Yield (j)),
+    fun j -> j*j < 49)
 ```
+Note that the `into` keyword is not customizable, unlike `join` and `on`.
 
-```
-b.Where(
-b.For([1..10], fun i -> b.Yield (i))
-fun i -> i>5),
-fun j -> b.Yield (j)),
-fun j -> j*j < 49)
-```
-Note that the into keyword is not customizable, unlike join and on.
-
-In addition to MaintainsVariableSpace, MaintainsVariableSpaceUsingBind is provided to pass
+In addition to `MaintainsVariableSpace`, `MaintainsVariableSpaceUsingBind` is provided to pass
 variable space down to the chain in a different way. For example:
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-member __.Return (item:'a) : seq<'a> = seq { yield item }
-member __.Bind (value , cont) = cont value
-```
-```
-[<CustomOperation("where", MaintainsVariableSpaceUsingBind=true,
-AllowIntoPattern=true)>]
-member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
-Seq.filter f source
-```
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Return (item:'a) : seq<'a> = seq { yield item }
+    member __.Bind (value , cont) = cont value
+    [<CustomOperation("where", MaintainsVariableSpaceUsingBind=true, AllowIntoPattern=true)>]
+    member __.Where (source: seq<'a>, [<ProjectionParameter>]f: 'a -> bool) : seq<'a> =
+        Seq.filter f source
+
 let myseq = SimpleSequenceBuilder()
 ```
-The presence of MaintainsVariableSpaceUsingBindAttribute requires Return and Bind methods
+The presence of `MaintainsVariableSpaceUsingBindAttribute` requires `Return` and `Bind` methods
 during the translation.
 
 Then, the expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-where (i > 5 && i*i < 49) into j
-return j
-}
+    for i in 1 .. 10 do
+    where (i > 5 && i*i < 49) into j
+    return j
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.Bind(
-b.Where(B.For([1..10], fun i -> b.Return (i)),
-fun i -> i > 5 && i*i < 49),
-fun j -> b.Return (j))
+    b.Where(B.For([1..10], fun i -> b.Return (i)),
+        fun i -> i > 5 && i*i < 49),
+    fun j -> b.Return (j))
 ```
-where Bind is called to capture the pattern variable j. Note that For and Yield are called to capture
-the pattern variable when MaintainsVariableSpace is used.
+where `Bind` is called to capture the pattern variable `j`. Note that `For` and `Yield` are called to capture
+the pattern variable when `MaintainsVariableSpace` is used.
 
-Certain properties on the CustomOperationAttribute introduce join-like operators. The following
-example shows how to use the IsLikeJoin property.
+Certain properties on the `CustomOperationAttribute` introduce join-like operators. The following
+example shows how to use the `IsLikeJoin` property.
 
-```
+```fsharp
 type SimpleSequenceBuilder() =
-member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
-seq { for v in source do yield! body v }
-```
+    member __.For (source : seq<'a>, body : 'a -> seq<'b>) =
+        seq { for v in source do yield! body v }
+    member __.Yield (item:'a) : seq<'a> = seq { yield item }
+    [<CustomOperation("merge", IsLikeJoin=true, JoinConditionWord="whenever")>]
+    member __.Merge (src1:seq<'a>, src2:seq<'a>, ks1, ks2, ret) =
+        seq { for a in src1 do
+            for b in src2 do
+            if ks1 a = ks2 b then yield((ret a ) b)
+        }   
 
-```
-member __.Yield (item:'a) : seq<'a> = seq { yield item }
-```
-```
-[<CustomOperation("merge", IsLikeJoin=true, JoinConditionWord="whenever")>]
-member __.Merge (src1:seq<'a>, src2:seq<'a>, ks1, ks2, ret) =
-seq { for a in src1 do
-for b in src2 do
-if ks1 a = ks2 b then yield((ret a ) b)
-}
-```
-```
 let myseq = SimpleSequenceBuilder()
 ```
-IsLikeJoin indicates that the custom operation is similar to a join in a sequence computation; that
+`IsLikeJoin` indicates that the custom operation is similar to a join in a sequence computation; that
 is, it supports two inputs and a correlation constraint.
 
 The expression
 
-```
+```fsharp
 myseq {
-for i in 1 .. 10 do
-merge j in [5 .. 15] whenever (i = j)
-yield j
-}
+    for i in 1 .. 10 do
+    merge j in [5 .. 15] whenever (i = j)
+    yield j
+    }
 ```
 translates to
 
-```
+```fsharp
 let b = myseq
 b.For(
-b.Merge([1..10], [5..15],
-fun i -> i, fun j -> j,
-fun i -> fun j -> (i,j)),
-fun j -> b.Yield (j))
+    b.Merge([1..10], [5..15],
+            fun i -> i, fun j -> j,
+            fun i -> fun j -> (i,j)),
+    fun j -> b.Yield (j))
 ```
 This translation implicitly places type constraints on the expected form of the builder methods. For
-example, for the async builder found in the FSharp.Control library, the translation phase
+example, for the `async` builder found in the `FSharp.Control` library, the translation phase
 corresponds to implementing a builder of a type that has the following member signatures:
 
-```
+```fsharp
 type AsyncBuilder with
-member For: seq<'T> * ('T -> Async<unit>) -> Async<unit>
-member Zero : unit -> Async<unit>
-member Combine : Async<unit> * Async<'T> -> Async<'T>
-member While : (unit -> bool) * Async<unit> -> Async<unit>
-member Return : 'T -> Async<'T>
-member Delay : (unit -> Async<'T>) -> Async<'T>
-member Using: 'T * ('T -> Async<'U>) -> Async<'U>
-when 'U :> System.IDisposable
-member Bind: Async<'T> * ('T -> Async<'U>) -> Async<'U>
-member TryFinally: Async<'T> * (unit -> unit) -> Async<'T>
-member TryWith: Async<'T> * (exn -> Async<'T>) -> Async<'T>
+    member For: seq<'T> * ('T -> Async<unit>) -> Async<unit>
+    member Zero : unit -> Async<unit>
+    member Combine : Async<unit> * Async<'T> -> Async<'T>
+    member While : (unit -> bool) * Async<unit> -> Async<unit>
+    member Return : 'T -> Async<'T>
+    member Delay : (unit -> Async<'T>) -> Async<'T>
+    member Using: 'T * ('T -> Async<'U>) -> Async<'U>
+        when 'U :> System.IDisposable
+    member Bind: Async<'T> * ('T -> Async<'U>) -> Async<'U>
+    member TryFinally: Async<'T> * (unit -> unit) -> Async<'T>
+    member TryWith: Async<'T> * (exn -> Async<'T>) -> Async<'T>
 ```
 The following example shows a common approach to implementing a new computation expression
 builder for a monad. The example uses computation expressions to define computations that can be
 partially run by executing them step-by-step, for example, up to a time limit.
 
-```
+```fsharp
 /// Computations that can cooperatively yield by returning a continuation
 type Eventually<'T> =
-| Done of 'T
-```
-
-| NotYetDone of (unit -> Eventually<'T>)
+    | Done of 'T
+    | NotYetDone of (unit -> Eventually<'T>)
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Eventually =
 
-/// The bind for the computations. Stitch 'k' on to the end of the computation.
-/// Note combinators like this are usually written in the reverse way,
-/// for example,
-/// e |> bind k
-let rec bind k e =
-match e with
-| Done x -> NotYetDone (fun () -> k x)
-| NotYetDone work -> NotYetDone (fun () -> bind k (work()))
+    /// The bind for the computations. Stitch 'k' on to the end of the computation.
+    /// Note combinators like this are usually written in the reverse way,
+    /// for example,
+    /// e |> bind k
+    let rec bind k e =
+        match e with
+        | Done x -> NotYetDone (fun () -> k x)
+        | NotYetDone work -> NotYetDone (fun () -> bind k (work()))
 
-/// The return for the computations.
-let result x = Done x
+    /// The return for the computations.
+    let result x = Done x
 
-type OkOrException<'T> =
-| Ok of 'T
-| Exception of System.Exception
+    type OkOrException<'T> =
+        | Ok of 'T
+        | Exception of System.Exception
 
-/// The catch for the computations. Stitch try/with throughout
-/// the computation and return the overall result as an OkOrException.
-let rec catch e =
-match e with
-| Done x -> result (Ok x)
-| NotYetDone work ->
-NotYetDone (fun () ->
-let res = try Ok(work()) with | e -> Exception e
-match res with
-| Ok cont -> catch cont // note, a tailcall
-| Exception e -> result (Exception e))
+    /// The catch for the computations. Stitch try/with throughout
+    /// the computation and return the overall result as an OkOrException.
+    let rec catch e =
+        match e with
+        | Done x -> result (Ok x)
+        | NotYetDone work ->
+            NotYetDone (fun () ->
+                let res = try Ok(work()) with | e -> Exception e
+                match res with
+                | Ok cont -> catch cont // note, a tailcall
+                | Exception e -> result (Exception e))
 
-/// The delay operator.
-let delay f = NotYetDone (fun () -> f())
+    /// The delay operator.
+    let delay f = NotYetDone (fun () -> f())
 
-/// The stepping action for the computations.
-let step c =
-match c with
-| Done _ -> c
-| NotYetDone f -> f ()
+    /// The stepping action for the computations.
+    let step c =
+        match c with
+        | Done _ -> c
+        | NotYetDone f -> f ()
 
-// The rest of the operations are boilerplate.
+    // The rest of the operations are boilerplate.
 
-/// The tryFinally operator.
-/// This is boilerplate in terms of "result", "catch" and "bind".
-let tryFinally e compensation =
-catch (e)
-|> bind (fun res -> compensation();
-match res with
-| Ok v -> result v
-| Exception e -> raise e)
+    /// The tryFinally operator.
+    /// This is boilerplate in terms of "result", "catch" and "bind".
+    let tryFinally e compensation =
+        catch (e)
+        |> bind (fun res ->
+            compensation();
+            match res with
+            | Ok v -> result v
+            | Exception e -> raise e)
 
-/// The tryWith operator.
-/// This is boilerplate in terms of "result", "catch" and "bind".
-let tryWith e handler =
-catch e
-|> bind (function Ok v -> result v | Exception e -> handler e)
+    /// The tryWith operator.
+    /// This is boilerplate in terms of "result", "catch" and "bind".
+    let tryWith e handler =
+        catch e
+        |> bind (function Ok v -> result v | Exception e -> handler e)
 
-/// The whileLoop operator.
+    /// The whileLoop operator.
+    /// This is boilerplate in terms of "result" and "bind".
+    let rec whileLoop gd body =
+        if gd() then body |> bind (fun v -> whileLoop gd body)
+        else result ()
 
+    /// The sequential composition operator
+    /// This is boilerplate in terms of "result" and "bind".
+    let combine e1 e2 =
+        e1 |> bind (fun () -> e2)
 
-```
-/// This is boilerplate in terms of "result" and "bind".
-let rec whileLoop gd body =
-if gd() then body |> bind (fun v -> whileLoop gd body)
-else result ()
-```
-```
-/// The sequential composition operator
-/// This is boilerplate in terms of "result" and "bind".
-let combine e1 e2 =
-e1 |> bind (fun () -> e2)
-```
-```
-/// The using operator.
-let using (resource: #System.IDisposable) f =
-tryFinally (f resource) (fun () -> resource.Dispose())
-```
-```
-/// The forLoop operator.
-/// This is boilerplate in terms of "catch", "result" and "bind".
-let forLoop (e:seq<_>) f =
-let ie = e.GetEnumerator()
-tryFinally (whileLoop (fun () -> ie.MoveNext())
-(delay (fun () -> let v = ie.Current in f v)))
-(fun () -> ie.Dispose())
-```
-```
+    /// The using operator.
+    let using (resource: #System.IDisposable) f =
+        tryFinally (f resource) (fun () -> resource.Dispose())
+
+    /// The forLoop operator.
+    /// This is boilerplate in terms of "catch", "result" and "bind".
+    let forLoop (e:seq<_>) f =
+        let ie = e.GetEnumerator()
+        tryFinally (whileLoop (fun () -> ie.MoveNext())
+                              (delay (fun () -> let v = ie.Current in f v)))
+                   (fun () -> ie.Dispose())
+
 // Give the mapping for F# computation expressions.
 type EventuallyBuilder() =
-member x.Bind(e,k) = Eventually.bind k e
-member x.Return(v) = Eventually.result v
-member x.ReturnFrom(v) = v
-member x.Combine(e1,e2) = Eventually.combine e1 e2
-member x.Delay(f) = Eventually.delay f
-member x.Zero() = Eventually.result ()
-member x.TryWith(e,handler) = Eventually.tryWith e handler
-member x.TryFinally(e,compensation) = Eventually.tryFinally e compensation
-member x.For(e:seq<_>,f) = Eventually.forLoop e f
-member x.Using(resource,e) = Eventually.using resource e
-```
-```
+    member x.Bind(e,k) = Eventually.bind k e
+    member x.Return(v) = Eventually.result v
+    member x.ReturnFrom(v) = v
+    member x.Combine(e1,e2) = Eventually.combine e1 e2
+    member x.Delay(f) = Eventually.delay f
+    member x.Zero() = Eventually.result ()
+    member x.TryWith(e,handler) = Eventually.tryWith e handler
+    member x.TryFinally(e,compensation) = Eventually.tryFinally e compensation
+    member x.For(e:seq<_>,f) = Eventually.forLoop e f
+    member x.Using(resource,e) = Eventually.using resource e
+
 let eventually = new EventuallyBuilder()
 ```
 After the computations are defined, they can be built by using eventually { ... }:
 
-```
+```fsharp
 let comp =
-eventually { for x in 1 .. 2 do
-printfn " x = %d" x
-return 3 + 4 }
+    eventually {
+        for x in 1 .. 2 do
+            printfn " x = %d" x
+        return 3 + 4 }
 ```
 These computations can now be stepped. For example:
 
-```
+```fsharp
 let step x = Eventually.step x
-comp |> step
+    comp |> step
 // returns "NotYetDone <closure>"
-```
-```
+
 comp |> step |> step
 // prints "x = 1"
 // returns "NotYetDone <closure>"
-```
-```
+
 comp |> step |> step |> step |> step |> step |> step
 // prints "x = 1"
 // prints "x = 2"
 // returns “NotYetDone <closure>”
-```
 
-```
 comp |> step |> step |> step |> step |> step |> step |> step |> step
 // prints "x = 1"
 // prints "x = 2"
@@ -1384,70 +1336,43 @@ comp |> step |> step |> step |> step |> step |> step |> step |> step
 
 An expression in one of the following forms is a _sequence expression_ :
 
-```
+```fsgrammar
 seq { comp-expr }
 seq { short-comp-expr }
 ```
 For example:
 
-```
+```fsharp
 seq { for x in [ 1; 2; 3 ] do for y in [5; 6] do yield x + y }
 seq { for x in [ 1; 2; 3 ] do yield x + x }
 seq { for x in [ 1; 2; 3 ] -> x + x }
 ```
 Logically speaking, sequence expressions can be thought of as computation expressions with a
-builder of type FSharp.Collections.SeqBuilder. This type can be considered to be defined as
+builder of type `FSharp.Collections.SeqBuilder`. This type can be considered to be defined as
 follows:
 
-```
+```fsharp
 type SeqBuilder() =
-member x.Yield (v) = Seq.singleton v
-member x.YieldFrom (s:seq<_>) = s
-member x.Return (():unit) = Seq.empty
-member x.Combine (xs1,xs2) = Seq.append xs1 xs2
-member x.For (xs,g) = Seq.collect f xs
-member x.While (guard,body) = SequenceExpressionHelpers.EnumerateWhile guard body
-member x.TryFinally (xs,compensation) =
-SequenceExpressionHelpers.EnumerateThenFinally xs compensation
-member x.Using (resource,xs) = SequenceExpressionHelpers.EnumerateUsing resource xs
+    member x.Yield (v) = Seq.singleton v
+    member x.YieldFrom (s:seq<_>) = s
+    member x.Return (():unit) = Seq.empty
+    member x.Combine (xs1,xs2) = Seq.append xs1 xs2
+    member x.For (xs,g) = Seq.collect f xs
+    member x.While (guard,body) = SequenceExpressionHelpers.EnumerateWhile guard body
+    member x.TryFinally (xs,compensation) =
+        SequenceExpressionHelpers.EnumerateThenFinally xs compensation
+    member x.Using (resource,xs) = SequenceExpressionHelpers.EnumerateUsing resource xs
 ```
-However, this builder type is not actually defined in the F# library. Instead, sequence expressions are
-elaborated directly as follows:
+> Note that this builder type is not actually defined in the F# library. Instead, sequence expressions are
+elaborated directly. For details, see page 79 of the old pdf spec.
 
-```
-{| yield expr |}  Seq.singleton expr
-{| yield! expr |}  expr
-{| expr 1 ; expr 2 |}  Seq.append {| expr 1 |} {| expr 2 |}
-{| for pat in expr 1 - > expr 2 |}  Seq.map (fun pat - > {| expr 2 |}) expr 1
-{| for pat in expr 1 do expr 2 |}  Seq.collect (fun pat - > {| expr 2 |}) expr 1
-{| while expr 1 do expr 2 |}  RuntimeHelpers.EnumerateWhile
-(fun () - > expr 1 )
-{| expr 2 |})
-{| try expr 1 finally expr 2 |}  RuntimeHelpers.EnumerateThenFinally
-(| expr 1 |})
-(fun () - > expr 2 )
-{| use v = expr 1 in expr 2 |}  let v = expr 1 in
-RuntimeHelpers.EnumerateUsing v {| expr 2 |}
-{| let v = expr 1 in expr 2 |}  let v = expr 1 in {| expr 2 |}
-{| match expr with pati - > expri |} .match expr with pati - > {| cexpri |}
-{| expr 1 |}  expr 1 ; Seq.empty
-{| if expr then expr 0 |}C  if expr then {| expr 0 |}C else Seq.empty
-{| if expr then expr 0 else expr 1 |}  if expr then {| expr 0 |}C else {| expr 1 |}C
-```
-Here the use of Seq and RuntimeHelpers refers to the corresponding functions in
-FSharp.Collections.Seq and FSharp.Core.CompilerServices.RuntimeHelpers respectively. This
-means that a sequence expression generates an object of type
-System.Collections.Generic.IEnumerable< `ty` > for some type `ty`. Such an object has a GetEnumerator
-
-
-method that returns a System.Collections.Generic.IEnumerator< `ty` > whose MoveNext, Current and
-Dispose methods implement an on-demand evaluation of the sequence expressions.
+<!-- Text skipped during conversion -->
 
 ### Range Expressions
 
 Expressions of the following forms are _range expressions_.
 
-```
+```fsgrammar
 { e1 .. e2 }
 { e1 .. e2 .. e3 }
 seq { e1 .. e2 }
@@ -1455,24 +1380,24 @@ seq { e1 .. e2 .. e3 }
 ```
 Range expressions generate sequences over a specified range. For example:
 
-```
+```fsgrammar
 seq { 1 .. 10 } // 1; 2; 3; 4; 5; 6; 7; 8; 9; 10
 seq { 1 .. 2 .. 10 } // 1; 3; 5; 7; 9
 ```
-Range expressions involving `expr 1` .. `expr 2` are translated to uses of the (..) operator, and those
-involving `expr 1` .. `expr 1` .. `expr 3` are translated to uses of the (.. ..) operator:
+Range expressions involving `expr1 .. expr2` are translated to uses of the `(..)` operator, and those
+involving `expr1 .. expr1 .. expr3` are translated to uses of the `(.. ..)` operator:
 
+```fsgrammar
+seq { e1 .. e2 } → ( .. ) e1 e2
+seq { e1 .. e2 .. e3 } → ( .. .. ) e1 e2 e3
 ```
-seq { e1 .. e2 } → ( .. ) e 1 e 2
-seq { e1 .. e2 .. e3 } → ( .. .. ) e 1 e 2 e 3
-```
-The default definition of these operators is in FSharp.Core.Operators. The ( `..` ) operator generates
-an IEnumerable<_> for the range of values between the start (`expr1`) and finish (`expr 2`) values, using
-an increment of 1 (as defined by FSharp.Core.LanguagePrimitives.GenericOne). The ( _.. .._ )
-operator generates an IEnumerable<_> for the range of values between the start (`expr1`) and finish
+The default definition of these operators is in `FSharp.Core.Operators`. The ( `..` ) operator generates
+an `IEnumerable<_>` for the range of values between the start (`expr1`) and finish (`expr2`) values, using
+an increment of 1 (as defined by `FSharp.Core.LanguagePrimitives.GenericOne`). The `(.. ..)`
+operator generates an `IEnumerable<_>` for the range of values between the start (`expr1`) and finish
 (`expr3`) values, using an increment of `expr2`.
 
-The seq keyword, which denotes the type of computation expression, can be omitted for simple
+The `seq` keyword, which denotes the type of computation expression, can be omitted for simple
 range expressions, but this is not recommended and might be deprecated in a future release. It is
 always preferable to explicitly mark the type of a computation expression.
 
@@ -1489,7 +1414,7 @@ elaborated as a simple for loop-expression ([§6.5.7](expressions.md#simple-for-
 
 A _list sequence expression_ is an expression in one of the following forms
 
-```
+```fsgrammar
 [ comp-expr ]
 [ short-comp-expr ]
 [ range-expr ]
@@ -1498,20 +1423,20 @@ In all cases `[ cexpr ]` elaborates to `FSharp.Collections.Seq.toList(seq { cexp
 
 For example:
 
-```
+```fsharp
 let x2 = [ yield 1; yield 2 ]
 ```
 
-```
+```fsharp
 let x3 = [ yield 1
-if System.DateTime.Now.DayOfWeek = System.DayOfWeek.Monday then
-yield 2]
+           if System.DateTime.Now.DayOfWeek = System.DayOfWeek.Monday then
+               yield 2]
 ```
 ### Arrays Sequence Expressions
 
 An expression in one of the following forms is an _array sequence expression_ :
 
-```
+```fsgrammar
 [| comp-expr |]
 [| short-comp-expr |]
 [| range-expr |]
@@ -1520,37 +1445,37 @@ In all cases `[| cexpr |]` elaborates to `FSharp.Collections.Seq.toArray(seq { c
 
 For example:
 
-```
+```fsharp
 let x2 = [| yield 1; yield 2 |]
 let x3 = [| yield 1
-if System.DateTime.Now.DayOfWeek = System.DayOfWeek.Monday then
-yield 2 |]
+    if System.DateTime.Now.DayOfWeek = System.DayOfWeek.Monday then
+        yield 2 |]
 ```
 ### Null Expressions
 
-An expression in the form null is a _null expression_. A null expression imposes a nullness constraint
-(§5.2.2, [§5.4.8](types-and-type-constraints.md#nullness)) on the initial type of the expression. The constraint ensures that the type directly
-supports the value null.
+An expression in the form `null` is a _null expression_. A null expression imposes a nullness constraint
+([§5.2.2](types-and-type-constraints.md#nullness-constraints), [§5.4.8](types-and-type-constraints.md#nullness)) on the initial type of the expression. The constraint ensures that the type directly
+supports the value `null`.
 
 Null expressions are a primitive elaborated form.
 
 ### 'printf' Formats
 
-Format strings are strings with % markers as format placeholders. Format strings are analyzed at
+Format strings are strings with `%` markers as format placeholders. Format strings are analyzed at
 compile time and annotated with static and runtime type information as a result of that analysis.
-They are typically used with one of the functions printf, fprintf, sprintf, or bprintf in the
-FSharp.Core.Printf module. Format strings receive special treatment in order to type check uses of
+They are typically used with one of the functions `printf`, `fprintf`, `sprintf`, or `bprintf` in the
+`FSharp.Core.Printf` module. Format strings receive special treatment in order to type check uses of
 these functions more precisely.
 
 More concretely, a constant string is interpreted as a printf-style format string if it is expected to
-have the type FSharp.Core.PrintfFormat<'Printer,'State,'Residue,'Result,'Tuple>. The string is
-statically analyzed to resolve the generic parameters of the PrintfFormat type, of which 'Printer
-and 'Tuple are the most interesting:
+have the type `FSharp.Core.PrintfFormat<'Printer,'State,'Residue,'Result,'Tuple>`. The string is
+statically analyzed to resolve the generic parameters of the `PrintfFormat type`, of which `'Printer`
+and `'Tuple` are the most interesting:
 
-- 'Printer is the function type that is generated by applying a printf-like function to the format
+- `'Printer` is the function type that is generated by applying a printf-like function to the format
     string.
-- 'Tuple is the type of the tuple of values that are generated by treating the string as a generator
-    (for example, when the format string is used with a function similar to scanf in other
+- `'Tuple` is the type of the tuple of values that are generated by treating the string as a generator
+    (for example, when the format string is used with a function similar to `scanf` in other
     languages).
 
 A format placeholder has the following shape:
@@ -1559,50 +1484,33 @@ A format placeholder has the following shape:
 
 where:
 
+`flags` are 0 , -, +, and the space character. The # flag is invalid and results in a compile-time error.
 
-`flags`
+`width` is an integer that specifies the minimum number of characters in the result.
 
-```
-Are 0 , -, +, and the space character. The # flag is invalid and results in a compile-time error.
-```
-`width`
+`precision` is the number of digits to the right of the decimal point for a floating-point type..
 
-```
-Is an integer that specifies the minimum number of characters in the result.
-```
-`precision`
+`type` is as shown in the following table.
 
-```
-Is the number of digits to the right of the decimal point for a floating-point type..
-```
-`type`
+| Placeholder string | Type |
+| --- | --- |
+| `%b` | `bool` |
+| `%s` | `string` |
+| `%c` | `char` |
+| `%d, %i` | One of the basic integer types: `byte`, `sbyte`, `int16`, `uint16`, `int32`, `uint32`, `int64`, `uint64`, `nativeint`, or `unativeint` |
+| `%u` | Basic integer type formatted as an unsigned integer |
+| `%x` | Basic integer type formatted as an unsigned hexadecimal integer with lowercase letters a through f. |
+| `%X` | Basic integer type formatted as an unsigned hexadecimal integer with uppercase letters A through F. |
+| `%o` | Basic integer type formatted as an unsigned octal integer. |
+| `%e, %E, %f, %F, %g, %G` | `float` or `float32` |
+| `%M` | `System.Decimal` |
+| `%O` | `System.Object` |
+| `%A` | Fresh variable type `'T` |
+| `%a` | Formatter of type `'State -> 'T -> 'Residue` for a fresh variable type `'T` |
+| `%t` | Formatter of type `'State -> 'Residue` |
 
-```
-Is as shown in the following table.
-Placeholder string Type
-%b bool
-%s string
-%c char
-%d, %i One of the basic integer types:
-byte, sbyte, int16, uint16, int32, uint32, int64, uint64, nativeint, or
-unativeint
-%u Basic integer type formatted as an unsigned integer
-%x Basic integer type formatted as an unsigned hexadecimal integer with lowercase
-letters a through f.
-```
-%X (^) Basic integer type formatted as an unsigned hexadecimal integer with uppercase
-letters A through F.
-%o Basic integer type formatted as an unsigned octal integer.
-%e, %E, %f, %F, %g, %G float or float32
-%M System.Decimal
-%O System.Object
-%A Fresh variable type 'T
-%a Formatter of type 'State -> 'T -> 'Residue for a fresh variable type 'T
-%t Formatter of type 'State -> 'Residue
-For example, the format string "%s %d %s" is given the type PrintfFormat<(string -> int -> string
-
-- > 'd), 'b, 'c, 'd,(string * int * string)> for fresh variable types 'b, 'c, 'd. Applying printf
-to it yields a function of type string -> int -> string -> unit.
+For example, the format string "`%s %d %s`" is given the type `PrintfFormat<(string -> int -> string -> 'd), 'b, 'c, 'd, (string * int * string)>` for fresh variable types `'b`, `'c`, `'d`. Applying `printf`
+to it yields a function of type `string -> int -> string -> unit`.
 
 ## Application Expressions
 
@@ -1611,42 +1519,46 @@ to it yields a function of type string -> int -> string -> unit.
 Application expressions involve variable names, dot-notation lookups, function applications, method
 applications, type applications, and item lookups, as shown in the following table.
 
-**Expression Description**
+| Expression | Description |
+| --- | --- |
+| `long-ident-or-op` | Long-ident lookup expression |
+| `expr '.' long-ident-or-op` | Dot lookup expression |
+| `expr expr` | Function or member application expression |
+| `expr(expr)` | High precedence function or member application expression |
+| `expr<types>` | Type application expression |
+| `expr< >` | Type application expression with an empty type list |
+| `type expr` | Simple object expression |
 
-`long-ident-or-op` (^) Long-ident lookup expression
-`expr '.' long-ident-or-op` (^) Dot lookup expression
-`expr expr` (^) Function or member application expression
-
-
-**Expression Description**
-
-`expr(expr)` (^) High precedence function or member application
-expression
-`expr<types>` (^) Type application expression
-`expr< >` (^) Type application expression with an empty type list
-`type expr` (^) Simple object expression
 The following are examples of application expressions:
+
+```fsharp
 System.Math.PI
 System.Math.PI.ToString()
 (3 + 4).ToString()
 System.Environment.GetEnvironmentVariable("PATH").Length
 System.Console.WriteLine("Hello World")
-Application expressions may start with object construction expressions that do not include the new
+```
+Application expressions may start with object construction expressions that do not include the `new`
 keyword:
+```fsharp
 System.Object()
 System.Collections.Generic.List<int>(10)
 System.Collections.Generic.KeyValuePair(3,"Three")
 System.Object().GetType()
 System.Collections.Generic.Dictionary<int,int>(10).[1]
-If the `long-ident-or-op` starts with the special pseudo-identifier keyword global, F# resolves the
-identifier with respect to the global namespace—that is, ignoring all open directives (see [§14.2](inference-procedures.md#resolving-application-expressions)). For
-example:
+```
+If the `long-ident-or-op` starts with the special pseudo-identifier keyword `global`, F# resolves the
+identifier with respect to the global namespace — that is, ignoring all `open` directives (see [§14.2](inference-procedures.md#resolving-application-expressions)). For example:
+```fsharp
 global.System.Math.PI
-is resolved to System.Math.PI ignoring all open directives.
+```
+is resolved to `System.Math.PI` ignoring all `open` directives.
+
 The checking of application expressions is described in detail as an algorithm in [§14.2](inference-procedures.md#resolving-application-expressions). To check an
 application expression, the expression form is repeatedly decomposed into a _lead_ expression `expr`
-and a list of projections projs through the use of _Unqualified Lookup_ ([§14.2.1](inference-procedures.md#unqualified-lookup)). This in turn uses
+and a list of projections `projs` through the use of _Unqualified Lookup_ ([§14.2.1](inference-procedures.md#unqualified-lookup)). This in turn uses
 procedures such as _Expression-Qualified Lookup_ and _Method Application Resolution_.
+
 As described in [§14.2](inference-procedures.md#resolving-application-expressions), checking an application expression results in an elaborated expression that
 contains a series of lookups and method calls. The elaborated expression may include:
 
@@ -1664,41 +1576,42 @@ Additional constructs may be inserted when resolving method calls into simpler p
 
 - The use of a method or value as a first-class function may result in a function expression.
 
-```
-For example, System.Environment.GetEnvironmentVariable elaborates to:
-(fun v -> System.Environment.GetEnvironmentVariable(v))
-for some fresh variable v.
-```
+    For example, `System.Environment.GetEnvironmentVariable` elaborates to:
+    `(fun v -> System.Environment.GetEnvironmentVariable(v))`
+    for some fresh variable `v`.
+
 - The use of post-hoc property setters results in the insertion of additional assignment and
     sequential execution expressions in the elaborated expression.
-    For example, new System.Windows.Forms.Form(Text="Text") elaborates to
-    let v = new System.Windows.Forms.Form() in v.set_Text("Text"); v
-    for some fresh variable v.
-- The use of optional arguments results in the insertion of Some(_) and None data constructions in
+
+    For example, `new System.Windows.Forms.Form(Text="Text")` elaborates to
+    `let v = new System.Windows.Forms.Form() in v.set_Text("Text"); v`
+    for some fresh variable `v`.
+
+- The use of optional arguments results in the insertion of `Some(_)` and `None` data constructions in
     the elaborated expression.
 
 For uses of active pattern results (see [§10.2.4](namespaces-and-modules.md#active-pattern-definitions-in-modules)), for result `i` in an active pattern that has `N` possible
-results of types `types` , the elaborated expression form is a union case Choice `N` Of `i` of type
+results of types `types` , the elaborated expression form is a union case `ChoiceNOfi` of type
 `FSharp.Core.Choice<types>`.
 
 ### Object Construction Expressions
 
-An expression of the following form is an _object construction expression_ :
+An expression of the following form is an _object construction expression_:
 
-```
-new ty ( e 1 ... en )
+```fsgrammar
+new ty ( e1 ... en )
 ```
 An object construction expression constructs a new instance of a type, usually by calling a
 constructor method on the type. For example:
 
-```
+```fsharp
 new System.Object()
 new System.Collections.Generic.List<int>()
 new System.Windows.Forms.Form (Text="Hello World")
 new 'T()
 ```
-The initial type of the expression is first asserted to be equal to `ty`. The type ty must not be an array,
-record, union or tuple type. If ty is a named class or struct type:
+The initial type of the expression is first asserted to be equal to `ty`. The type `ty` must not be an array,
+record, union or tuple type. If `ty` is a named class or struct type:
 
 - `ty` must not be abstract.
 - If `ty` is a struct type, `n` is 0 , and `ty` does not have a constructor method that takes zero
@@ -1710,9 +1623,13 @@ record, union or tuple type. If ty is a named class or struct type:
 If `ty` is a delegate type the expression is a _delegate implementation expression_.
 
 - If the delegate type has an `Invoke` method that has the following signature
+
     `Invoke(ty1, ..., tyn) -> rtyA` ,
+
     then the overall expression must be in this form:
+
     `new ty(expr)` where `expr` has type `ty1 -> ... -> tyn -> rtyB`
+
     If type `rtyA` is a CLI void type, then `rtyB` is unit, otherwise it is `rtyA`.
 
 - If any of the types `tyi` is a byref-type then an explicit function expression must be specified. That
@@ -1720,47 +1637,46 @@ If `ty` is a delegate type the expression is a _delegate implementation expressi
 
 If `ty` is a type variable:
 
-- There must be no arguments (that is, n = 0).
+- There must be no arguments (that is, `n = 0`).
 - The type variable is constrained as follows:
 
-```
-ty : (new : unit -> ty ) -- CLI default constructor constraint
-```
+    `ty : (new : unit -> ty )` -- CLI default constructor constraint
+
 - The expression elaborates to a call to
-    FSharp.Core.LanguagePrimitives.IntrinsicFunctions.CreateInstance< _ty_ >(), which in turn calls
-    System.Activator.CreateInstance< _ty_ >(), which in turn uses CLI reflection to find and call the
-    null object constructor method for type _ty_. On return from this function, any exceptions are
-    wrapped by using System.TargetInvocationException.
+    `FSharp.Core.LanguagePrimitives.IntrinsicFunctions.CreateInstance<ty>()`, which in turn calls
+    `System.Activator.CreateInstance<ty>()`, which in turn uses CLI reflection to find and call the
+    null object constructor method for type `ty`. On return from this function, any exceptions are
+    wrapped by using `System.TargetInvocationException`.
 
 ### Operator Expressions
 
 Operator expressions are specified in terms of their shallow syntactic translation to other constructs.
 The following translations are applied in order:
 
+```fsgrammar
+infix-or-prefix-op e1 → (~infix-or-prefix-op) e1
+prefix-op e1 → (prefix-op) e1
+e1 infix-op e2 → (infix-op) e1 e2
 ```
-infix-or-prefix-op e1 → (~ infix-or-prefix-op ) e1
-prefix-op e1 → ( prefix-op ) e1
-e1 infix-op e2 → ( infix-op ) e1 e2
-```
-```
-Note: When an operator that may be used as either an infix or prefix operator is used in
+
+> Note: When an operator that may be used as either an infix or prefix operator is used in
 prefix position, a tilde character ~ is added to the name of the operator during the
 translation process.
-```
+
 These rules are applied after applying the rules for dynamic operators ([§6.4.4](expressions.md#dynamic-operator-expressions)).
 
 The parenthesized operator name is then treated as an identifier and the standard rules for
 unqualified name resolution ([§14.1](inference-procedures.md#name-resolution)) in expressions are applied. The expression may resolve to a
 specific definition of a user-defined or library-defined operator. For example:
 
-```
+```fsharp
 let (+++) a b = (a,b)
 3 +++ 4
 ```
 In some cases, the operator name resolves to a standard definition of an operator from the F#
 library. For example, in the absence of an explicit definition of (+),
 
-```
+```fsharp
 3 + 4
 ```
 resolves to a use of the infix operator FSharp.Core.Operators.(+).
@@ -1768,66 +1684,63 @@ resolves to a use of the infix operator FSharp.Core.Operators.(+).
 Some operators that are defined in the F# library receive special treatment in this specification. In
 particular:
 
-- The & _expr_ and && _expr_ address-of operators ([§6.4.5](expressions.md#the-addressof-operators))
-- The _expr_ && _expr_ and _expr_ || _expr_ shortcut control flow operators ([§6.5.4](expressions.md#shortcut-operator-expressions))
-- The % _expr_ and %% _expr_ expression splice operators in quotations ([§6.8.3](expressions.md#expression-splices))
-- The library-defined operators, such as +, -, *, /, %, **, <<<, >>>, &&&, |||, and ^^^ ([§18.2](the-f-library-fsharpcoredll.md#basic-operators-and-functions-fsharpcoreoperators)).
+- The `&expr` and `&&expr` address-of operators ([§6.4.5](expressions.md#the-addressof-operators))
+- The `expr && expr` and `expr || expr` shortcut control flow operators ([§6.5.4](expressions.md#shortcut-operator-expressions))
+- The `%expr` and `%%expr` expression splice operators in quotations ([§6.8.3](expressions.md#expression-splices))
+- The library-defined operators, such as `+`, `-`, `*`, `/`, `%`, `**`, `<<<`, `>>>`, `&&&`, `|||`, and `^^^` ([§18.2](the-f-library-fsharpcoredll.md#basic-operators-and-functions-fsharpcoreoperators)).
 
 
 If the operator does not resolve to a user-defined or library-defined operator, the name resolution
 rules ([§14.1](inference-procedures.md#name-resolution)) ensure that the operator resolves to an expression that implicitly uses a static member
-invocation expression (§ 0 ) that involves the types of the operands. This means that the effective
+invocation expression (§ ?) that involves the types of the operands. This means that the effective
 behavior of an operator that is not defined in the F# library is to require a static member that has the
 same name as the operator, on the type of one of the operands of the operator. In the following
-code, the otherwise undefined operator --> resolves to the static member on the Receiver type,
+code, the otherwise undefined operator `-->` resolves to the static member on the `Receiver` type,
 based on a type-directed resolution:
 
-```
+```fsharp
 type Receiver(latestMessage:string) =
-static member (<--) (receiver:Receiver,message:string) =
-Receiver(message)
-```
-```
-static member (-->) (message,receiver:Receiver) =
-Receiver(message)
-```
-```
+    static member (<--) (receiver:Receiver,message:string) =
+        Receiver(message)
+
+    static member (-->) (message,receiver:Receiver) =
+        Receiver(message)
+
 let r = Receiver "no message"
-```
-```
+
 r <-- "Message One"
-```
-```
+
 "Message Two" --> r
 ```
 ### Dynamic Operator Expressions
 
 Expressions of the following forms are _dynamic operator expressions:_
 
-```
-expr 1? expr 2
-expr 1? expr 2 <- expr 3
+```fsgrammar
+expr1 ? expr2
+expr1 ? expr2 <- expr3
 ```
 These expressions are defined by their syntactic translation:
 
-```
-expr? ident → (?) expr " ident "
-expr 1? ( expr 2 ) → (?) expr 1 expr 2
-expr 1? ident <- expr 2 → (?<-) expr 1 " ident " expr 2
-expr 1? ( expr 2 ) <- expr 3 → (?<-) expr 1 expr 2 expr 3
-```
-Here " _ident_ " is a string literal that contains the text of `ident`.
+`expr ? ident` → `(?) expr "ident"`
 
-```
-Note: The F# core library FSharp.Core.dll does not define the (?) and (?<-) operators.
+`expr1 ? (expr2)` → `(?) expr1 expr2`
+
+`expr1 ? ident <- expr2` → `(?<-) expr1 "ident" expr2`
+
+`expr1 ? (expr2) <- expr3` → `(?<-) expr1 expr2 expr3`
+
+Here `"ident"` is a string literal that contains the text of `ident`.
+
+> Note: The F# core library `FSharp.Core.dll` does not define the `(?)` and `(?<-)` operators.
 However, user code may define these operators. For example, it is common to define
 the operators to perform a dynamic lookup on the properties of an object by using
 reflection.
-```
-This syntactic translation applies regardless of the definition of the (?) and (?<-) operators.
+
+This syntactic translation applies regardless of the definition of the `(?)` and `(?<-)` operators.
 However, it does not apply to uses of the parenthesized operator names, as in the following:
 
-```
+```fsharp
 (?) x y
 ```
 ### The AddressOf Operators
@@ -1835,7 +1748,7 @@ However, it does not apply to uses of the parenthesized operator names, as in th
 Under default definitions, expressions of the following forms are _address-of expressions,_ called
 _byref-address-of expression_ and _nativeptr-address-of expression,_ respectively:
 
-```
+```fsgrammar
 & expr
 && expr
 ```
@@ -1843,174 +1756,173 @@ _byref-address-of expression_ and _nativeptr-address-of expression,_ respectivel
 Such expressions take the address of a mutable local variable, byref-valued argument, field, array
 element, or static mutable global variable.
 
-For & _expr_ and && _expr_ , the initial type of the overall expression must be of the form byref< _ty_ > and
-nativeptr< _ty_ > respectively, and the expression `expr` is checked with initial type `ty`.
+For `&expr` and `&&expr`, the initial type of the overall expression must be of the form `byref<ty>` and
+`nativeptr<ty>` respectively, and the expression `expr` is checked with initial type `ty`.
 
-The overall expression is elaborated recursively by taking the address of the elaborated form of `expr` ,
-written _AddressOf_ ( _expr_ , DefinitelyMutates), defined in [§6.9.4](expressions.md#taking-the-address-of-an-elaborated-expression).
+The overall expression is elaborated recursively by taking the address of the elaborated form of `expr`,
+written `AddressOf(expr, DefinitelyMutates)`, defined in [§6.9.4](expressions.md#taking-the-address-of-an-elaborated-expression).
 
 Use of these operators may result in unverifiable or invalid common intermediate language (CIL)
 code; when possible, a warning or error is generated. In general, their use is recommended only:
 
-- To pass addresses where byref or nativeptr parameters are expected.
-- To pass a byref parameter on to a subsequent function.
+- To pass addresses where `byref` or `nativeptr` parameters are expected.
+- To pass a `byref` parameter on to a subsequent function.
 - When required to interoperate with native code.
 
-Addresses that are generated by the && operator must not be passed to functions that are in tail call
+Addresses that are generated by the `&&` operator must not be passed to functions that are in tail call
 position. The F# compiler does not check for this.
 
-Direct uses of byref types, nativeptr types, or values in the FSharp.NativeInterop module may
-result in invalid or unverifiable CIL code. In particular, byref and nativeptr types may NOT be used
+Direct uses of `byref` types, `nativeptr` types, or values in the `FSharp.NativeInterop` module may
+result in invalid or unverifiable CIL code. In particular, `byref` and `nativeptr` types may NOT be used
 within named types such as tuples or function types.
 
-When calling an existing CLI signature that uses a CLI pointer type `ty*` , use a value of type
-nativeptr<ty>.
+When calling an existing CLI signature that uses a CLI pointer type `ty*`, use a value of type
+`nativeptr<ty>`.
 
-```
-Note: The rules in this section apply to the following prefix operators, which are defined
+> Note: The rules in this section apply to the following prefix operators, which are defined
 in the F# core library for use with one argument.
-FSharp.Core.LanguagePrimitives.IntrinsicOperators.(~&)
-FSharp.Core.LanguagePrimitives.IntrinsicOperators.(~&&)
-```
-```
-Other uses of these operators are not permitted.
-```
+<br>`FSharp.Core.LanguagePrimitives.IntrinsicOperators.(~&)`
+<br>`FSharp.Core.LanguagePrimitives.IntrinsicOperators.(~&&)`
+<br>Other uses of these operators are not permitted.
+
 ### Lookup Expressions
 
 Lookup expressions are specified by syntactic translation:
 
-```
-e 1 .[ eargs ] → e 1 .get_Item( eargs )
-e 1 .[ eargs ] <- e 3 → e 1 .set_Item( eargs , e 3 )
-```
+`e1.[eargs]` → `e1.get_Item(eargs)`
+
+`e1.[eargs] <- e3` → `e .set_Item(eargs, e3)`
+
 In addition, for the purposes of resolving expressions of this form, array types of rank 1, 2, 3, and 4
-are assumed to support a type extension that defines an Item property that has the following
+are assumed to support a type extension that defines an `Item` property that has the following
 signatures:
 
-```
+```fsharp
 type 'T[] with
-member arr.Item : int -> 'T
-type 'T[,] with
-member arr.Item : int * int -> 'T
-type 'T[,,] with
-member arr.Item : int * int * int -> 'T
-```
+    member arr.Item : int -> 'T
 
-```
+type 'T[,] with
+    member arr.Item : int * int -> 'T
+
+type 'T[,,] with
+    member arr.Item : int * int * int -> 'T
+
 type 'T[,,,] with
-member arr.Item : int * int * int * int -> 'T
+    member arr.Item : int * int * int * int -> 'T
 ```
 In addition, if type checking determines that the type of `e1` is a named type that supports the
-DefaultMember attribute, then the member name identified by the DefaultMember attribute is used
+`DefaultMember` attribute, then the member name identified by the `DefaultMember` attribute is used
 instead of Item.
 
 ### Slice Expressions
 
 Slice expressions are defined by syntactic translation:
 
-```
-e1.[sliceArg1, ,,, sliceArgN] → e1.GetSlice( args1,...,argsN)
-e1.[sliceArg1, ,,, sliceArgN] <- expr → e1.SetSlice( args1,...,argsN, expr)
-```
-where each sliceArgN is one of the following and translated to argsN (giving one or two args) as
+`e1.[sliceArg1, ,,, sliceArgN]` → `e1.GetSlice(args1, ..., argsN)`
+
+`e1.[sliceArg1, ,,, sliceArgN] <- expr` → `e1.SetSlice(args1, ...,argsN, expr)`
+
+where each `sliceArgN` is one of the following and translated to `argsN` (giving one or two args) as
 indicated
 
-```
-* → None, None
-e1.. → Some e1, None
-..e2 → None, Some e2
-e1..e2 → Some e1, Some e2
-idx → idx
-```
-Because this is a shallow syntactic translation, the GetSlice and SetSlice name may be resolved by
+`*` → `None, None`
+
+`e1..` → `Some e1, None`
+
+`..e2` → `None, Some e2`
+
+`e1..e2` → `Some e1, Some e2`
+
+`idx` → `idx`
+
+Because this is a shallow syntactic translation, the `GetSlice` and `SetSlice` name may be resolved by
 any of the relevant _Name Resolution_ ([§14.1](inference-procedures.md#name-resolution)) techniques, including defining the method as a type
 extension for an existing type.
 
 For example, if a matrix type has the appropriate overloads of the GetSlice method (see below), it is
 possible to do the following:
 
-```
-matrix.[1..,*] -- get rows 1.. from a matrix (returning a matrix)
-matrix.[1..3,*] -- get rows 1..3 from a matrix (returning a matrix)
-matrix.[*,1..3] -- get columns 1..3from a matrix (returning a matrix)
-matrix.[1..3,1,.3] -- get a 3x3 sub-matrix (returning a matrix)
-matrix.[3,*] -- get row 3 from a matrix as a vector
-matrix.[*,3] -- get column 3 from a matrix as a vector
+```fsharp
+matrix.[1..,*] // get rows 1.. from a matrix (returning a matrix)
+matrix.[1..3,*] // get rows 1..3 from a matrix (returning a matrix)
+matrix.[*,1..3] // get columns 1..3from a matrix (returning a matrix)
+matrix.[1..3,1,.3] // get a 3x3 sub-matrix (returning a matrix)
+matrix.[3,*] // get row 3 from a matrix as a vector
+matrix.[*,3] // get column 3 from a matrix as a vector
 ```
 In addition, CIL array types of rank 1 to 4 are assumed to support a type extension that defines a
-method GetSlice that has the following signature:
+method `GetSlice` that has the following signature:
 
-```
+```fsharp
 type 'T[] with
-member arr.GetSlice : ?start1:int * ?end1:int -> 'T[]
+    member arr.GetSlice : ?start1:int * ?end1:int -> 'T[]
 type 'T[,] with
-member arr.GetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int -> 'T[,]
-member arr.GetSlice : idx1:int * ?start2:int * ?end2:int -> 'T[]
-member arr.GetSlice : ?start1:int * ?end1:int * idx2:int - > 'T[]
+    member arr.GetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int -> 'T[,]
+    member arr.GetSlice : idx1:int * ?start2:int * ?end2:int -> 'T[]
+    member arr.GetSlice : ?start1:int * ?end1:int * idx2:int - > 'T[]
 type 'T[,,] with
-member arr.GetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
-?start3:int * ?end3:int
-```
-- > 'T[,,]
+    member arr.GetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int * 
+                          ?start3:int * ?end3:int
+                            -> 'T[,,]
 type 'T[,,,] with
-member arr.GetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
-?start3:int * ?end3:int * ?start4:int * ?end4:int
-
-
-- > 'T[,,,]
-
+    member arr.GetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
+                          ?start3:int * ?end3:int * ?start4:int * ?end4:int
+                            -> 'T[,,,]
+```
 In addition, CIL array types of rank 1 to 4 are assumed to support a type extension that defines a
-method SetSlice that has the following signature:
+method `SetSlice` that has the following signature:
 
-```
+```fsharp
 type 'T[] with
-member arr.SetSlice : ?start1:int * ?end1:int * values:T[] -> unit
+    member arr.SetSlice : ?start1:int * ?end1:int * values:T[] -> unit
+
 type 'T[,] with
-member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
-values:T[,] -> unit
-member arr.SetSlice : idx1:int * ?start2:int * ?end2:int * values:T[] -> unit
-member arr.SetSlice : ?start1:int * ?end1:int * idx2:int * values:T[] -> unit
+    member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
+                          values:T[,] -> unit
+    member arr.SetSlice : idx1:int * ?start2:int * ?end2:int * values:T[] -> unit
+    member arr.SetSlice : ?start1:int * ?end1:int * idx2:int * values:T[] -> unit
+
 type 'T[,,] with
-member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
-?start3:int * ?end3:int * values:T[,,] -> unit
+    member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int * 
+                          ?start3:int * ?end3:int *
+                          values:T[,,] -> unit
+
 type 'T[,,,] with
-member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
-?start3:int * ?end3:int * ?start4:int * ?end4:int *
-values:T[,,,] -> unit
+    member arr.SetSlice : ?start1:int * ?end1:int * ?start2:int * ?end2:int *
+                          ?start3:int * ?end3:int * ?start4:int * ?end4:int *
+                          values:T[,,,] -> unit
 ```
 ### Member Constraint Invocation Expressions
 
 An expression of the following form is a member constraint invocation expression:
 
-```
-( static-typars : ( member-sig ) expr )
+```fsgrammar
+(static-typars : (member-sig) expr)
 ```
 Type checking proceeds as follows:
 
 1. The expression is checked with initial type `ty`.
 2. A statically resolved member constraint is applied ([§5.2.3](types-and-type-constraints.md#member-constraints)):
-    _static-typars_ : ( _member-sig_ )
+    <br>`static-typars: (member-sig)`
 3. `ty` is asserted to be equal to the return type of the constraint.
 4. `expr` is checked with an initial type that corresponds to the argument types of the constraint.
 
 The elaborated form of the expression is a member invocation. For example:
 
-```
+```fsharp
 let inline speak (a: ^a) =
-let x = (^a : (member Speak: unit -> string) (a))
-printfn "It said: %s" x
-let y = (^a : (member MakeNoise: unit -> string) (a))
-printfn "Then it went: %s" y
-```
-```
+    let x = (^a : (member Speak: unit -> string) (a))
+    printfn "It said: %s" x
+    let y = (^a : (member MakeNoise: unit -> string) (a))
+    printfn "Then it went: %s" y
+
 type Duck() =
-member x.Speak() = "I'm a duck"
-member x.MakeNoise() = "quack"
+    member x.Speak() = "I'm a duck"
+    member x.MakeNoise() = "quack"
 type Dog() =
-member x.Speak() = "I'm a dog"
-member x.MakeNoise() = "grrrr"
-```
-```
+    member x.Speak() = "I'm a dog"
+    member x.MakeNoise() = "grrrr"
+
 let x = new Duck()
 let y = new Dog()
 speak x
@@ -2019,7 +1931,7 @@ speak y
 
 Outputs:
 
-```
+```fsother
 It said: I'm a duck
 Then it went: quack
 It said: I'm a dog
@@ -2029,95 +1941,92 @@ Then it went: grrrr
 
 An expression of the following form is an _assignment expression_ :
 
+```fsharp
+expr1 <- expr2
 ```
-expr 1 <- expr 2
-```
-A modified version of _Unqualified Lookup_ ([§14.2.1](inference-procedures.md#unqualified-lookup)) is applied to the expression _expr_ 1 using a fresh
-expected result type `ty` , thus producing an elaborate expression _expr_ 1. The last qualification for _expr_ 1
+A modified version of _Unqualified Lookup_ ([§14.2.1](inference-procedures.md#unqualified-lookup)) is applied to the expression `expr1` using a fresh
+expected result type `ty` , thus producing an elaborate expression `expr1`. The last qualification for `expr1`
 must resolve to one of the following constructs:
 
 - An invocation of a property with a setter method. The property may be an indexer.
 
-```
-Type checking incorporates expr 2 as the last argument in the method application resolution for
-the setter method. The overall elaborated expression is a method call to this setter property and
-includes the last argument.
-```
+    Type checking incorporates `expr2` as the last argument in the method application resolution for
+    the setter method. The overall elaborated expression is a method call to this setter property and
+    includes the last argument.
+
 - A mutable value `path` of type `ty`.
 
-```
-Type checking of expr 2 uses the expected result type ty and generates an elaborated expression
-expr 2. The overall elaborated expression is an assignment to a value reference &path <- stobj
-expr 2.
-```
-- A reference to a value `path` of type byref< _ty_ >.
+    Type checking of `expr2` uses the expected result type `ty` and generates an elaborated expression
+    `expr2`. The overall elaborated expression is an assignment to a value reference `&path <-stobj expr2`.
 
-```
-Type checking of expr 2 uses the expected result type ty and generates an elaborated expression
-expr 2. The overall elaborated expression is an assignment to a value reference path <- stobj expr 2.
-```
-- A reference to a mutable field _expr_ 1a. _field_ with the actual result type `ty`.
+- A reference to a value `path` of type `byref<ty>`.
 
-```
-Type checking of expr 2 uses the expected result type ty and generatesan elaborated expression
-expr 2. The overall elaborated expression is an assignment to a field (see [§6.9.4](expressions.md#taking-the-address-of-an-elaborated-expression)):
-```
-```
-AddressOf ( expr 1a. field , DefinitelyMutates) <- stobj expr 2
-```
-- A array lookup _expr_ 1a.[ _expr_ 1b] where _expr_ 1a has type _ty_ [].
+    Type checking of `expr2` uses the expected result type `ty` and generates an elaborated expression
+    `expr2`. The overall elaborated expression is an assignment to a value reference `path <-stobj expr2`.
 
-```
-Type checking of expr 2 uses the expected result type ty and generates thean elaborated
-expression expr 2. The overall elaborated expression is an assignment to a field (see [§6.9.4](expressions.md#taking-the-address-of-an-elaborated-expression)):
-```
-```
-AddressOf ( expr 1a.[ expr 1b] , DefinitelyMutates) <- stobj expr 2
-```
-```
-Note: Because assignments have the preceding interpretations, local values must be
-mutable so that primitive field assignments and array lookups can mutate their
-immediate contents. In this context, “immediate” contents means the contents of a
-mutable value type. For example, given
-```
+- A reference to a mutable field `expr1a.field` with the actual result type `ty`.
 
-```
-[<Struct>]
-type SA =
-new(v) = { x = v }
-val mutable x : int
-[<Struct>]
-type SB =
-new(v) = { sa = v }
-val mutable sa : SA
-let s1 = SA(0)
-let mutable s2 = SA(0)
-let s3 = SB(0)
-let mutable s4 = SB(0)
-```
-```
-Then these are not permitted:
-s1.x <- 3
-s3.sa.x <- 3
-```
-```
-and these are:
-s2.x <- 3
-s4.sa.x <- 3
-s4.sa <- SA(2)
-```
+    Type checking of `expr2` uses the expected result type `ty` and generates an elaborated expression
+    `expr2`. The overall elaborated expression is an assignment to a field (see [§6.9.4](expressions.md#taking-the-address-of-an-elaborated-expression)):
+
+    `AddressOf(expr1a.field, DefinitelyMutates) <-stobj expr2`
+
+- A array lookup `expr1a.[expr1b]` where `expr1a` has type `ty[]`.
+
+
+    Type checking of expr2 uses the expected result type ty and generates thean elaborated
+    expression expr2. The overall elaborated expression is an assignment to a field (see [§6.9.4](expressions.md#taking-the-address-of-an-elaborated-expression)):
+
+    `AddressOf(expr1a.[expr1b], DefinitelyMutates) <-stobj expr2`
+
+    > Note: Because assignments have the preceding interpretations, local values must be
+    mutable so that primitive field assignments and array lookups can mutate their
+    immediate contents. In this context, “immediate” contents means the contents of a
+    mutable value type. For example, given
+
+
+    ```fsharp
+    [<Struct>]
+    type SA =
+        new(v) = { x = v }
+        val mutable x : int
+    
+    [<Struct>]
+    type SB =
+        new(v) = { sa = v }
+        val mutable sa : SA
+    
+    let s1 = SA(0)
+    let mutable s2 = SA(0)
+    let s3 = SB(0)
+    let mutable s4 = SB(0)
+    ```
+
+    > Then these are not permitted:
+
+    ```fsharp
+    s1.x <- 3
+    s3.sa.x <- 3
+    ```
+    and these are:
+    ```fsharp
+    s2.x <- 3
+    s4.sa.x <- 3
+    s4.sa <- SA(2)
+    ```
+
 ## Control Flow Expressions
 
 ### Parenthesized and Block Expressions
 
 A _parenthesized expression_ has the following form:
 
-```
-( expr )
+```fsgrammar
+(expr)
 ```
 A _block expression_ has the following form:
 
-```
+```fsgrammar
 begin expr end
 ```
 The expression `expr` is checked with the same initial type as the overall expression.
@@ -2128,101 +2037,97 @@ The elaborated form of the expression is simply the elaborated form of `expr`.
 
 A _sequential execution expression_ has the following form:
 
-```
-expr 1 ; expr 2
+```fsgrammar
+expr1 ; expr2
 ```
 For example:
 
-```
+```fsharp
 printfn "Hello"; printfn "World"; 3
 ```
-The ; token is optional when both of the following are true:
+The `;` token is optional when both of the following are true:
 
-- The expression _expr_ 2 occurs on a subsequent line that starts in the same column as _expr_ 1.
-
+- The expression `expr2` occurs on a subsequent line that starts in the same column as `expr1`.
 
 - The current pre-parse context that results from the syntax analysis of the program text is a
-    **SeqBlock** (§ 15 ).
+    `SeqBlock` ([§15](lexical-filtering.md#lexical-filtering)).
 
-When the semicolon is optional, parsing inserts a $sep token automatically and applies an additional
-syntax rule for lightweight syntax ([§15.1.1](lexical-filtering.md#basic-lightweight-syntax-rules-by-example)). In practice, this means that code can omit the ; token
+When the semicolon is optional, parsing inserts a `$sep` token automatically and applies an additional
+syntax rule for lightweight syntax ([§15.1.1](lexical-filtering.md#basic-lightweight-syntax-rules-by-example)). In practice, this means that code can omit the `;` token
 for sequential execution expressions that implement functions or immediately follow tokens such as
-begin and (.
+`begin` and `(`.
 
-The expression _expr_ 1 is checked with an arbitrary initial type `ty`. After checking _expr_ 1 , `ty` is asserted
-to be equal to unit. If the assertion fails, a warning rather than an error is reported. The expression
-_expr_ 2 is then checked with the same initial type as the overall expression.
+The expression `expr1` is checked with an arbitrary initial type `ty`. After checking `expr1`, `ty` is asserted
+to be equal to `unit`. If the assertion fails, a warning rather than an error is reported. The expression
+`expr2` is then checked with the same initial type as the overall expression.
 
 Sequential execution expressions are a primitive elaborated form.
 
 ### Conditional Expressions
 
-A _conditional expression_ has the following form:s
+A _conditional expression_ has the following forms
 
-```
-if expr 1 a then expr 1b
-elif expr 3a then expr 2b
-```
-```
-elif expr na then expr nb
-else expr last
+```fsgrammar
+if expr1a then expr1b
+elif expr3a then expr2b
+...
+elif exprna then exprnb
+else exprlast
 ```
 The `elif` and `else` branches may be omitted. For example:
 
-```
+```fsharp
 if (1 + 1 = 2) then "ok" else "not ok"
 if (1 + 1 = 2) then printfn "ok"
 ```
 Conditional expressions are equivalent to pattern matching on Boolean values. For example, the
 following expression forms are equivalent:
 
-```
-if expr 1 then expr 2 else expr 3
-match ( expr 1 :bool) with true -> expr 2 | false -> expr 3
+```fsgrammar
+if expr1 then expr2 else expr3
+match (expr1: bool) with true -> expr2 | false -> expr3
 ```
 If the `else` branch is omitted, the expression is a _sequential conditional expression_ and is equivalent
 to:
 
+```fsgrammar
+match (expr1: bool) with true -> expr2 | false -> ()
 ```
-match ( expr 1 :bool) with true -> expr 2 | false -> ()
-```
-with the exception that the initial type of the overall expression is first asserted to be unit.
+with the exception that the initial type of the overall expression is first asserted to be `unit`.
 
 ### Shortcut Operator Expressions
 
 Under default definitions, expressions of the following form are respectively an _shortcut and expression_ and a _shortcut or expression_ :
 
-```
+```fsgrammar
 expr && expr
 expr || expr
 ```
 These expressions are defined by their syntactic translation:
 
-```
-expr 1 && expr 2 → if expr 1 then expr 2 else false
-expr 1 || expr 2 → if expr 1 then true else expr 2
+```fsgrammar
+expr1 && expr2 → if expr1 then expr2 else false
+expr1 || expr2 → if expr1 then true else expr2
 ```
 
-```
-Note: The rules in this section apply when the following operators, as defined in the F#
-core library, are applied to two arguments.
-FSharp.Core.LanguagePrimitives.IntrinsicOperators.(&&)
-FSharp.Core.LanguagePrimitives.IntrinsicOperators.(||)
-```
-```
-If the operator is not immediately applied to two arguments, it is interpreted as a strict
-function that evaluates both its arguments before use.
-```
+> Note: The rules in this section apply when the following operators, as defined in the F#
+    core library, are applied to two arguments.
+    <br>`FSharp.Core.LanguagePrimitives.IntrinsicOperators.(&&)`
+    <br>`FSharp.Core.LanguagePrimitives.IntrinsicOperators.(||)`
+    <br>
+    If the operator is not immediately applied to two arguments, it is interpreted as a strict
+    function that evaluates both its arguments before use.
+
 ### Pattern-Matching Expressions and Functions
 
 A _pattern-matching expression_ has the following form:
 
-```
+```fsgrammar
 match expr with rules
 ```
-Pattern matching is used to evaluate the given expression and select a rule (§ 7 ). For example:
+Pattern matching is used to evaluate the given expression and select a rule ([§7](patterns.md#patterns)). For example:
 
-```
+```fsharp
 match (3, 2) with
 | 1, j -> printfn "j = %d" j
 | i, 2 - > printfn "i = %d" i
@@ -2230,62 +2135,63 @@ match (3, 2) with
 ```
 A _pattern-matching function_ is an expression of the following form:
 
-```
+```fsgrammar
 function rules
 ```
 A pattern-matching function is syntactic sugar for a single-argument function expression that is
 followed by immediate matches on the argument. For example:
 
-```
+```fsharp
 function
 | 1, j -> printfn "j = %d" j
 | _ - > printfn "no match"
 ```
 is syntactic sugar for the following, where x is a fresh variable:
 
-```
+```fsharp
 fun x ->
-match x with
-| 1, j -> printfn "j = %d" j
-| _ - > printfn "no match"
+    match x with
+    | 1, j -> printfn "j = %d" j
+    | _ - > printfn "no match"
 ```
+
 ### Sequence Iteration Expressions
 
 An expression of the following form is a _sequence iteration expression_ :
 
+```fsgrammar
+for pat in expr1 do expr2 done
 ```
-for pat in expr 1 do expr 2 done
-```
-The done token is optional if _expr_ 2 appears on a later line and is indented from the column position
-of the for token. In this case, parsing inserts a $done token automatically and applies an additional
+The done token is optional if `expr2` appears on a later line and is indented from the column position
+of the for token. In this case, parsing inserts a `$done` token automatically and applies an additional
 syntax rule for lightweight syntax ([§15.1.1](lexical-filtering.md#basic-lightweight-syntax-rules-by-example)).
 
 For example:
 
-```
+```fsharp
 for x, y in [(1, 2); (3, 4)] do
-printfn "x = %d, y = %d" x y
+    printfn "x = %d, y = %d" x y
 ```
 
-The expression _expr_ 1 is checked with a fresh initial type `ty` expr, which is then asserted to be a subtype
-of type IEnumerable< _ty_ >, for a fresh type `ty`. If the assertion succeeds, the expression elaborates to
-the following, where `v` is of type IEnumerator< _ty_ > and `pat` is a pattern of type `ty` :
+The expression `expr1` is checked with a fresh initial type `tyexpr`, which is then asserted to be a subtype
+of type `IEnumerable<ty>`, for a fresh type `ty`. If the assertion succeeds, the expression elaborates to
+the following, where `v` is of type `IEnumerator<ty>` and `pat` is a pattern of type `ty` :
 
-```
-let v = expr 1 .GetEnumerator()
+```fsharp
+let v = expr1.GetEnumerator()
 try
-while ( v .MoveNext()) do
-match v .Current with
-| pat - > expr 2
-| _ -> ()
+    while (v.MoveNext()) do
+        match v.Current with
+        | pat - > expr2
+        | _ -> ()
 finally
-match box( v ) with
-| :? System.IDisposable as d - > d .Dispose()
-| _ -> ()
+    match box(v) with
+    | :? System.IDisposable as d - > d .Dispose()
+    | _ -> ()
 ```
-If the assertion fails, the type _ty_ expr may also be of any static type that satisfies the “collection
+If the assertion fails, the type `tyexpr` may also be of any static type that satisfies the “collection
 pattern” of CLI libraries. If so, the _enumerable extraction_ process is used to enumerate the type. In
-particular, _ty_ expr may be any type that has an accessible GetEnumerator method that accepts zero
+particular, `tyexpr` may be any type that has an accessible GetEnumerator method that accepts zero
 arguments and returns a value that has accessible MoveNext and Current properties. The type of `pat`
 is the same as the return type of the Current property on the enumerator value. However, if the
 Current property has return type obj and the collection type `ty` has an Item property with a more
@@ -2294,37 +2200,37 @@ convert v.Current to `ty2`.
 
 A sequence iteration of the form
 
+```fsgrammar
+for var in expr1 .. expr2 do expr3 done
 ```
-for var in expr 1 .. expr 2 do expr 3 done
-```
-where the type of _expr_ 1 or _expr_ 2 is equivalent to int, is elaborated as a simple for-loop expression
+where the type of `expr1` or `expr2` is equivalent to `int`, is elaborated as a simple for-loop expression
 ([§6.5.7](expressions.md#simple-for-loop-expressions))
 
 ### Simple for-Loop Expressions
 
 An expression of the following form is a _simple for loop expression_ :
 
+```fsgrammar
+for var = expr1 to expr2 do expr3 done
 ```
-for var = expr 1 to expr 2 do expr 3 done
-```
-The done token is optional when e2 appears on a later line and is indented from the column position
-of the for token. In this case, a $done token is automatically inserted, and an additional syntax rule
+The `done` token is optional when `e2` appears on a later line and is indented from the column position
+of the `for` token. In this case, a `$done` token is automatically inserted, and an additional syntax rule
 for lightweight syntax applies ([§15.1.1](lexical-filtering.md#basic-lightweight-syntax-rules-by-example)). For example:
 
-```
+```fsharp
 for x = 1 to 30 do
-printfn "x = %d, x^2 = %d" x (x*x)
+    printfn "x = %d, x^2 = %d" x (x*x)
 ```
-The bounds _expr_ 1 and _expr_ 2 are checked with initial type int. The overall type of the expression is
-unit. A warning is reported if the body _expr_ 3 of the for loop does not have static type unit.
+The bounds `expr1` and `expr2` are checked with initial type `int`. The overall type of the expression is
+`unit`. A warning is reported if the body `expr3` of the `for` loop does not have static type `unit`.
 
-The following shows the elaborated form of a simple for-loop expression for fresh variables start
-and finish:
+The following shows the elaborated form of a simple for-loop expression for fresh variables `start`
+and `finish`:
 
-```
-let start = expr 1 in
-let finish = expr 2 in
-for var = start to finish do expr 3 done
+```fsharp
+let start = expr1 in
+let finish = expr2 in
+for var = start to finish do expr3 done
 ```
 
 For-loops over ranges that are specified by variables are a primitive elaborated form. When
@@ -2333,95 +2239,91 @@ increment of 1.
 
 An expression of the form
 
+```fsgrammar
+for var in expr1 .. expr2 do expr3 done
 ```
-for var in expr 1 .. expr 2 do expr 3 done
-```
-is always elaborated as a simple for-loop expression whenever the type of _expr_ 1 or _expr_ 2 is
-equivalent to int.
+is always elaborated as a simple for-loop expression whenever the type of `expr1` or `expr2` is
+equivalent to `int`.
 
 ### While Expressions
 
 A _while loop expression_ has the following form:
 
+```fsgrammar
+while expr1 do expr2 done
 ```
-while expr 1 do expr 2 done
-```
-The done token is optional when _expr_ 2 appears on a subsequent line and is indented from the
-column position of the while. In this case, a $done token is automatically inserted, and an additional
+The `done` token is optional when `expr2` appears on a subsequent line and is indented from the
+column position of the `while`. In this case, a `$done` token is automatically inserted, and an additional
 syntax rule for lightweight syntax applies ([§15.1.1](lexical-filtering.md#basic-lightweight-syntax-rules-by-example)).
 
 For example:
 
-```
+```fsharp
 while System.DateTime.Today.DayOfWeek = System.DayOfWeek.Monday do
-printfn "I don't like Mondays"
+    printfn "I don't like Mondays"
 ```
-The overall type of the expression is unit. The expression _expr_ 1 is checked with initial type bool. A
-warning is reported if the body _expr_ 2 of the while loop cannot be asserted to have type unit.
+The overall type of the expression is `unit`. The expression `expr1` is checked with initial type `bool`. A
+warning is reported if the body `expr2` of the while loop cannot be asserted to have type `unit`.
 
 ### Try-with Expressions
 
 A _try-with expression_ has the following form:
 
-```
+```fsgrammar
 try expr with rules
 ```
 For example:
 
-```
+```fsharp
 try "1" with _ -> "2"
-```
-```
+
 try
-failwith "fail"
+    failwith "fail"
 with
-| Failure msg -> "caught"
-| :? System.InvalidOperationException -> "unexpected"
+    | Failure msg -> "caught"
+    | :? System.InvalidOperationException -> "unexpected"
 ```
 Expression `expr` is checked with the same initial type as the overall expression. The pattern matching
-clauses are then checked with the same initial type and with input type System.Exception.
+clauses are then checked with the same initial type and with input type `System.Exception`.
 
 Try-with expressions are a primitive elaborated form.
 
 ### Reraise Expressions
 
-A _reraise expression_ is an application of the reraise F# library function. This function must be
-applied to an argument and can be used only on the immediate right-hand side of _rules_ in a try-with
+A _reraise expression_ is an application of the `reraise` F# library function. This function must be
+applied to an argument and can be used only on the immediate right-hand side of `rules` in a try-with
 expression.
 
-
-```
+```fsharp
 try
-failwith "fail"
+    failwith "fail"
 with e -> printfn "Failing"; reraise()
 ```
-```
-Note: The rules in this section apply to any use of the function
-FSharp.Core.Operators.reraise, which is defined in the F# core library.
-```
-When executed, reraise() continues exception processing with the original exception information.
+> Note: The rules in this section apply to any use of the function
+  `FSharp.Core.Operators.reraise`, which is defined in the F# core library.
+
+When executed, `reraise()` continues exception processing with the original exception information.
 
 ### Try-finally Expressions
 
 A _try-finally expression_ has the following form:
 
-```
-try expr 1 finally expr 2
+```fsgrammar
+try expr1 finally expr2
 ```
 For example:
 
-```
+```fsharp
 try "1" finally printfn "Finally!"
-```
-```
+
 try
-failwith "fail"
+    failwith "fail"
 finally
-printfn "Finally block"
+    printfn "Finally block"
 ```
-Expression _expr_ 1 is checked with the initial type of the overall expression. Expression _expr_ 2 is
+Expression `expr1` is checked with the initial type of the overall expression. Expression `expr2` is
 checked with arbitrary initial type, and a warning occurs if this type cannot then be asserted to be
-equal to unit.
+equal to `unit`.
 
 Try-finally expressions are a primitive elaborated form.
 
@@ -2429,20 +2331,19 @@ Try-finally expressions are a primitive elaborated form.
 
 An _assertion expression_ has the following form:
 
-```
+```fsgrammar
 assert expr
 ```
-The expression assert `expr` is syntactic sugar for System.Diagnostics.Debug.Assert(expr)
+The expression `assert expr` is syntactic sugar for `System.Diagnostics.Debug.Assert(expr)`
 
-```
-Note: System.Diagnostics.Debug.Assert is a conditional method call. This means that
+> Note: `System.Diagnostics.Debug.Assert` is a conditional method call. This means that
 assertions are triggered only if the DEBUG conditional compilation symbol is defined.
-```
+
 ## Definition Expressions
 
 A _definition expression_ has one of the following forms:
 
-```
+```fsgrammar
 let function-defn in expr
 let value-defn in expr
 let rec function-or-value-defns in expr
@@ -2452,67 +2353,66 @@ Such an expression establishes a local function or value definition within the l
 and has the same overall type as `expr`.
 
 
-In each case, the in token is optional if `expr` appears on a subsequent line and is aligned with the
-token let. In this case, a $in token is automatically inserted, and an additional syntax rule for
+In each case, the `in` token is optional if `expr` appears on a subsequent line and is aligned with the
+token `let`. In this case, a `$in` token is automatically inserted, and an additional syntax rule for
 lightweight syntax applies ([§15.1.1](lexical-filtering.md#basic-lightweight-syntax-rules-by-example))
 
 For example:
 
-```
+```fsharp
 let x = 1
 x + x
 ```
 and
 
-```
+```fsharp
 let x, y = ("One", 1)
 x.Length + y
 ```
 and
 
-```
+```fsharp
 let id x = x in (id 3, id "Three")
 ```
 and
 
-```
+```fsharp
 let swap (x, y) = (y,x)
 List.map swap [ (1, 2); (3, 4) ]
 ```
 and
 
-```
+```fsharp
 let K x y = x in List.map (K 3) [ 1; 2; 3; 4 ]
 ```
 Function and value definitions in expressions are similar to function and value definitions in class
-definitions (§8.6.1.3), modules (§ 1 0.2.1), and computation expressions ([§6.3.10](expressions.md#computation-expressions)), with the following
+definitions ([§8.6](type-definitions.md#class-type-definitions)), modules ([§10.2.1](namespaces-and-modules.md#function-and-value-definitions-in-modules)), and computation expressions ([§6.3.10](expressions.md#computation-expressions)), with the following
 exceptions:
 
 - Function and value definitions in expressions may not define explicit generic parameters ([§5.3](types-and-type-constraints.md#type-parameter-definitions)).
     For example, the following expression is rejected:
-       let f<'T> (x:'T) = x in f 3
+       <br>`let f<'T> (x:'T) = x in f 3`
 - Function and value definitions in expressions are not public and are not subject to arity analysis
     ([§14.10](inference-procedures.md#arity-inference)).
 - Any custom attributes that are specified on the declaration, parameters, and/or return
     arguments are ignored and result in a warning. As a result, function and value definitions in
-    expressions may not have the ThreadStatic or ContextStatic attribute.
+    expressions may not have the `ThreadStatic` or `ContextStatic` attribute.
 
 ### Value Definition Expressions
 
 A value definition expression has the following form:
 
-```
+```fsgrammar
 let value-defn in expr
 ```
 where _value-defn_ has the form:
 
-```
-mutableopt accessopt pat typar-defnsopt return-typeopt = rhs-expr
+```fsgrammar
+mutable~opt access~opt pat typar-defns~opt return-type~opt = rhs-expr
 ```
 Checking proceeds as follows:
 
 1. Check the _value-defn_ ([§14.6](inference-procedures.md#checking-and-elaborating-function-value-and-member-definitions)), which defines a group of identifiers `identj` with inferred types `tyj`
-
 
 2. Add the identifiers `identj` to the name resolution environment, each with corresponding type
     `tyj`.
@@ -2520,36 +2420,33 @@ Checking proceeds as follows:
 
 In this case, the following rules apply:
 
-- If `pat` is a single value pattern `ident` , the resulting elaborated form of the entire expression is
+- If `pat` is a single value pattern `ident`, the resulting elaborated form of the entire expression is
 
-```
-let ident 1 < typars1 > = expr 1 in
-body-expr
-```
-```
-where ident 1 , typars 1 and expr 1 are defined in [§14.6](inference-procedures.md#checking-and-elaborating-function-value-and-member-definitions).
-```
+    ```fsgrammar
+    let ident1 <typars1> = expr1 in
+    body-expr
+    ```
+    where ident1 , typars1 and expr1 are defined in [§14.6](inference-procedures.md#checking-and-elaborating-function-value-and-member-definitions).
+
 - Otherwise, the resulting elaborated form of the entire expression is
 
-```
-let tmp < typars 1 ... typars n> = expr in
-let ident 1 < typars 1 > = expr 1 in
-```
-```
-let identn < typars n> = exprn in
-body-expr
-```
-```
-where tmp is a fresh identifier and identi , typarsi , and expri all result from the compilation of
-the pattern pat (§ 7 ) against the input tmp.
-```
-Value definitions in expressions may be marked as mutable. For example:
+    ```fsgrammar
+    let tmp <typars1 ... typars n> = expr in
+    let ident1 <typars1> = expr1 in
+    ...
+    let identn <typarsn> = exprn in
+    body-expr
+    ```
+    where `tmp` is a fresh identifier and `identi`, `typarsi`, and `expri` all result from the compilation of
+    the pattern `pat` ([§7](patterns.md#patterns)) against the input `tmp`.
 
-```
+Value definitions in expressions may be marked as `mutable`. For example:
+
+```fsharp
 let mutable v = 0
 while v < 10 do
-v <- v + 1
-printfn "v = %d" v
+    v <- v + 1
+    printfn "v = %d" v
 ```
 Such variables are implicitly dereferenced each time they are used.
 
@@ -2557,24 +2454,24 @@ Such variables are implicitly dereferenced each time they are used.
 
 A function definition expression has the form:
 
-```
+```fsgrammar
 let function-defn in expr
 ```
 where `function-defn` has the form:
 
-```
-inline opt accessopt ident-or-op typar-defnsopt pat 1 ... patn return-typeopt = rhs-expr
+```fsgrammar
+inline~opt access~opt ident-or-op typar-defns~opt pat1 ... patn return-type~opt = rhs-expr
 ```
 Checking proceeds as follows:
 
-1. Check the `function-defn` ([§14.6](inference-procedures.md#checking-and-elaborating-function-value-and-member-definitions)), which defines `ident1` , `ty1` , `typars1` and `expr1`
+1. Check the `function-defn` ([§14.6](inference-procedures.md#checking-and-elaborating-function-value-and-member-definitions)), which defines `ident1`, `ty1`, `typars1` and `expr1`
 2. Add the identifier `ident1` to the name resolution environment, each with corresponding type `ty1`.
 3. Check the body `expr` against the initial type of the overall expression.
 
 The resulting elaborated form of the entire expression is
 
-```
-let ident 1 < typars 1 > = expr 1 in
+```fsgrammar
+let ident1 < typars1 > = expr1 in
 expr
 ```
 where `ident1` , `typars1` and `expr1` are as defined in [§14.6](inference-procedures.md#checking-and-elaborating-function-value-and-member-definitions).
@@ -2582,29 +2479,27 @@ where `ident1` , `typars1` and `expr1` are as defined in [§14.6](inference-proc
 
 ### Recursive Definition Expressions
 
-An expression of the following form is a _recursive definition expression_ :
+An expression of the following form is a _recursive definition expression_:
 
-```
+```fsgrammar
 let rec function-or-value-defns in expr
 ```
 The defined functions and values are available for use within their own definitions—that is can be
-used within any of the expressions on the right-hand side of _function-or-value-defns_. Multiple
-functions or values may be defined by using let rec ... and .... For example:
+used within any of the expressions on the right-hand side of `function-or-value-defns`. Multiple
+functions or values may be defined by using `let rec ... and ...`. For example:
 
-```
+```fsharp
 let test() =
-let rec twoForward count =
-printfn "at %d, taking two steps forward" count
-if count = 1000 then "got there!"
-else oneBack (count + 2)
-and oneBack count =
-printfn "at %d, taking one step back " count
-twoForward (count - 1)
-```
-```
-twoForward 1
-```
-```
+    let rec twoForward count =
+        printfn "at %d, taking two steps forward" count
+        if count = 1000 then "got there!"
+        else oneBack (count + 2)
+    and oneBack count =
+        printfn "at %d, taking one step back " count
+        twoForward (count - 1)
+
+    twoForward 1
+
 test()
 ```
 In the example, the expression defines a set of recursive functions. If one or more recursive values
@@ -2615,84 +2510,83 @@ are defined, the recursive expressions are analyzed for safety ([§14.6.6](infer
 
 A _deterministic disposal expression_ has the form:
 
-```
-use ident = expr 1 in expr 2
+```fsgrammar
+use ident = expr1 in expr2
 ```
 For example:
 
-```
+```fsharp
 use inStream = System.IO.File.OpenText "input.txt"
 let line1 = inStream.ReadLine()
 let line2 = inStream.ReadLine()
 (line1,line2)
 ```
-The expression is first checked as an expression of form let _ident_ = `expr1` in `expr2` (§ **Error! R
-eference source not found.** ), which results in an elaborated expression of the following form:
+The expression is first checked as an expression of form `let ident = expr1 in expr2` ([§6.6.1](expressions.md#value-definition-expressions)), which results in an elaborated expression of the following form:
 
-```
-let ident 1 : ty 1 = expr 1 in expr 2.
+```fsgrammar
+let ident1 : ty1 = expr1 in expr2.
 ```
 Only one value may be defined by a deterministic disposal expression, and the definition is not
-generalized ([§14.6.7](inference-procedures.md#generalization)). The type `ty1` , is then asserted to be a subtype of System.IDisposable. If the
-dynamic value of the expression after coercion to type obj is non-null, the Dispose method is called
+generalized ([§14.6.7](inference-procedures.md#generalization)). The type `ty1` , is then asserted to be a subtype of `System.IDisposable`. If the
+dynamic value of the expression after coercion to type `obj` is non-null, the `Dispose` method is called
 on the value when the value goes out of scope. Thus the overall expression elaborates to this:
 
-```
-let ident 1 : ty 1 = expr 1
-try expr 2
+```fsgrammar
+let ident1 : ty1 = expr1
+try expr2
 finally (match ( ident :> obj) with
-| null -> ()
-| _ -> ( ident :> System.IDisposable).Dispose())
+         | null -> ()
+         | _ -> (ident :> System.IDisposable).Dispose())
 ```
 
 ## Type-related Expressions
 
 ### Type-Annotated Expressions
 
-A _type-annotated expression_ has the following form, where `ty` indicates the static type of `expr` :
+A _type-annotated expression_ has the following form, where `ty` indicates the static type of `expr`:
 
-```
+```fsgrammar
 expr : ty
 ```
 For example:
 
-```
+```fsharp
 (1 : int)
 let f x = (x : string) + x
 ```
 When checked, the initial type of the overall expression is asserted to be equal to `ty`. Expression `expr`
 is then checked with initial type `ty`. The expression elaborates to the elaborated form of `expr`. This
-ensures that information from the annotation is used during the analysis of expr itself.
+ensures that information from the annotation is used during the analysis of `expr` itself.
 
 ### Static Coercion Expressions
 
-A _static coercion expression_ —also called a flexible type constraint—has the following form:
+A _static coercion expression_ — also called a flexible type constraint — has the following form:
 
-```
+```fsgrammar
 expr :> ty
 ```
-The expression upcast `expr` is equivalent to _expr_ :> ___ , so the target type is the same as the initial
+The expression `upcast expr` is equivalent to `expr :> _`, so the target type is the same as the initial
 type of the overall expression. For example:
 
-```
+```fsharp
 (1 :> obj)
 ("Hello" :> obj)
 ([1;2;3] :> seq<int>).GetEnumerator()
 (upcast 1 : obj)
 ```
 The initial type of the overall expression is `ty`. Expression `expr` is checked using a fresh initial type
-`tye` , with constraint _tye_ :> _ty_. Static coercions are a primitive elaborated form.
+`tye`, with constraint `tye :> ty`. Static coercions are a primitive elaborated form.
 
 ### Dynamic Type-Test Expressions
 
 A dynamic type-test expression has the following form:
 
-```
+```fsgrammar
 expr :? ty
 ```
 For example:
 
-```
+```fsharp
 ((1 :> obj) :? int)
 ((1 :> obj) :? string)
 ```
@@ -2705,20 +2599,19 @@ The initial type of the overall expression is `bool`. Expression `expr` is check
 - If type `ty` is sealed, or if `ty` is a variable type, or if type `tye` is not an interface type, then `ty :> tye`
     is asserted.
 
-
 Dynamic type tests are a primitive elaborated form.
 
 ### Dynamic Coercion Expressions
 
 A dynamic coercion expression has the following form:
 
-```
+```fsgrammar
 expr :?> ty
 ```
-The expression downcast `e1` is equivalent to _expr_ :?> ___ , so the target type is the same as the initial
+The expression downcast `e1` is equivalent to `expr :?> _` , so the target type is the same as the initial
 type of the overall expression. For example:
 
-```
+```fsharp
 let obj1 = (1 :> obj)
 (obj1 :?> int)
 (obj1 :?> string)
@@ -2738,11 +2631,11 @@ Dynamic coercions are a primitive elaborated form.
 ## Quoted Expressions
 
 An expression in one of these forms is a quoted expression:
+```fsgrammar
+<@ expr @>
 
-<@ _expr_ @>
-
-<@@ _expr_ @@>
-
+<@@ expr @@>
+```
 The former is a _strongly typed quoted expression_ , and the latter is a _weakly typed quoted expression_.
 In both cases, the expression forms capture the enclosed expression in the form of a typed abstract
 syntax tree.
@@ -2751,40 +2644,42 @@ The exact nodes that appear in the expression tree are determined by the elabora
 that type checking produces.
 
 For details about the nodes that may be encountered, see the documentation for the
-FSharp.Quotations.Expr type in the F# core library. In particular, quotations may contain:
+`FSharp.Quotations.Expr` type in the F# core library. In particular, quotations may contain:
 
 - References to module-bound functions and values, and to type-bound members. For example:
 
-```
-let id x = x
-let f (x : int) = <@ id 1 @>
-```
-```
-In this case the value appears in the expression tree as a node of kind
-FSharp.Quotations.Expr.Call.
-```
+    ```fsharp
+    let id x = x
+    let f (x : int) = <@ id 1 @>
+    ```
 
-- A type, module, function, value, or member that is annotated with the ReflectedDefinition
+    In this case the value appears in the expression tree as a node of kind
+    `FSharp.Quotations.Expr.Call`.
+
+- A type, module, function, value, or member that is annotated with the `ReflectedDefinition`
     attribute. If so, the expression tree that forms its definition may be retrieved dynamically using
-    the FSharp.Quotations.Expr.TryGetReflectedDefinition.
-    If the ReflectedDefinition attribute is applied to a type or module, it will be recursively applied
+    the `FSharp.Quotations.Expr.TryGetReflectedDefinition`.
+
+    If the `ReflectedDefinition` attribute is applied to a type or module, it will be recursively applied
     to all members, too.
+
 - References to defined values, such as the following:
 
-```
-let f (x : int) = <@ x + 1 @>
-```
-```
-Such a value appears in the expression tree as a node of kind FSharp.Quotations.Expr.Value.
-```
+    ```fsharp
+    let f (x : int) = <@ x + 1 @>
+    ```
+
+    Such a value appears in the expression tree as a node of kind FSharp.Quotations.Expr.Value.
+
 - References to generic type parameters or uses of constructs whose type involves a generic
     parameter, such as the following:
-       let f (x:'T) = <@ (x, x) : 'T * 'T @>
+    ```fsharp
+           let f (x:'T) = <@ (x, x) : 'T * 'T @>
+    ```
 
-```
-In this case, the actual value of the type parameter is implicitly substituted throughout the type
-annotations and types in the generated expression tree.
-```
+    In this case, the actual value of the type parameter is implicitly substituted throughout the type
+    annotations and types in the generated expression tree.
+
 As of F# 3. 1 , the following limitations apply to quoted expressions:
 
 - Quotations may not use object expressions.
@@ -2796,111 +2691,107 @@ As of F# 3. 1 , the following limitations apply to quoted expressions:
 
 A strongly typed quoted expression has the following form:
 
-```
+```fsgrammar
 <@ expr @>
 ```
 For example:
 
-```
+```fsharp
 <@ 1 + 1 @>
-```
-```
+
 <@ (fun x -> x + 1) @>
 ```
-In the first example, the type of the expression is FSharp.Quotations.Expr<int>. In the second
-example, the type of the expression is FSharp.Quotations.Expr<int -> int>.
+In the first example, the type of the expression is `FSharp.Quotations.Expr<int>`. In the second
+example, the type of the expression is `FSharp.Quotations.Expr<int -> int>`.
 
-When checked, the initial type of a strongly typed quoted expression <@ _expr_ @> is asserted to be of
-the form FSharp.Quotations.Expr< _ty_ > for a fresh type `ty`. The expression `expr` is checked with initial
+When checked, the initial type of a strongly typed quoted expression `<@ expr @>` is asserted to be of
+the form `FSharp.Quotations.Expr<ty>` for a fresh type `ty`. The expression `expr` is checked with initial
 type `ty`.
 
 ### Weakly Typed Quoted Expressions
 
 A _weakly typed quoted expression_ has the following form:
 
-```
+```fsgrammar
 <@@ expr @@>
 ```
 Weakly typed quoted expressions are similar to strongly quoted expressions but omit any type
 annotation. For example:
 
 
-```
+```fsharp
 <@@ 1 + 1 @@>
-```
-```
+
 <@@ (fun x -> x + 1) @@>
 ```
-In both these examples, the type of the expression is FSharp.Quotations.Expr.
+In both these examples, the type of the expression is `FSharp.Quotations.Expr`.
 
-When checked, the initial type of a weakly typed quoted expression <@@ _expr_ @@> is asserted to be
-of the form FSharp.Quotations.Expr. The expression `expr` is checked with fresh initial type `ty`.
+When checked, the initial type of a weakly typed quoted expression `<@@ expr @@>` is asserted to be
+of the form `FSharp.Quotations.Expr`. The expression `expr` is checked with fresh initial type `ty`.
 
 ### Expression Splices
 
 Both strongly typed and weakly typed quotations may contain expression splices in the following
 forms:
 
-```
+```fsgrammar
 %expr
 %%expr
 ```
 These are respectively strongly typed and weakly typed splicing operators.
 
-**6.8.3.1 Strongly Typed Expression Splices**
+#### Strongly Typed Expression Splices
 An expression of the following form is a _strongly typed expression splice_ :
 
-```
-% expr
+```fsgrammar
+%expr
 ```
 For example, given
 
-```
+```fsharp
 open FSharp.Quotations
 let f1 (v:Expr<int>) = <@ %v + 1 @>
 let expr = f1 <@ 3 @>
 ```
-the identifier expr evaluates to the same expression tree as <@ 3 + 1 @>. The expression tree for <@
-3 @> replaces the splice in the corresponding expression tree node.
+the identifier `expr` evaluates to the same expression tree as `<@ 3 + 1 @>`. The expression tree
+for `<@ 3 @>` replaces the splice in the corresponding expression tree node.
 
 A strongly typed expression splice may appear only in a quotation. Assuming that the splice
-expression % _expr_ is checked with initial type `ty` , the expression `expr` is checked with initial type
-FSharp.Quotations.Expr< _ty_ >.
+expression `%expr` is checked with initial type `ty` , the expression `expr` is checked with initial type
+`FSharp.Quotations.Expr<ty>`.
 
-```
-Note: The rules in this section apply to any use of the prefix operator
-FSharp.Core.ExtraTopLevelOperators.(~%). Uses of this operator must be applied to an
+> Note: The rules in this section apply to any use of the prefix operator
+`FSharp.Core.ExtraTopLevelOperators.(~%)`. Uses of this operator must be applied to an
 argument and may only appear in quoted expressions.
-```
+
 **6.8.3.2 Weakly Typed Expression Splices**
 An expression of the following form is a _weakly typed expression splice_ :
 
-```
-%% expr
+```fsgrammar
+%%expr
 ```
 For example, given
 
-```
+```fsharp
 open FSharp.Quotations
 let f1 (v:Expr) = <@ %%v + 1 @>
 let tree = f1 <@@ 3 @@>
 ```
-the identifier tree evaluates to the same expression tree as <@ 3 + 1 @>. The expression tree
+the identifier `tree` evaluates to the same expression tree as `<@ 3 + 1 @>`. The expression tree
 replaces the splice in the corresponding expression tree node.
 
 
 A weakly typed expression splice may appear only in a quotation. Assuming that the splice
-expression %% _expr_ is checked with initial type `ty` , then the expression `expr` is checked with initial type
-FSharp.Quotations.Expr. No additional constraint is placed on `ty`.
+expression `%%expr` is checked with initial type `ty`, then the expression `expr` is checked with initial type
+`FSharp.Quotations.Expr`. No additional constraint is placed on `ty`.
 
 Additional type annotations are often required for successful use of this operator.
 
-```
-Note: The rules in this section apply to any use of the prefix operator
-FSharp.Core.ExtraTopLevelOperators.(~%%), which is defined in the F# core library. Uses
+> Note: The rules in this section apply to any use of the prefix operator
+`FSharp.Core.ExtraTopLevelOperators.(~%%)`, which is defined in the F# core library. Uses
 of this operator must be applied to an argument and may only occur in quoted
 expressions.
-```
+
 ## Evaluation of Elaborated Forms
 
 At runtime, execution evaluates expressions to values. The evaluation semantics of each expression
@@ -2911,7 +2802,7 @@ form are specified in the subsections that follow.
 The execution of elaborated F# expressions results in values. Values include:
 
 - Primitive constant values
-- The special value null
+- The special value `null`
 - References to object values in the global heap of object values
 - Values for value types, containing a value for each field in the value type
 - Pointers to mutable locations (including static mutable locations, mutable fields and array
@@ -2955,149 +2846,135 @@ their type:
 - F# value types map to a corresponding CLI value type that has corresponding fields. Reads and
     writes of sizes less than or equal to one machine word are atomic.
 
-The VolatileField attribute marks a mutable location as volatile in the compiled form of the code.
+The `VolatileField` attribute marks a mutable location as volatile in the compiled form of the code.
 
 Ordering of reads and writes from mutable locations may be adjusted according to the limitations
 specified by the CLI memory model. The following example shows situations in which changes to
 read and write order can occur, with annotations about the order of reads:
 
-```
+```fsharp
 type ClassContainingMutableData() =
-let value = (1, 2)
-let mutable mutableValue = (1, 2)
-```
-```
-[<VolatileField>]
-let mutable volatileMutableValue = (1, 2)
-```
-```
-member x.ReadValues() =
-// Two reads on an immutable value
-let (a1, b1) = value
-```
-```
-// One read on mutableValue, which may be duplicated according
-// to ECMA CLI spec.
-let (a2, b2) = mutableValue
-```
-```
-// One read on volatileMutableValue, which may not be duplicated.
-let (a3, b3) = volatileMutableValue
-```
-```
-a1, b1, a2, b2, a3, b3
-```
-```
-member x.WriteValues() =
-// One read on mutableValue, which may be duplicated according
-// to ECMA CLI spec.
-let (a2, b2) = mutableValue
-```
-```
-// One write on mutableValue.
-mutableValue <- (a2 + 1, b2 + 1)
-```
-```
-// One read on volatileMutableValue, which may not be duplicated.
-let (a3, b3) = volatileMutableValue
-```
+    let value = (1, 2)
+    let mutable mutableValue = (1, 2)
 
-```
-// One write on volatileMutableValue.
-volatileMutableValue <- (a3 + 1, b3 + 1)
-```
-```
+    [<VolatileField>]
+    let mutable volatileMutableValue = (1, 2)
+
+    member x.ReadValues() =
+        // Two reads on an immutable value
+        let (a1, b1) = value
+
+        // One read on mutableValue, which may be duplicated according
+        // to ECMA CLI spec.
+        let (a2, b2) = mutableValue
+
+        // One read on volatileMutableValue, which may not be duplicated.
+        let (a3, b3) = volatileMutableValue
+
+        a1, b1, a2, b2, a3, b3
+
+    member x.WriteValues() =
+        // One read on mutableValue, which may be duplicated according
+        // to ECMA CLI spec.
+        let (a2, b2) = mutableValue
+
+        // One write on mutableValue.
+        mutableValue <- (a2 + 1, b2 + 1)
+
+        // One read on volatileMutableValue, which may not be duplicated.
+        let (a3, b3) = volatileMutableValue
+
+        // One write on volatileMutableValue.
+        volatileMutableValue <- (a3 + 1, b3 + 1)
+
 let obj = ClassContainingMutableData()
 Async.Parallel [ async { return obj.WriteValues() };
-async { return obj.WriteValues() };
-async { return obj.ReadValues() };
-async { return obj.ReadValues() } ]
+                 async { return obj.WriteValues() };
+                 async { return obj.ReadValues() };
+                 async { return obj.ReadValues() } ]
 ```
 ### Zero Values
 
-Some types have a _zero value_. The zero value is the“default” value for the type in the CLI execution
+Some types have a _zero value_. The zero value is the “default” value for the type in the CLI execution
 environment. The following types have the following zero values:
 
-- For reference types, the null value.
+- For reference types, the `null` value.
 - For value types, the value with all fields set to the zero value for the type of the field. The zero
-    value is also computed by the F# library function Unchecked.defaultof< _ty_ >.
+    value is also computed by the F# library function `Unchecked.defaultof<ty>`.
 
 ### Taking the Address of an Elaborated Expression
 
 When the F# compiler determines the elaborated forms of certain expressions, it must compute a
-“reference” to an elaborated expression `expr` , written _AddressOf_ ( _expr_ , _mutation_ ). The `AddressOf`
+“reference” to an elaborated expression `expr` , written `AddressOf(expr, mutation)`. The `AddressOf`
 operation is used internally within this specification to indicate the elaborated forms of address-of
 expressions, assignment expressions, and method and property calls on objects of variable and value
 types.
 
 The `AddressOf` operation is computed as follows:
 
-- If `expr` has form `path` where `path` is a reference to a value with type byref< _ty_ >, the elaborated
-    form is & _path_.
+- If `expr` has form `path` where `path` is a reference to a value with type `byref<ty>`, the elaborated
+    form is `&path`.
 - If `expr` has form `expra.field` where `field` is a mutable, non-readonly CLI field, the elaborated
-    form is &( _AddressOf_ ( _expra_ ) _.field_ ).
-- If `expr` has form _expra._ [ _exprb_ ] where the operation is an array lookup, the elaborated form is
-    &( _AddressOf_ ( _expra_ )_._ [ _exprb_ ]).
-- If `expr` has any other form, the elaborated form is & _v_ ,where `v` is a fresh mutable local value that
-    is initialized by adding let _v_ = _expr_ to the overall elaborated form for the entire assignment
+    form is `&(AddressOf(expra).field)`.
+- If `expr` has form expra.[exprb] where the operation is an array lookup, the elaborated form is
+    `&(AddressOf(expra).[exprb])`.
+- If `expr` has any other form, the elaborated form is `&v` ,where `v` is a fresh mutable local value that
+    is initialized by adding `let v = expr` to the overall elaborated form for the entire assignment
     expression. This initialization is known as a _defensive copy_ of an immutable value. If `expr` is a
     struct, `expr` is copied each time the `AddressOf` operation is applied, which results in a different
     address each time. To keep the struct in place, the field that contains it should be marked as
     mutable.
 
-The `AddressOf` operation is computed with respect to _mutation_ , which indicates whether the
+The `AddressOf` operation is computed with respect to `mutation`, which indicates whether the
 relevant elaborated form uses the resulting pointer to change the contents of memory. This
 assumption changes the errors and warnings reported.
 
-- If _mutation_ is DefinitelyMutates, then an error is given if a defensive copy must be created.
-- If _mutation_ is PossiblyMutates, then a warning is given if a defensive copy arises.
+- If `mutation` is `DefinitelyMutates`, then an error is given if a defensive copy must be created.
+- If `mutation` is `PossiblyMutates`, then a warning is given if a defensive copy arises.
 
 
-An F# compiler can optionally upgrade PossiblyMutates to DefinitelyMutates for calls to property
-setters and methods named MoveNext and GetNextArg, which are the most common cases of struct-
+An F# compiler can optionally upgrade `PossiblyMutates` to `DefinitelyMutates` for calls to property
+setters and methods named `MoveNext` and `GetNextArg`, which are the most common cases of struct-
 mutators in CLI library design. This is done by the F# compiler.
 
-```
-Note:In F#, the warning “copy due to possible mutation of value type” is a level 4
-warning and is not reported when using the default settings of the F# compiler. This is
-because the majority of value types in CLI libraries are immutable. This is warning
-number 52 in the F# implementation.
-```
-```
-CLI libraries do not include metadata to indicate whether a particular value type is
-immutable. Unless a value is held in arrays or locations marked mutable, or a value type
-is known to be immutable to the F# compiler, F# inserts copies to ensure that
-inadvertent mutation does not occur.
-```
+> Note:In F#, the warning “copy due to possible mutation of value type” is a level 4
+  warning and is not reported when using the default settings of the F# compiler. This is
+  because the majority of value types in CLI libraries are immutable. This is warning
+  number 52 in the F# implementation.
+  <br> CLI libraries do not include metadata to indicate whether a particular value type is
+  immutable. Unless a value is held in arrays or locations marked mutable, or a value type
+  is known to be immutable to the F# compiler, F# inserts copies to ensure that
+  inadvertent mutation does not occur.
+
 ### Evaluating Value References
 
-At runtime, an elaborated value reference v is evaluated by looking up the value of v in the local
+At runtime, an elaborated value reference `v` is evaluated by looking up the value of `v` in the local
 environment.
 
 ### Evaluating Function Applications
 
-At runtime, an elaborated application of a function _f e 1_ ... _en_ is evaluated as follows:
+At runtime, an elaborated application of a function `f e1 ... en` is evaluated as follows:
 
-- The expressions `f` and `e1` ... _en_ , are evaluated.
-- If `f` evaluates to a function value with closure environment **E** , arguments `v1` ... _vm_ , and body `expr` ,
-    where _m_ <= _n_ , then **E** is extended by mapping `v1` ... _vm_ to the argument values for `e1` ... _em_. The
+- The expressions `f` and `e1 ... en`, are evaluated.
+- If `f` evaluates to a function value with closure environment `E`, arguments `v1 ... vm`, and body `expr`,
+    where `m <= n` , then `E` is extended by mapping `v1 ... vm` to the argument values for `e1 ... em`. The
     expression `expr` is then evaluated in this extended environment and any remaining arguments
     applied.
 - If `f` evaluates to a function value with more than `n` arguments, then a new function value is
     returned with an extended closure mapping `n` additional formal argument names to the
-    argument values for `e1` ... _em_.
+    argument values for `e1 ... em`.
 
-The result of calling the obj.GetType() method on the resulting object is under-specified (see
-§6.9.24).
+The result of calling the `obj.GetType()` method on the resulting object is under-specified (see
+[§6.9.24](expressions.md#values-with-underspecified-object-identity-and-type-identity)).
 
 ### Evaluating Method Applications
 
 At runtime an elaborated application of a method is evaluated as follows:
 
-- The elaborated form is `e0` .M( `e1` ,..., _en_ ) for an instance method or M( `e1` ,..., _en_ ) for a static method.
+- The elaborated form is `e0.M(e1 , ..., en)` for an instance method or `M(e, ..., en)` for a static method.
 - The (optional) `e0` and `e1` ,..., _en_ are evaluated in order.
-- If `e0` evaluates to null, a NullReferenceException is raised.
-- If the method is declared abstract—that is, if it is a virtual dispatch slot—then the body of the
+- If `e0` evaluates to `null`, a `NullReferenceException` is raised.
+- If the method is declared `abstract` — that is, if it is a virtual dispatch slot — then the body of the
     member is chosen according to the dispatch maps of the value of `e0` ([§14.8](inference-procedures.md#dispatch-slot-checking)).
 - The formal parameters of the method are mapped to corresponding argument values. The body
     of the method member is evaluated in the resulting environment.
@@ -3105,14 +2982,14 @@ At runtime an elaborated application of a method is evaluated as follows:
 
 ### Evaluating Union Cases
 
-At runtime, an elaborated use of a union case _Case_ ( `e1` ,..., _en_ ) for a union type `ty` is evaluated as
+At runtime, an elaborated use of a union case `Case(e1 , ..., en)` for a union type `ty` is evaluated as
 follows:
 
-- The expressions `e1` ,..., _en_ are evaluated in order.
+- The expressions `e1, ..., en` are evaluated in order.
 - The result of evaluation is an object value with union case label `Case` and fields given by the
-    values of `e1` ,..., _en_.
+    values of `e1 , ..., en`.
 - If the type `ty` uses null as a representation ([§5.4.8](types-and-type-constraints.md#nullness)) and `Case` is the single union case without
-    arguments, the generated value is null.
+    arguments, the generated value is `null`.
 - The runtime type of the object is either `ty` or an internally generated type that is compatible
     with `ty`.
 
@@ -3120,36 +2997,36 @@ follows:
 
 At runtime, an elaborated lookup of a CLI or F# fields is evaluated as follows:
 
-- The elaborated form is _expr_. _F_ for an instance field or `F` for a static field.
-- The(optional) `expr` is evaluated.
-- If `expr` evaluates to null, a NullReferenceException is raised.
+- The elaborated form is `expr.F` for an instance field or `F` for a static field.
+- The (optional) `expr` is evaluated.
+- If `expr` evaluates to `null`, a `NullReferenceException` is raised.
 - The value of the field is read from either the global field table or the local field table associated
     with the object.
 
 ### Evaluating Array Expressions
 
-At runtime, an elaborated array expression [| _e 1 ; ..._ ; _en_ |] _ty_ is evaluated as follows:
+At runtime, an elaborated array expression `[| e1; ...; en |]ty` is evaluated as follows:
 
-- Each expression _e 1 ... en_ is evaluated in order.
-- The result of evaluation is a new array of runtime type _ty_ [] that contains the resulting values in
+- Each expression `e1 ... en` is evaluated in order.
+- The result of evaluation is a new array of runtime type `ty[]` that contains the resulting values in
     order.
 
 ### Evaluating Record Expressions
 
-At runtime, an elaborated record construction { _field_ 1 = _e 1 ; ..._ ; _field_ n = _en_ } _ty_ is evaluated as
+At runtime, an elaborated record construction `{ field1 = e1; ... ; fieldn = en }ty` is evaluated as
 follows:
 
-- Each expression _e 1 ... en_ is evaluated in order.
+- Each expression `e1 ... en` is evaluated in order.
 - The result of evaluation is an object of type `ty` with the given field values
 
 ### Evaluating Function Expressions
 
-At runtime, an elaborated function expression (fun `v1` ... _vn_ - > _expr_ ) is evaluated as follows:
+At runtime, an elaborated function expression `(fun v1 ... vn -> expr)` is evaluated as follows:
 
 - The expression evaluates to a function object with a closure that assigns values to all variables
     that are referenced in `expr` and a function body that is `expr`.
 - The values in the closure are the current values of those variables in the execution environment.
-- The result of calling the obj.GetType() method on the resulting object is under-specified (see
+- The result of calling the `obj.GetType()` method on the resulting object is under-specified (see
     [§6.9.24](expressions.md#values-with-underspecified-object-identity-and-type-identity)).
 
 
@@ -3157,25 +3034,25 @@ At runtime, an elaborated function expression (fun `v1` ... _vn_ - > _expr_ ) is
 
 At runtime, elaborated object expressions
 
-```
-{ new ty 0 args-expropt object-members
-interface ty 1 object-members 1
-interface tyn object-membersn }
+```fsgrammar
+{ new ty0 args-expr~opt object-members
+      interface ty1 object-members1
+      interface tyn object-membersn }
 ```
 is evaluated as follows:
 
 - The expression evaluates to an object whose runtime type is compatible with all of the `tyi` and
     which has the corresponding dispatch map ([§14.8](inference-procedures.md#dispatch-slot-checking)). If present, the base construction expression
-    _ty_ 0 ( _args-expr_ ) is executed as the first step in the construction of the object.
+    `ty0 (args-expr)` is executed as the first step in the construction of the object.
 - The object is given a closure that assigns values to all variables that are referenced in `expr`.
 - The values in the closure are the current values of those variables in the execution environment.
 
-The result of calling the obj.GetType() method on the resulting object is under-specified (see
-§6.9.24).
+The result of calling the `obj.GetType()` method on the resulting object is under-specified (see
+[§6.9.24](expressions.md#values-with-underspecified-object-identity-and-type-identity)).
 
 ### Evaluating Definition Expressions
 
-At runtime, each elaborated definition _pat_ = _expr_ is evaluated as follows:
+At runtime, each elaborated definition `pat = expr` is evaluated as follows:
 
 - The expression `expr` is evaluated.
 - The expression is then matched against `pat` to produce a value for each variable pattern ([§7.2](patterns.md#named-patterns))
@@ -3184,7 +3061,7 @@ At runtime, each elaborated definition _pat_ = _expr_ is evaluated as follows:
 
 ### Evaluating Integer For Loops
 
-At runtime, an integer for loop for _var_ = `expr1` to `expr2` do `expr3` done is evaluated as follows:
+At runtime, an integer for loop `for var = expr1 to expr2 do expr3 done` is evaluated as follows:
 
 - Expressions `expr1` and `expr2` are evaluated once to values `v1` and `v2`.
 - The expression `expr3` is evaluated repeatedly with the variable `var` assigned successive values in
@@ -3193,18 +3070,17 @@ At runtime, an integer for loop for _var_ = `expr1` to `expr2` do `expr3` done i
 
 ### Evaluating While Loops
 
-As runtime, while-loops while `expr1` do `expr2` done are evaluated as follows:
+As runtime, while-loops `while expr1 do expr2 done` are evaluated as follows:
 
 - Expression `expr1` is evaluated to a value `v1`.
-- If `v1` is true, expression `expr2` is evaluated, and the expression while `expr1` do `expr2` done is
+- If `v1` is true, expression `expr2` is evaluated, and the expression `while expr1 do expr2 done` is
     evaluated again.
-- If `v1` is false, the loop terminates and the resulting value is null (the representation of the only
-    value of type unit)
+- If `v1` is `false`, the loop terminates and the resulting value is `null` (the representation of the only
+    value of type `unit`)
 
 ### Evaluating Static Coercion Expressions
 
-At runtime, elaborated static coercion expressions of the form _expr_ :> _ty_ are evaluated as follows:
-
+At runtime, elaborated static coercion expressions of the form `expr :> ty` are evaluated as follows:
 
 - Expression `expr` is evaluated to a value `v`.
 - If the static type of `e` is a value type, and `ty` is a reference type, `v` is _boxed_ ; that is, `v` is converted
@@ -3214,74 +3090,72 @@ At runtime, elaborated static coercion expressions of the form _expr_ :> _ty_ ar
 
 ### Evaluating Dynamic Type-Test Expressions
 
-At runtime, elaborated dynamic type test expressions _expr_ :? _ty_ are evaluated as follows:
+At runtime, elaborated dynamic type test expressions `expr :? ty` are evaluated as follows:
 
 1. Expression `expr` is evaluated to a value `v`.
-2. If `v` is null, then:
-    - If `tye` uses null as a representation ([§5.4.8](types-and-type-constraints.md#nullness)), the result is true.
-    - Otherwise the expression evaluates to false.
-3. If `v` is not null and has runtime type `vty` which dynamically converts to `ty` ([§5.4.10](types-and-type-constraints.md#dynamic-conversion-between-types)), the
-    expression evaluates to true. However, if `ty` is an enumeration type, the expression evaluates to
-    true if and only if `ty` is precisely `vty`.
+2. If `v` is `null`, then:
+    - If `tye` uses `null` as a representation ([§5.4.8](types-and-type-constraints.md#nullness)), the result is `true`.
+    - Otherwise the expression evaluates to `false`.
+3. If `v` is not `null` and has runtime type `vty` which dynamically converts to `ty` ([§5.4.10](types-and-type-constraints.md#dynamic-conversion-between-types)), the
+    expression evaluates to `true`. However, if `ty` is an enumeration type, the expression evaluates to
+    `true` if and only if `ty` is precisely `vty`.
 
 ### Evaluating Dynamic Coercion Expressions
 
-At runtime, elaborated dynamic coercion expressions _expr_ :?> _ty_ are evaluated as follows:
+At runtime, elaborated dynamic coercion expressions `expr :?> ty` are evaluated as follows:
 
 1. Expression `expr` is evaluated to a value `v`.
-2. If `v` is null:
-    - If `tye` uses null as a representation ([§5.4.8](types-and-type-constraints.md#nullness)), the result is the null value.
-    - Otherwise a NullReferenceException is raised.
-3. If `v` is not null:
-    - If `v` has dynamic type `vty` which _dynamically converts to ty_ ([§5.4.10](types-and-type-constraints.md#dynamic-conversion-between-types)), the expression
-       evaluates to the dynamic conversion of `v` to `ty`.
-          o If `vty` is a reference type and `ty` is a value type, then `v` is _unboxed_ ; that is, `v` is
+2. If `v` is `null`:
+    - If `tye` uses `null` as a representation ([§5.4.8](types-and-type-constraints.md#nullness)), the result is the `null` value.
+    - Otherwise a `NullReferenceException` is raised.
+3. If `v` is not `null`:
+    - If `v` has dynamic type `vty` which _dynamically converts_ to `ty` ([§5.4.10](types-and-type-constraints.md#dynamic-conversion-between-types)), the expression evaluates to the dynamic conversion of `v` to `ty`.
+        - If `vty` is a reference type and `ty` is a value type, then `v` is _unboxed_ ; that is, `v` is
              converted from an object on the heap to a struct value with the same field
              assignments as the object. The expression evaluates to this value.
-          o Otherwise, the expression evaluates to `v`.
-    - Otherwise an InvalidCastException is raised.
+        - Otherwise, the expression evaluates to `v`.
+    - Otherwise an `InvalidCastException` is raised.
 
-Expressions of the form _expr_ :?> _ty_ evaluate in the same way as the F# library function
-unbox _<ty>_ ( _expr_ ).
+Expressions of the form `expr :?> ty` evaluate in the same way as the F# library function
+`unbox<ty>(expr)`.
 
-```
-Note: Some F# types—most notably the option<_> type—use null as a representation
-for efficiency reasons ([§5.4.8](types-and-type-constraints.md#nullness)),. For these types, boxing and unboxing can lose type
-distinctions. For example, contrast the following two examples:
-```
+>   Note: Some F# types — most notably the `option<_>` type — use `null` as a representation
+    for efficiency reasons ([§5.4.8](types-and-type-constraints.md#nullness)). For these  types, boxing and unboxing can lose type
+    distinctions. For example, contrast the following two examples:
 
-```
-> (box([]:string list) :?> int list);;
-System.InvalidCastException...
-> (box(None:string option) :?> int option);;
-val it : int option = None
-```
-```
-In the first case, the conversion from an empty list of strings to an empty list of integers
-(after first boxing) fails. In the second case, the conversion from a string option to an
-integer option (after first boxing) succeeds.
-```
+    ```fsharp
+    > (box([]:string list) :?> int list);;
+    System.InvalidCastException...
+    > (box(None:string option) :?> int option);;
+    val it : int option = None
+    ```
+
+>    In the first case, the conversion from an empty list of strings to an empty list of integers
+    (after first boxing) fails. In the second case, the conversion from a string option to an
+    integer option (after first boxing) succeeds.
+    
+    
 ### Evaluating Sequential Execution Expressions
 
-At runtime, elaborated sequential expressions `expr1` ; `expr2` are evaluated as follows:
+At runtime, elaborated sequential expressions `expr1 ; expr2` are evaluated as follows:
 
 - The expression `expr1` is evaluated for its side effects and the result is discarded.
 - The expression `expr2` is evaluated to a value `v2` and the result of the overall expression is `v2`.
 
 ### Evaluating Try-with Expressions
 
-At runtime, elaborated try-with expressions try `expr1` with _rules_ are evaluated as follows:
+At runtime, elaborated try-with expressions try `expr1 with rules` are evaluated as follows:
 
 - The expression `expr1` is evaluated to a value `v1`.
 - If no exception occurs, the result is the value `v1`.
 - If an exception occurs, the pattern rules are executed against the resulting exception value.
     - If no rule matches, the exception is reraised.
-    - If a rule _pat -> expr 2_ matches, the mapping _pat = v 1_ is added to the local environment,
+    - If a rule `pat -> expr2` matches, the mapping `pat = v1` is added to the local environment,
        and `expr2` is evaluated.
 
 ### Evaluating Try-finally Expressions
 
-At runtime, elaborated try-finally expressions try `expr1` finally `expr2` are evaluated as follows:
+At runtime, elaborated try-finally expressions try `expr1 finally expr2` are evaluated as follows:
 
 - The expression `expr1` is evaluated.
     - If the result of this evaluation is a value `v` , then `expr2` is evaluated.
@@ -3297,27 +3171,24 @@ At runtime, elaborated try-finally expressions try `expr1` finally `expr2` are e
 At runtime, an elaborated address-of expression is evaluated as follows. First, the expression has
 one of the following forms:
 
-- & _path_ where `path` is a static field.
-
-
-- &( _expr.field_ )
-- &( _expra._ [ _exprb_ ])
-- & `v` where `v` is a local mutable value.
+- `&path` where `path` is a static field.
+- `&(expr.field)`
+- `&(expra.[exprb])`
+- `&v` where `v` is a local mutable value.
 
 The expression evaluates to the address of the referenced local mutable value, mutable field, or
 mutable static field.
 
-```
-Note: The underlying CIL execution machinery that F# uses supports covariant arrays, as
-evidenced by the fact that the type string[] dynamically converts to obj[] ([§5.4.10](types-and-type-constraints.md#dynamic-conversion-between-types)).
+> Note: The underlying CIL execution machinery that F# uses supports covariant arrays, as
+evidenced by the fact that the type `string[]` dynamically converts to `obj[]` (§5.4.10).
 Although this feature is rarely used in F#, its existence means that array assignments and
 taking the address of array elements may fail at runtime with a
-System.ArrayTypeMismatchException if the runtime type of the target array does not
+`System.ArrayTypeMismatchException` if the runtime type of the target array does not
 match the runtime type of the element being assigned. For example, the following code
 fails at runtime:
+```fsharp
 let f (x: byref<obj>) = ()
-```
-```
+
 let a = Array.zeroCreate<obj> 10
 let b = Array.zeroCreate<string> 10
 f (&a.[0])
@@ -3328,10 +3199,10 @@ F (&bb.[1])
 ### Values with Underspecified Object Identity and Type Identity
 
 The CLI and F# support operations that detect object identity—that is, whether two object
-references refer to the same “physical” object. For example, System.Object.ReferenceEquals(obj 1 ,
-obj 2 ) returns true if the two object references refer to the same object. Similarly,
-System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode() returns a hash code that is partly
-based on physical object identity, and the AddHandler and RemoveHandler operations (which register
+references refer to the same “physical” object. For example, `System.Object.ReferenceEquals(obj1, obj2)` 
+returns true if the two object references refer to the same object. Similarly,
+`System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode()` returns a hash code that is partly
+based on physical object identity, and the `AddHandler` and `RemoveHandler` operations (which register
 and unregister event handlers) are based on the object identity of delegate values.
 
 The results of these operations are underspecified when used with values of the following F# types:
@@ -3342,19 +3213,17 @@ The results of these operations are underspecified when used with values of the 
 - Union types
 - Boxed immutable value types
 
-For two values of such types, the results of System.Object.ReferenceEquals and
-System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode are underspecified; however, the
+For two values of such types, the results of `System.Object.ReferenceEquals` and
+`System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode` are underspecified; however, the
 operations terminate and do not raise exceptions. An implementation of F# is not required to define
 the results of these operations for values of these types.
 
 For function values and objects that are returned by object expressions, the results of the following
 operations are underspecified in the same way:
 
-- Object.GetHashCode()
-
-
-- Object.GetType()
+- `Object.GetHashCode()`
+- `Object.GetType()`
 
 For union types the results of the following operations are underspecified in the same way:
 
-- Object.GetType()
+- `Object.GetType()`
