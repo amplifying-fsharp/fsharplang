@@ -158,10 +158,8 @@ During checking, Name Resolution (see [§14.1](inference-procedures.md#name-reso
   only in the context of a syntactic type that is embedded in an expression or pattern. If the type
   variable name is assigned a type in that environment, F# uses that mapping. Otherwise, a fresh
 
-```
 type inference variable is created (see [§14.5](inference-procedures.md#constraint-solving)) and added to both the type inference environment
 and the floating type variable environment.
-```
 
 A type of the form `_` is an anonymous variable type. A fresh type inference variable is created and
 added to the type inference environment (see [§14.5](inference-procedures.md#constraint-solving)) for such a type.
@@ -209,9 +207,7 @@ the rank of the array type.
 > Note: The type `int[][,]` in F# is the same as the type `int[,][]` in C# although the
 dimensions are swapped. This ensures consistency with other postfix type names in F# such as `int list list`.
 
-```
 F# supports multidimensional array types only up to rank 4.
-```
 
 ### Constrained Types
 
@@ -332,11 +328,11 @@ return types in the two member constraints are themselves constrained to be equa
 is specifically necessary to simplify type inference, reduce the size of types shown to users, and
 ensure the reporting of useful error messages.
 
-### 4 Default Constructor Constraints
+### Default Constructor Constraints
 
 An `explicit default constructor constraint` has the following form:
 
-```fshgrammar
+```fsgrammar
 typar : (new : unit -> 'T)
 ```
 
@@ -367,7 +363,7 @@ notably because types such as `System.Nullable<System.Nullable<_>>` and `System.
 
 An `explicit reference type constraint` has the following form:
 
-```fsgarmmar
+```fsgrammar
 typar : not struct
 ```
 
