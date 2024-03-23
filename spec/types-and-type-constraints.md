@@ -109,8 +109,8 @@ static types. For example `int32 * int32` is used to represent the syntactic typ
 source code and the static type that is used during checking and type inference.
 
 The conversion from syntactic types to static types happens in the context of a name resolution
-environment (14.1), a floating type variable environment, which is a mapping from names to type
-variables, and a type inference environment (14.5).
+environment (see [§14.1](inference-procedures.md#name-resolution)), a floating type variable environment, which is a mapping from names to type
+variables, and a type inference environment (see [§14.5](inference-procedures.md#constraint-solving)).
 
 The phrase “fresh type” means a static type that is formed from a `fresh type inference variable`. Type
 inference variables are either solved or generalized by type inference ([§14.5](inference-procedures.md#constraint-solving)). During conversion and
@@ -132,7 +132,7 @@ and results in output constraints `Χ’`. Type inference variables and constrai
 
 Named types are converted to static types as follows:
 
-- Name Resolution for Types (14.1) resolves `long-ident` to a type definition with formal generic
+- Name Resolution for Types (see [§14.1](inference-procedures.md#name-resolution)) resolves `long-ident` to a type definition with formal generic
   parameters `<typar1,...,typarn>` and formal constraints `C`. The number of type arguments `n` is
   used during the name resolution process to distinguish between similarly named types that take
   different numbers of type arguments.
@@ -150,7 +150,7 @@ A type of the form `'ident` is a variable type. For example, the following are a
 'Key
 ```
 
-During checking, Name Resolution (14.1) is applied to the identifier.
+During checking, Name Resolution (see [§14.1](inference-procedures.md#name-resolution)) is applied to the identifier.
 
 - If name resolution succeeds, the result is a variable type that refers to an existing declared type
   parameter.
@@ -159,16 +159,16 @@ During checking, Name Resolution (14.1) is applied to the identifier.
   variable name is assigned a type in that environment, F# uses that mapping. Otherwise, a fresh
 
 ```
-type inference variable is created (see 14.5) and added to both the type inference environment
+type inference variable is created (see [§14.5](inference-procedures.md#constraint-solving)) and added to both the type inference environment
 and the floating type variable environment.
 ```
 
 A type of the form `_` is an anonymous variable type. A fresh type inference variable is created and
-added to the type inference environment (see 14.5) for such a type.
+added to the type inference environment (see [§14.5](inference-procedures.md#constraint-solving)) for such a type.
 
 A type of the form `^ident` is a `statically resolved type variable`. A fresh type inference variable is
-created and added to the type inference environment (see §14.5). This type variable is tagged with
-an attribute that indicates that it can be generalized only at `inline` definitions (see §14.6.7). The
+created and added to the type inference environment (see [§14.5](inference-procedures.md#constraint-solving)). This type variable is tagged with
+an attribute that indicates that it can be generalized only at `inline` definitions (see [§14.6.7](inference-procedures.md#generalization)). The
 same restriction on generalization applies to any type variables that are contained in any type that is
 equated with the `^ident` type in a type inference equation.
 
