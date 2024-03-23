@@ -7,28 +7,28 @@ in the subsequent table.
 
 ```fsgrammar
 rule :=
-    pat pattern-guardopt - > expr -- pattern, optional guard and action
+    pat pattern-guard~opt -> expr       -- pattern, optional guard and action
 
 pattern-guard := when expr
 
 pat :=
-    const -- constant pattern
-    long-ident pat-paramopt patopt -- named pattern
+    const                               -- constant pattern
+    long-ident pat-param~opt pat~opt    -- named pattern
     _ -- wildcard pattern
-    pat as ident -- "as" pattern
-    pat '|' pat -- disjunctive pattern
-    pat '&' pat -- conjunctive pattern
-    pat :: pat -- "cons" pattern
-    pat : type -- pattern with type constraint
-    pat ,..., pat -- tuple pattern
-    ( pat ) -- parenthesized pattern
-    list-pat -- list pattern
-    array-pat -- array pattern
-    record-pat -- record pattern
-    :? atomic-type -- dynamic type test pattern
-    :? atomic-type as ident -- dynamic type test pattern
-    null -- null-test pattern
-    attributes pat -- pattern with attributes
+    pat as ident                        -- "as" pattern
+    pat '|' pat                         -- disjunctive pattern
+    pat '&' pat                         -- conjunctive pattern
+    pat :: pat                          -- "cons" pattern
+    pat : type                          -- pattern with type constraint
+    pat ,..., pat                       -- tuple pattern
+    ( pat )                             -- parenthesized pattern
+    list-pat                            -- list pattern
+    array-pat                           -- array pattern
+    record-pat                          -- record pattern
+    :? atomic-type                      -- dynamic type test pattern
+    :? atomic-type as ident             -- dynamic type test pattern
+    null                                -- null-test pattern
+    attributes pat                      -- pattern with attributes
 
 list-pat :=
     [ ]
@@ -62,7 +62,7 @@ pat-param :=
 
 pats := pat , ... , pat
 field-pats := field-pat ; ... ; field-pat
-rules := '|' opt rule '|' ... '|' rule
+rules := '|'~opt rule '|' ... '|' rule
 ```
 Patterns are elaborated to expressions through a process called _pattern match compilation_. This
 reduces pattern matching to _decision trees_ which operate on an input value, called the _pattern input_.
