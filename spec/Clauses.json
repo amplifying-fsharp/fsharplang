@@ -7,7 +7,8 @@
         "types-and-type-constraints",
         "expressions",
         "patterns",
-        "type-definitions"
+        "type-definitions",
+        "units-of-measure"
     ],
     "Annexes": [
     ]
