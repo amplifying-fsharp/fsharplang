@@ -34,10 +34,11 @@ let initialState = {
 
 let specDir = "spec"
 let outDir = "artifacts"
+let outName = "spec"
 let specPath filename = $"{specDir}/{filename}"
 let clausePath clauseName = specPath clauseName + ".md"
 let clauseCatalogPath = specPath "Clauses.json"
-let outFilePath = $"{outDir}/spec.md"
+let outFilePath = $"{outDir}/{outName}.md"
 
 let readClauses() =
     try
@@ -152,7 +153,7 @@ let processClauses clauses =
     // Create the ToC and build the complete spec
     let lines = docHead @ tocLines state.toc @ List.collect _.lines processedClauses
     // Adjust the reference links to point to the correct header of the new spec
-    let (lines, state) = ({state with clauseName = outFilePath; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
+    let (lines, state) = ({state with clauseName = outName; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
     if not state.errors.IsEmpty then
         Error(DocumentErrors (List.rev state.errors))
     else
