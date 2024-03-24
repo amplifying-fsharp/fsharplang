@@ -8,7 +8,8 @@
         "expressions",
         "patterns",
         "type-definitions",
-        "units-of-measure"
+        "units-of-measure",
+        "namespaces-and-modules"
     ],
     "Annexes": [
     ]
