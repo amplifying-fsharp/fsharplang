@@ -6,7 +6,8 @@
         "basic-grammar-elements",
         "types-and-type-constraints",
         "expressions",
-        "patterns"
+        "patterns",
+        "type-definitions"
     ],
     "Annexes": [
     ]
