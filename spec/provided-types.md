@@ -1,4 +1,4 @@
-# 16. PROVIDED TYPES
+# Provided Types
 
 Type providers are extensions provided to an F# compiler or interpreter which provide information
 about types available in the environment for the F# code being analysed.
@@ -40,7 +40,7 @@ As of this release of F#,
   by a type provider instance.
 - provided attributes are attribute value objects returned by a type provider instance.
 
-## 16.1 STATIC PARAMETERS
+## Static Parameters
 
 The syntax of types in F# is expanded to include static parameters, including named static
 parameters:
@@ -89,98 +89,85 @@ apply the static arguments to the provided method.
 
 In both cases a static parameter value must be given for each non-optional static parameter.
 
-### 16.1.1 Mangling of Static Parameter Values
+### Mangling of Static Parameter Values
 
 Static parameter values are encoded into the names used for types and methods within F#
 metadata. The encoding scheme used is
 
 ```fsgrammar
-**encoding** (A<arg1,...,argN>) =
+encoding (A<arg1,...,argN>) =
 
-typeOrMethodName,ParamName1= **encoding** (arg1),..., ParamNameN= **encoding** (argN)
+  typeOrMethodName,ParamName1= encoding(arg1),..., ParamNameN=encoding(argN)
 
-**encoding** (v) = "s"
+encoding(v) = "s"
 ```
-
 
 where s is the result applying the F# `string` operator to v (using invariant numeric
 formatting), and in the result `"` is replaced by `\"` and `\` by `\\`
 
-## 16.2 PROVIDED NAMESPACE
+## Provided Namespaces
 
 Each type provider instance in the assembly context reports a collection of provided namespaces
-though the GetNamespaces type provider method. Each provided namespace can in turn report
-further namespaces through the GetNestedNamespaces type provider method.
+though the `GetNamespaces` type provider method. Each provided namespace can in turn report
+further namespaces through the `GetNestedNamespaces` type provider method.
 
-## 16.3 PROVIDED TYPE DEFINITIONS
+## Provided Type Definitions
 
-Each provided namespace reports provided type definitions though the GetTypes and
-ResolveTypeName type provider methods. The type provider is obliged to ensure that these two
+Each provided namespace reports provided type definitions though the `GetTypes` and
+`ResolveTypeName` type provider methods. The type provider is obliged to ensure that these two
 methods return consistent results.
 
 Name resolution for unqualified identifiers may return provided type definitions if no other
 resolution is available.
 
-### 16.3.1 Generated v. Erased Types
+### Generated v. Erased Types
 
-Each provided type definition may be _generated_ or _erased_. In this case, the types and method calls
+Each provided type definition may be `generated` or `erased`. In this case, the types and method calls
 are removed entirely during compilation and replaced with other representations. When an erased
 type is used, the compiler will replace it with the first concrete type in its inheritance chain as
-returned by the TPM type.BaseType. The erasure of an erased interface type is “object”.
+returned by the TPM `type.BaseType`. The erasure of an erased interface type is `object`.
 
-```
-➢ If it has a type definition under a path D.E.F , and the .Assembly of that type is in a different
-assembly A to the provider’s assembly, then that type definition is a “generated” type
+- If it has a type definition under a path `D.E.F` , and the .Assembly of that type is in a different
+assembly A to the provider’s assembly, then that type definition is a `generated` type
 definition. Otherwise it is an erased type definition.
-```
-```
-➢ Erased type definitions must return TypeAttributes with the IsErased flag set, value
-0x40000000 and given by the F# literal TypeProviderTypeAttributes.IsErased.
-```
-```
-➢ When a provided type definition is generated, its reported assembly A is treated as an
+
+- Erased type definitions must return TypeAttributes with the IsErased flag set, value
+`0x40000000` and given by the F# literal `TypeProviderTypeAttributes.IsErased`.
+
+- When a provided type definition is generated, its reported assembly `A` is treated as an
 injected assembly which is statically linked into the resulting assembly.
-```
-```
-➢ Concrete type definitions (both provided and F#-authored) and object expressions may not
+
+- Concrete type definitions (both provided and F#-authored) and object expressions may not
 inherit from erased types
-```
-```
-➢ Concrete type definitions (both provided and F#-authored) and object expressions may not
+
+- Concrete type definitions (both provided and F#-authored) and object expressions may not
 implement erased interfaces
-```
-```
-➢ If an erased type definition reports an interface, its erasure must implement the erasure of
+
+- If an erased type definition reports an interface, its erasure must implement the erasure of
 that interface. The interfaces reported by an erased type definition must be unique up to
 erasure.
-```
-```
-➢ Erased types may not be used as the target type of a runtime type test of runtime coercion.
-```
 
-```
-➢ When determining uniqueness for F#-declared methods, uniqueness is determined after
+- Erased types may not be used as the target type of a runtime type test of runtime coercion.
+
+- When determining uniqueness for F#-declared methods, uniqueness is determined after
 erasure of both provided types and units of measure.
-```
-```
-➢ The elaborated form of F# expressions is after erasure of provided types.
-```
-```
-➢ Two generated type definitions are equivalent if and only if they have the same F# path and
+
+- The elaborated form of F# expressions is after erasure of provided types.
+
+- Two generated type definitions are equivalent if and only if they have the same F# path and
 name in the same assembly, once they are rooted according to their corresponding
 generative type definition.
-```
-```
-➢ Two erased type definitions are only equivalent if they are provided by the same provider,
+
+- Two erased type definitions are only equivalent if they are provided by the same provider,
 using the same type name, with the same static arguments.
-```
-### 16.3.2 Type References
+
+### Type References
 
 The elements of provided type definitions may reference other provided type definitions, and types
 from imported assemblies referenced in the compilation context. They may not reference type
 defined in the F# code currently being compiled.
 
-### 16.3.3 Static Parameters
+### Static Parameters
 
 A provided type definition may report a set of static parameters. For such a definition, all other
 provided contents are ignored.
@@ -188,205 +175,154 @@ provided contents are ignored.
 A provided method definition may also report a set of static parameters. For such a definition, all
 other provided contents are ignored.
 
-Static parameters may be optional and/or named, indicated by the Attributes property of the static
+Static parameters may be optional and/or named, indicated by the `Attributes` property of the static
 parameter. For a given set of static parameters, no two static parameters may have the same name
 and named static arguments must come after all other arguments.
 
-### 16.3.4 Kind
+### Kind
 
-```
-➢ Provided type definitions may be classes.
-```
-```
-This includes both erased and concrete types. This corresponds to the type.IsClass property
+- Provided type definitions may be classes.
+This includes both erased and concrete types. This corresponds to the `type.IsClass` property
 returning true for the provided type definition.
-```
-```
-➢ Provided type definitions may be interfaces.
-```
-```
-This includes both erased and concrete types. This corresponds to the type.IsInterface
-property returning true. Only one of IsInterface, IsClass, IsStruct, IsEnum, IsDelegate,
-IsArray may return true.
-```
-```
-➢ Provided type definitions may be static classes.
-```
-```
+
+- Provided type definitions may be interfaces.
+This includes both erased and concrete types. This corresponds to the `type.IsInterface`
+property returning true. Only one of `IsInterface`, `IsClass`, `IsStruct`, `IsEnum`, `IsDelegate`,
+`IsArray` may return true.
+
+- Provided type definitions may be static classes.
 This includes both erased and concrete types.
-```
-```
-➢ Provided type definitions may be sealed.
-```
-```
-➢ Provided type definitions may not be arrays. This means the type.IsArray property must
+
+- Provided type definitions may be sealed. 
+
+- Provided type definitions may not be arrays. This means the `type.IsArray` property must
 always return false. Provided types used in return types and argument positions may be
-array “symbol” types, see below.
-```
+array `symbol` types, see below.
 
-```
-➢ By default provided type definitions which are reference types are considered to support
-null literals.
-```
-```
-A provided type definition may have the AllowNullLiteralAttribute with value false in
+- By default provided type definitions which are reference types are considered to support
+`null` literals.
+
+A provided type definition may have the `AllowNullLiteralAttribute` with value `false` in
 which case the type is considered to have null as an abnormal value.
-```
-### 16.3.5 Inheritance
 
-```
-➢ Provided type definitions may report base types.
-```
-```
-➢ Provided type definition may report interfaces.
-```
-### 16.3.6 Members
+### Inheritance
 
-```
-➢ Provided type definitions may report methods.
-```
-```
-This corresponds to non-null results from the type.GetMethod and type.GetMethods of the
+- Provided type definitions may report base types.
+- Provided type definition may report interfaces.
+
+### Members
+
+- Provided type definitions may report methods.
+
+This corresponds to non-null results from the `type.GetMethod` and `type.GetMethods` of the
 provided type definition. The results returned by these methods must be consistent.
-```
-```
-o Provided methods may be static, instance and abstract
-```
-```
-o Provided methods may not be class constructors (.cctor). By .NET rules these would
-have to be private anyway.
-```
-```
-o Provided methods may be operators such as op_Addition.
-```
-```
-➢ Provided type definitions may report properties.
-```
-```
-This corresponds to non-null results from the type.GetProperty and type.GetProperties of the
+
+  - Provided methods may be static, instance and abstract
+    - Provided methods may not be class constructors (.cctor). By .NET rules these would
+      have to be private anyway.
+    - Provided methods may be operators such as op_Addition.
+
+- Provided type definitions may report properties.
+
+This corresponds to non-null results from the `type.GetProperty` and `type.GetProperties` of the
 provided type definition. The results returned by these methods must be consistent.
-```
-```
-o Provided properties may be static or instance
-```
-```
-o Provided properties may be indexers. This corresponds to reporting methods with
-name Item , or as identified by DefaultMemberAttribute non-null results from the
-type.GetEvent and type.GetEvents of the provided type definition. The results
-returned by these methods must be consistent. This include 1D, 2D, 3D and 4D
-indexer access notation in F# (corresponding to different numbers of parameters to
-the indexer property).
-```
-```
-➢ Provided type definitions may report constructors.
-```
-```
+
+  - Provided properties may be static or instance
+
+    - Provided properties may be indexers. This corresponds to reporting methods with
+    name Item , or as identified by `DefaultMemberAttribute` non-null results from the
+    `type.GetEvent` and `type.GetEvents` of the provided type definition. The results
+    returned by these methods must be consistent. This include 1D, 2D, 3D and 4D
+    indexer access notation in F# (corresponding to different numbers of parameters to
+    the indexer property).
+
+- Provided type definitions may report constructors.
+
 This corresponds to non-null results from the type.GetConstructor and type.GetConstructors of
 the provided type definition. The results returned by these methods must be consistent.
-```
-```
-➢ Provided type definitions may report events.
-```
-```
+
+- Provided type definitions may report events.
+
 This corresponds to non-null results from the type.GetEvent and type.GetEvents of the
 provided type definition. The results returned by these methods must be consistent.
-```
-```
-➢ Provided type definitions may report nested types.
-```
 
-```
+- Provided type definitions may report nested types.
+
 This corresponds to non-null results from the type.GetNestedType and type.GetNestedTypes of
 the provided type definition. The results returned by these methods must be consistent.
-```
-```
-o The nested types of an erased type may be generated types in a generated
+
+  - The nested types of an erased type may be generated types in a generated
 assembly. The type.DeclaringType property of the nested type need not report the
 erased type.
-```
-```
-➢ Provided type definitions may report literal (constant) fields.
-```
-```
-This corresponds to non-null results from the type.GetField and type.GetFields of the
+
+- Provided type definitions may report literal (constant) fields.
+
+This corresponds to non-null results from the `type.GetField` and `type.GetFields` of the
 provided type definition, and is related to the fact that provided types may be
 enumerations. The results returned by these methods must be consistent.
-```
-```
-➢ Provided type definitions may not report non-literal (i.e. non-const) fields
-```
-```
+
+- Provided type definitions may not report non-literal (i.e. non-const) fields
+
 This is a deliberate feature limitation, because in .NET, non-literal fields should not appear in
 public API surface area.
-```
-### 16.3.7 Attributes
 
-```
-➢ Provided type definitions, properties, constructors, events and methods may report
+### Attributes
+
+- Provided type definitions, properties, constructors, events and methods may report
 attributes.
-```
-```
-This includes ObsoleteAttribute and ParamArrayAttribute attributes
-```
-### 16.3.8 Accessibility
 
-```
-➢ All erased provided type definitions must be public
-```
-```
+This includes `ObsoleteAttribute` and `ParamArrayAttribute` attributes
+
+### Accessibility
+
+- All erased provided type definitions must be public
+
 However, concrete provided types are each in an assembly A that gets statically linked into
 the resulting F# component. These assemblies may contain private types and methods.
 These types are not directly “provided” types, since they are not returned to the compiler by
 the API, but they are part of the closure of the types that are being embedded.
-```
-### 16.3.9 Elaborated Code
+
+### Elaborated Code
 
 Elaborated uses of provided methods are erased to elaborated expressions returned by the TPM
-GetInvokerExpression. In the current release of F#, replacement elaborated expressions are
+`GetInvokerExpression`. In the current release of F#, replacement elaborated expressions are
 specified via F# quotation values composed of quotations constructed with respect to the
 referenced assemblies in the compilation context according to the following quotation library calls:
 
-```
-➢ Expr.NewArray
-➢ Expr.NewObject
-➢ Expr.WhileLoop
-➢ Expr.NewDelegate
-➢ Expr.ForIntegerRangeLoop
-➢ Expr.Sequential
-➢ Expr.TryWith
-➢ Expr.TryFinally
-```
+- Expr.NewArray
+- Expr.NewObject
+- Expr.WhileLoop
+- Expr.NewDelegate 
+- Expr.ForIntegerRangeLoop 
+- Expr.Sequential 
+- Expr.TryWith 
+- Expr.TryFinally 
+- Expr.Lambda 
+- Expr.Call 
+- Expr.Constant 
+- Expr.DefaultValue 
+- Expr.NewTuple 
+- Expr.TupleGet 
+- Expr.TypeAs 
+- Expr.TypeTest 
+- Expr.Let 
+- Expr.VarSet 
+- Expr.IfThenElse 
+- Expr.Var
 
-```
-➢ Expr.Lambda
-➢ Expr.Call
-➢ Expr.Constant
-➢ Expr.DefaultValue
-➢ Expr.NewTuple
-➢ Expr.TupleGet
-➢ Expr.TypeAs
-➢ Expr.TypeTest
-➢ Expr.Let
-➢ Expr.VarSet
-➢ Expr.IfThenElse
-➢ Expr.Var
-```
-The type of the quotation expression returned by GetInvokerExpression must be an erased type. The
+The type of the quotation expression returned by `GetInvokerExpression` must be an erased type. The
 type provider is obliged to ensure that this type is equivalent to the erased type of the expression it
 is replacing.
 
-### 16.3.10 Further Restrictions
+### Further Restrictions
 
-```
-➢ If a provided type definition reports a member with ExtensionAttribute, it is not treated as
+- If a provided type definition reports a member with `ExtensionAttribute`, it is not treated as
 an extension member
-```
-```
-➢ Provided type and method definitions may not be generic
-```
-```
+
+- Provided type and method definitions may not be generic
+
 This corresponds to
-```
-- GetGenericArguments returning length 0
-- For type definitions, IsGenericType and IsGenericTypeDefinition returning false
-- For method definitions, IsGenericMethod and IsGenericMethodDefinition returning false
+
+- `GetGenericArguments` returning length 0
+- For type definitions, `IsGenericType` and `IsGenericTypeDefinition` returning false
+- For method definitions, `IsGenericMethod` and `IsGenericMethodDefinition` returning false
