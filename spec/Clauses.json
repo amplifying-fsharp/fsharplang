@@ -9,7 +9,8 @@
         "patterns",
         "type-definitions",
         "units-of-measure",
-        "namespaces-and-modules"
+        "namespaces-and-modules",
+        "provided-types"
     ],
     "Annexes": [
     ]
