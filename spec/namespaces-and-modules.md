@@ -369,7 +369,7 @@ let ident typar-defns () = expr
 ```
 References to type functions are elaborated to invocations of such a function.
 
-### Active Pattern Definitions in Modules.......................................................................
+### Active Pattern Definitions in Modules
 
 A value definition within a module that has an `active-pattern-op-name` introduces pattern-matching
 tags into the environment when the module is accessed or opened. For example,
