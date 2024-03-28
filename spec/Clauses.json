@@ -10,7 +10,8 @@
         "type-definitions",
         "units-of-measure",
         "namespaces-and-modules",
-        "namespace-and-module-signatures"
+        "namespace-and-module-signatures",
+        "program-structure-and-execution"
     ],
     "Annexes": [
     ]
