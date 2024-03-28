@@ -10,7 +10,7 @@
         "type-definitions",
         "units-of-measure",
         "namespaces-and-modules",
-        "provided-types"
+        "namespace-and-module-signatures"
     ],
     "Annexes": [
     ]
