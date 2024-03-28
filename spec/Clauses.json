@@ -11,7 +11,8 @@
         "units-of-measure",
         "namespaces-and-modules",
         "namespace-and-module-signatures",
-        "program-structure-and-execution"
+        "program-structure-and-execution",
+        "custom-attributes-and-reflection"
     ],
     "Annexes": [
     ]
