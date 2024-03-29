@@ -15,7 +15,8 @@
         "custom-attributes-and-reflection",
         "inference-procedures",
         "lexical-filtering",
-        "provided-types"
+        "provided-types",
+        "special-attributes-and-types"
     ],
     "Annexes": [
     ]
