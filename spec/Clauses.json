@@ -12,7 +12,8 @@
         "namespaces-and-modules",
         "namespace-and-module-signatures",
         "program-structure-and-execution",
-        "custom-attributes-and-reflection"
+        "custom-attributes-and-reflection",
+        "inference-procedures"
     ],
     "Annexes": [
     ]
