@@ -400,7 +400,7 @@ _Field Label Resolution_ specifies how to resolve identifiers such as `field1` i
 
 _Field Label Resolution_ proceeds through the following steps:
 
-1. Look up all fields in all available types in the _Types_ table and the _FieldLabels_ table ([§8.4](type-definitions.md#record-type-definitions). 2 ).
+1. Look up all fields in all available types in the _Types_ table and the _FieldLabels_ table ([§8.4](type-definitions.md#record-type-definitions)).
 2. Return the set of field declarations.
 
 ## Resolving Application Expressions

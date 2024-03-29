@@ -13,7 +13,9 @@
         "namespace-and-module-signatures",
         "program-structure-and-execution",
         "custom-attributes-and-reflection",
-        "inference-procedures"
+        "inference-procedures",
+        "lexical-filtering",
+        "provided-types"
     ],
     "Annexes": [
     ]
