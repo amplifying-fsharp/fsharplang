@@ -1,6 +1,24 @@
 // This script creates the full spec doc with freshly numbered section headers, adjusted reference links and ToC.
-// For now just a single script, at some point it should become a project with proper tests etc.
-// TODO: annexes
+
+// Configuration of file locations and some document elements
+let specDir = "spec"
+let outDir = "artifacts"
+let outName = "spec"
+let specPath filename = $"{specDir}/{filename}"
+let chapterPath chapterName = specPath chapterName + ".md"
+let catalogPath = specPath "Catalog.json"
+let outFilePath = $"{outDir}/{outName}.md"
+let title = [
+    "The F# Language Specification"
+    "============================="
+    ""
+    ]
+let versionPlaceholder() = [
+    $"_This is an inofficial version, created from sources on {System.DateTime.Now}_"
+    ""
+]
+let tocHeader = [""; "# Table of Contents"]
+
 
 open System
 open System.Text.RegularExpressions
@@ -32,31 +50,12 @@ let initialState = {
     warnings = []
     }
 
-let specDir = "spec"
-let outDir = "artifacts"
-let outName = "spec"
-let specPath filename = $"{specDir}/{filename}"
-let chapterPath chapterName = specPath chapterName + ".md"
-let catalogPath = specPath "Chapters.json"
-let outFilePath = $"{outDir}/{outName}.md"
-
-let title = [
-    "The F# Language Specification"
-    "============================="
-    ""
-    ]
-let versionPlaceholder() = [
-    $"_This is an inofficial version, created from sources on {DateTime.Now}_"
-    ""
-]
-let tocHeader = [""; "# Table of Contents"]
-
 let readChapters() =
     try
         use catalogStream = File.OpenRead catalogPath
         let catalog = JsonSerializer.Deserialize<Catalog> catalogStream
         let getChapter name = {name = name; lines = File.ReadAllLines(chapterPath name) |> Array.toList}
-        let clauses = catalog.MainBody |> List.map getChapter  // For now. TODO: Annexes etc.
+        let clauses = catalog.MainBody |> List.map getChapter
         printfn $"read {clauses.Length} files with a total of {clauses |> List.sumBy (_.lines >> List.length)} lines"
         let frontMatter = getChapter catalog.FrontMatter
         Ok {frontMatter = frontMatter; clauses = clauses}
@@ -165,9 +164,14 @@ let processClauses chapters =
     // Add section numbers to the headers and collect the ToC information
     let (processedClauses, state) = (initialState, chapters.clauses) ||> List.mapFold renumberClause
     // Create the ToC and build the complete spec
-    let clausesLines = List.collect _.lines processedClauses
-    let lines =
-        title @ versionPlaceholder() @ chapters.frontMatter.lines @ tocHeader @ tocLines state.toc @ clausesLines
+    let lines = List.concat [
+        title
+        versionPlaceholder()
+        chapters.frontMatter.lines
+        tocHeader
+        tocLines state.toc
+        List.collect _.lines processedClauses
+    ]
     // Adjust the reference links to point to the correct header of the new spec
     let (lines, state) = ({state with chapterName = outName; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
     if not state.errors.IsEmpty then
