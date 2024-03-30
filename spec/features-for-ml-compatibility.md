@@ -1,10 +1,10 @@
-# FEATURES FOR ML COMPATIBILITY
+# Features for ML Compatibility
 
 F# has its roots in the Caml family of programming languages and its core constructs are similar to
 some other ML-family languages. As a result, F# supports some constructs for compatibility with
 other implementations of ML-family languages.
 
-## CONDITIONAL COMPILATION FOR ML COMPATIBILITY
+## Conditional Compilation for ML Compatibility
 
 F# supports the following constructs for conditional compilation:
 
@@ -46,7 +46,7 @@ are simply processed as “other text.”
 
 The converse holds when programs are compiled using a typical ML compiler.
 
-## EXTRA SYNTACTIC FORMS FOR ML COMPATIBILITY
+## Extra Syntactic Forms for ML Compatibility
 
 The following identifiers are also keywords primarily because they are keywords in OCaml. Although
 F# reserves several OCaml keywords for future use, the `/mlcompatibility` option enables the use of
@@ -111,7 +111,7 @@ e 1 .( e 2 )                → (.()) e 1 e 2
 e 1 .( e 2 ) <- e 3         → (.()<-) e 1 e 2 e 3
 ```
 
-## EXTRA OPERATORS
+## Extra Operators
 
 F# defines the following two additional shortcut operators:
 
@@ -120,7 +120,7 @@ e 1 or e 2                  → (or) e 1 e 2
 e 1 & e 2                   → (&) e 1 e 2
 ```
 
-## FILE EXTENSIONS AND LEXICAL MATTERS
+## File Extensions and Lexical Matters
 
 F# supports the use of the `.ml` and `.mli` extensions on the command line. The “indentation
 awareness off” syntax option is implicitly enabled when using either of these filename extensions.
