@@ -16,7 +16,8 @@
         "inference-procedures",
         "lexical-filtering",
         "provided-types",
-        "special-attributes-and-types"
+        "special-attributes-and-types",
+        "features-for-ml-compatibility"
     ],
     "Annexes": [
     ]
