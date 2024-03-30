@@ -17,6 +17,7 @@
         "lexical-filtering",
         "provided-types",
         "special-attributes-and-types",
+        "the-f-library-fsharpcoredll",
         "features-for-ml-compatibility"
     ],
     "Annexes": [
