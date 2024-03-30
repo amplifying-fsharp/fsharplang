@@ -3,42 +3,39 @@
 Type providers are extensions provided to an F# compiler or interpreter which provide information
 about types available in the environment for the F# code being analysed.
 
-The compilation context is augmented with a set of _type provider instances_. A type provider insance
-is interrogated for information through _type provider invocations_ (TPI). Type provider invocations
+The compilation context is augmented with a set of `type provider instances`. A type provider instance
+is interrogated for information through `type provider invocations` (TPI). Type provider invocations
 are all executed at compile-time. The type provider instance is not required at runtime.
 
-Wherever an operation on a provided namespace, provided type definition or provided
+> Wherever an operation on a provided namespace, provided type definition or provided
 member is mentioned in this section, it is assumed to be a compile-time type provider
-invocation.
-
+invocation.<br><br>
 The exact protocol used to implement type provider invocations and communicate
 between an F# compiler/interpreter and type provider instances is implementation
-dependent.
-
-As of this release of F#,
-
-- a type provider is a .NET 4.x binary component referenced as an imported asssembly
-  reference. The assembly should have a TypeProviderAssemblyAttribute, with at
-  least one component marked with TypeProviderAttribute.
-- a type provider instance is an object created for a component marked with
-  TypeProviderAttribute.
-- provided type definitions are System.Type objects returned by a type provider
-  instance.
-- provided methods are System.Reflection.MethodInfo objects returned by a type
-  provider instance.
-- provided constructors are System.Reflection.ConstructorInfo objects returned by
-  a type provider instance.
-- provided properties are System.Reflection.PropertyInfo objects returned by a type
-  provider instance.
-- provided events are System.Reflection.EventInfo objects returned by a type
-  provider instance.
-- provided literal fields are System.Reflection.FieldInfo objects returned by a type
-  provider instance.
-- provided parameters are System.Reflection.ParameterInfo objects returned by a
-  type provider instance.
-- provided static parameters are System.Reflection.ParameterInfo objects returned
-  by a type provider instance.
-- provided attributes are attribute value objects returned by a type provider instance.
+dependent.<br><br>
+As of this release of F#,<br><br>
+    - a type provider is a .NET 4.x binary component referenced as an imported assembly<br>
+      reference. The assembly should have a `TypeProviderAssemblyAttribute`, with at
+      least one component marked with `TypeProviderAttribute`.<br>
+    - a type provider instance is an object created for a component marked with
+      `TypeProviderAttribute`.<br>
+    - provided type definitions are `System.Type` objects returned by a type provider
+      instance.<br>
+    - provided methods are `System.Reflection.MethodInfo` objects returned by a type
+      provider instance.<br>
+    - provided constructors are `System.Reflection.ConstructorInfo` objects returned by
+      a type provider instance.<br>
+    - provided properties are `System.Reflection.PropertyInfo` objects returned by a type
+      provider instance.<br>
+    - provided events are `System.Reflection.EventInfo` objects returned by a type
+      provider instance.<br>
+    - provided literal fields are `System.Reflection.FieldInfo` objects returned by a type
+      provider instance.<br>
+    - provided parameters are `System.Reflection.ParameterInfo` objects returned by a
+      type provider instance.<br>
+    - provided static parameters are `System.Reflection.ParameterInfo` objects returned
+      by a type provider instance.<br>
+    - provided attributes are attribute value objects returned by a type provider instance.<br>
 
 ## Static Parameters
 
@@ -52,7 +49,7 @@ static-parameter =
     static-parameter-value
     id = static-parameter-value
 
-    static-parameter-value =
+static-parameter-value =
     const expr
     simple-constant-expression
 ```
@@ -129,9 +126,9 @@ returned by the TPM `type.BaseType`. The erasure of an erased interface type is 
 
 - If it has a type definition under a path `D.E.F` , and the .Assembly of that type is in a different
 assembly A to the provider’s assembly, then that type definition is a `generated` type
-definition. Otherwise it is an erased type definition.
+definition. Otherwise, it is an erased type definition.
 
-- Erased type definitions must return TypeAttributes with the IsErased flag set, value
+- Erased type definitions must return `TypeAttributes` with the `IsErased` flag set, value
 `0x40000000` and given by the F# literal `TypeProviderTypeAttributes.IsErased`.
 
 - When a provided type definition is generated, its reported assembly `A` is treated as an
@@ -181,17 +178,13 @@ and named static arguments must come after all other arguments.
 
 ### Kind
 
-- Provided type definitions may be classes.
-This includes both erased and concrete types. This corresponds to the `type.IsClass` property
-returning true for the provided type definition.
+- Provided type definitions may be classes. This includes both erased and concrete types. 
+This corresponds to the `type.IsClass` property returning true for the provided type definition.
 
-- Provided type definitions may be interfaces.
-This includes both erased and concrete types. This corresponds to the `type.IsInterface`
-property returning true. Only one of `IsInterface`, `IsClass`, `IsStruct`, `IsEnum`, `IsDelegate`,
-`IsArray` may return true.
+- Provided type definitions may be interfaces. This includes both erased and concrete types. 
+This corresponds to the `type.IsInterface` property returning true. Only one of `IsInterface`, `IsClass`, `IsStruct`, `IsEnum`, `IsDelegate`, `IsArray` may return true.
 
-- Provided type definitions may be static classes.
-This includes both erased and concrete types.
+- Provided type definitions may be static classes. This includes both erased and concrete types.
 
 - Provided type definitions may be sealed. 
 
@@ -199,7 +192,7 @@ This includes both erased and concrete types.
 always return false. Provided types used in return types and argument positions may be
 array `symbol` types, see below.
 
-- By default provided type definitions which are reference types are considered to support
+- By default, provided type definitions which are reference types are considered to support
 `null` literals.
 
 A provided type definition may have the `AllowNullLiteralAttribute` with value `false` in
@@ -214,73 +207,72 @@ which case the type is considered to have null as an abnormal value.
 
 - Provided type definitions may report methods.
 
-This corresponds to non-null results from the `type.GetMethod` and `type.GetMethods` of the
-provided type definition. The results returned by these methods must be consistent.
+    This corresponds to non-null results from the `type.GetMethod` and `type.GetMethods` of the
+    provided type definition. The results returned by these methods must be consistent.
 
-  - Provided methods may be static, instance and abstract
-    - Provided methods may not be class constructors (.cctor). By .NET rules these would
-      have to be private anyway.
+    - Provided methods may be static, instance and abstract
+    - Provided methods may not be class constructors (.cctor). By .NET rules these would have to be private anyway.
     - Provided methods may be operators such as op_Addition.
 
 - Provided type definitions may report properties.
 
-This corresponds to non-null results from the `type.GetProperty` and `type.GetProperties` of the
-provided type definition. The results returned by these methods must be consistent.
-
-  - Provided properties may be static or instance
-
+    This corresponds to non-null results from the `type.GetProperty` and `type.GetProperties` of the
+    provided type definition. The results returned by these methods must be consistent.
+    
+    - Provided properties may be static or instance
     - Provided properties may be indexers. This corresponds to reporting methods with
     name Item , or as identified by `DefaultMemberAttribute` non-null results from the
     `type.GetEvent` and `type.GetEvents` of the provided type definition. The results
-    returned by these methods must be consistent. This include 1D, 2D, 3D and 4D
+    returned by these methods must be consistent. This includes 1D, 2D, 3D and 4D
     indexer access notation in F# (corresponding to different numbers of parameters to
     the indexer property).
 
 - Provided type definitions may report constructors.
 
-This corresponds to non-null results from the type.GetConstructor and type.GetConstructors of
-the provided type definition. The results returned by these methods must be consistent.
+    This corresponds to non-null results from the type.GetConstructor and type.GetConstructors of
+    the provided type definition. The results returned by these methods must be consistent.
 
 - Provided type definitions may report events.
 
-This corresponds to non-null results from the type.GetEvent and type.GetEvents of the
-provided type definition. The results returned by these methods must be consistent.
+    This corresponds to non-null results from the type.GetEvent and type.GetEvents of the
+    provided type definition. The results returned by these methods must be consistent.
 
 - Provided type definitions may report nested types.
 
-This corresponds to non-null results from the type.GetNestedType and type.GetNestedTypes of
-the provided type definition. The results returned by these methods must be consistent.
+    This corresponds to non-null results from the type.GetNestedType and type.GetNestedTypes of
+    the provided type definition. The results returned by these methods must be consistent.
 
-  - The nested types of an erased type may be generated types in a generated
-assembly. The type.DeclaringType property of the nested type need not report the
-erased type.
+    - The nested types of an erased type may be generated types in a generated
+    assembly. The `type.DeclaringType` property of the nested type need not report the
+    erased type.
+
 
 - Provided type definitions may report literal (constant) fields.
 
-This corresponds to non-null results from the `type.GetField` and `type.GetFields` of the
-provided type definition, and is related to the fact that provided types may be
-enumerations. The results returned by these methods must be consistent.
+    This corresponds to non-null results from the `type.GetField` and `type.GetFields` of the
+    provided type definition, and is related to the fact that provided types may be
+    enumerations. The results returned by these methods must be consistent.
 
 - Provided type definitions may not report non-literal (i.e. non-const) fields
 
-This is a deliberate feature limitation, because in .NET, non-literal fields should not appear in
-public API surface area.
+    This is a deliberate feature limitation, because in .NET, non-literal fields should not appear in
+    public API surface area.
 
 ### Attributes
 
 - Provided type definitions, properties, constructors, events and methods may report
 attributes.
 
-This includes `ObsoleteAttribute` and `ParamArrayAttribute` attributes
+    This includes `ObsoleteAttribute` and `ParamArrayAttribute` attributes
 
 ### Accessibility
 
 - All erased provided type definitions must be public
 
-However, concrete provided types are each in an assembly A that gets statically linked into
-the resulting F# component. These assemblies may contain private types and methods.
-These types are not directly “provided” types, since they are not returned to the compiler by
-the API, but they are part of the closure of the types that are being embedded.
+    However, concrete provided types are each in an assembly A that gets statically linked into
+    the resulting F# component. These assemblies may contain private types and methods.
+    These types are not directly “provided” types, since they are not returned to the compiler by
+    the API, but they are part of the closure of the types that are being embedded.
 
 ### Elaborated Code
 
@@ -321,8 +313,7 @@ an extension member
 
 - Provided type and method definitions may not be generic
 
-This corresponds to
-
-- `GetGenericArguments` returning length 0
-- For type definitions, `IsGenericType` and `IsGenericTypeDefinition` returning false
-- For method definitions, `IsGenericMethod` and `IsGenericMethodDefinition` returning false
+    This corresponds to
+    - `GetGenericArguments` returning length 0
+    - For type definitions, `IsGenericType` and `IsGenericTypeDefinition` returning false
+    - For method definitions, `IsGenericMethod` and `IsGenericMethodDefinition` returning false
