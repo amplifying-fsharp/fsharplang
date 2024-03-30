@@ -1,16 +1,17 @@
 // This script creates the full spec doc with freshly numbered section headers, adjusted reference links and ToC.
 // For now just a single script, at some point it should become a project with proper tests etc.
-// TODO: boilerplate, annexes ...
+// TODO: annexes
 
 open System
 open System.Text.RegularExpressions
 open System.Text.Json
 open System.IO
 
-type Clause = {name: string; lines: string list}
-type ClauseCatalog = {MainBody: string list; Annexes: string list}
+type Chapter = {name: string; lines: string list}
+type Chapters = {frontMatter: Chapter; clauses: Chapter list}
+type Catalog = {FrontMatter: string; MainBody: string list; Annexes: string list}
 type BuildState = {
-    clauseName: string
+    chapterName: string
     lineNumber: int
     sectionNumber: int list
     inCodeBlock: bool
@@ -21,9 +22,8 @@ type BuildState = {
 type BuildError = IoFailure of string | DocumentErrors of string list
 
 let warningsAsErrors = false   // set this to true once the baseline is complete
-let docHead = [$"WIP {DateTime.Now}"; "# Table of Contents"]
 let initialState = {
-    clauseName = ""
+    chapterName = ""
     lineNumber = 0
     sectionNumber = []
     inCodeBlock = false
@@ -36,18 +36,30 @@ let specDir = "spec"
 let outDir = "artifacts"
 let outName = "spec"
 let specPath filename = $"{specDir}/{filename}"
-let clausePath clauseName = specPath clauseName + ".md"
-let clauseCatalogPath = specPath "Clauses.json"
+let chapterPath chapterName = specPath chapterName + ".md"
+let catalogPath = specPath "Chapters.json"
 let outFilePath = $"{outDir}/{outName}.md"
 
-let readClauses() =
+let title = [
+    "The F# Language Specification"
+    "============================="
+    ""
+    ]
+let versionPlaceholder() = [
+    $"_This is an inofficial version, created from sources on {DateTime.Now}_"
+    ""
+]
+let tocHeader = [""; "# Table of Contents"]
+
+let readChapters() =
     try
-        use clauseStream = File.OpenRead clauseCatalogPath
-        let clauseCatalog = JsonSerializer.Deserialize<ClauseCatalog> clauseStream
-        let getClause name = {name = name; lines = File.ReadAllLines(clausePath name) |> Array.toList}
-        let clauses = clauseCatalog.MainBody |> List.map getClause  // For now. TODO: Annexes etc.
+        use catalogStream = File.OpenRead catalogPath
+        let catalog = JsonSerializer.Deserialize<Catalog> catalogStream
+        let getChapter name = {name = name; lines = File.ReadAllLines(chapterPath name) |> Array.toList}
+        let clauses = catalog.MainBody |> List.map getChapter  // For now. TODO: Annexes etc.
         printfn $"read {clauses.Length} files with a total of {clauses |> List.sumBy (_.lines >> List.length)} lines"
-        Ok clauses
+        let frontMatter = getChapter catalog.FrontMatter
+        Ok {frontMatter = frontMatter; clauses = clauses}
     with
         e -> Error(IoFailure e.Message)
 
@@ -81,7 +93,7 @@ let referenceable (s: string) =
             if c = ' ' then yield '-'
     |]
 
-let mkError state msg = $"{state.clauseName}.md({state.lineNumber}): {msg}"
+let mkError state msg = $"{state.chapterName}.md({state.lineNumber}): {msg}"
 
 let checkCodeBlock state line =
     let m = Regex.Match(line, " *```(.*)")
@@ -118,7 +130,7 @@ let renumberIfHeaderLine state line =
                 headerLine, {state with sectionNumber = sectionNumber; toc = state.toc.Add(sectionNumber, heading)}
 
 let renumberClause state clause =
-    let state = {state with clauseName = clause.name; lineNumber = 0}
+    let state = {state with chapterName = clause.name; lineNumber = 0}
     let outLines, state = (state, clause.lines) ||> List.mapFold renumberIfHeaderLine
     {clause with lines = outLines}, state
 
@@ -149,13 +161,15 @@ let adjustLinks state line =
         else lineFragment, state
     adjustLinks' state line
 
-let processClauses clauses =
+let processClauses chapters =
     // Add section numbers to the headers and collect the ToC information
-    let (processedClauses, state) = (initialState, clauses) ||> List.mapFold renumberClause
+    let (processedClauses, state) = (initialState, chapters.clauses) ||> List.mapFold renumberClause
     // Create the ToC and build the complete spec
-    let lines = docHead @ tocLines state.toc @ List.collect _.lines processedClauses
+    let clausesLines = List.collect _.lines processedClauses
+    let lines =
+        title @ versionPlaceholder() @ chapters.frontMatter.lines @ tocHeader @ tocLines state.toc @ clausesLines
     // Adjust the reference links to point to the correct header of the new spec
-    let (lines, state) = ({state with clauseName = outName; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
+    let (lines, state) = ({state with chapterName = outName; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
     if not state.errors.IsEmpty then
         Error(DocumentErrors (List.rev state.errors))
     else
@@ -163,7 +177,7 @@ let processClauses clauses =
         Ok lines
 
 let build() =
-    match readClauses() |> Result.bind processClauses |> Result.bind writeSpec with
+    match readChapters() |> Result.bind processClauses |> Result.bind writeSpec with
     | Ok () -> 0
     | Error(IoFailure msg) -> printfn $"IO error: %s{msg}"; 1
     | Error(DocumentErrors errors) -> errors |> List.iter (printfn "Error: %s"); 2
