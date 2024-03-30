@@ -88,8 +88,10 @@ let checkCodeBlock state line =
     if not m.Success then state else
         if state.inCodeBlock then {state with inCodeBlock = false} else
             let infoString = m.Groups[1].Value
-            if not <| List.contains infoString ["fsgrammar"; "fsharp"; "csharp"; "fsother"] then
-                let msg = "starting code block fences must be '```fsgrammar', '```fsharp', '```csharp' or 'fsother'"
+            let validInfoStrings = ["fsgrammar"; "fsharp"; "csharp"; "fsother"]
+            if not <| List.contains infoString validInfoStrings then
+                let validFences = validInfoStrings |> List.map ((+) "```") |> String.concat ", "
+                let msg = $"starting code block fences must be one of {validFences}"
                 {state with inCodeBlock = true; errors = (mkError state msg)::state.errors}
             else {state with inCodeBlock = true}
 
