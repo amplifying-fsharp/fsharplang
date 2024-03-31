@@ -6,9 +6,7 @@ and does not yet incorporate all RFCs since F# 4.1 (including some of the 4.1 RF
 
 > Authors of the original F# spec:  <br> Don Syme, with assistance from Anar Alimov, Keith Battocchi, Jomo Fisher, Michael Hale, Jack Hu, Luke Hoban, Tao Liu, Dmitry Lomov,  James Margetson, Brian McNamara, Joe Pamer, Penny
 Orwick, Daniel Quirk, Kevin Ransom, Chris Smith, Matteo Taveggia, Donna Malayeri, Wonseok Chae,
-Uladzimir Matsveyeu, Lincoln Atkinson, and others.
-<br>
-For contributors to the later version, see the github history / insights.
+Uladzimir Matsveyeu, Lincoln Atkinson, and others.<br>For contributors to the later version, see the github history / insights.
 
 **Notice**
 
