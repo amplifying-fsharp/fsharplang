@@ -107,8 +107,8 @@ expr :=
 Are equivalent to the following uses of library-defined operators:
 
 ```fsgrammar
-e 1 .( e 2 )                → (.()) e 1 e 2
-e 1 .( e 2 ) <- e 3         → (.()<-) e 1 e 2 e 3
+e1.(e2)               → (.()) e1 e2
+e1.(e2) <- e3         → (.()<-) e1 e2 e3
 ```
 
 ## Extra Operators
@@ -116,8 +116,8 @@ e 1 .( e 2 ) <- e 3         → (.()<-) e 1 e 2 e 3
 F# defines the following two additional shortcut operators:
 
 ```fsgrammar
-e 1 or e 2                  → (or) e 1 e 2
-e 1 & e 2                   → (&) e 1 e 2
+e1 or e2                  → (or) e1 e2
+e1 & e2                   → (&) e1 e2
 ```
 
 ## File Extensions and Lexical Matters
