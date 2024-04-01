@@ -35,11 +35,9 @@ type BuildState = {
     inCodeBlock: bool
     toc: Map<int list, string>
     errors: string list
-    warnings: string list
     }
 type BuildError = IoFailure of string | DocumentErrors of string list
 
-let warningsAsErrors = false   // set this to true once the baseline is complete
 let initialState = {
     chapterName = ""
     lineNumber = 0
@@ -47,7 +45,6 @@ let initialState = {
     inCodeBlock = false
     toc = Map.empty
     errors = []
-    warnings = []
     }
 
 let readChapters() =
@@ -153,10 +150,7 @@ let adjustLinks state line =
                 $"{pre}[§{sText}](#{referenceable sText}-{anchor}){post'}", state'
             | None ->
                 let msg = $"unknown link target {filename}#{anchor} ({sText})"
-                if warningsAsErrors then
-                    lineFragment, {state with errors = (mkError state msg)::state.errors}
-                else
-                    lineFragment, {state with warnings = (mkError state msg)::state.warnings}
+                lineFragment, {state with errors = (mkError state msg)::state.errors}
         else lineFragment, state
     adjustLinks' state line
 
@@ -177,7 +171,6 @@ let processClauses chapters =
     if not state.errors.IsEmpty then
         Error(DocumentErrors (List.rev state.errors))
     else
-        state.warnings |> List.rev |> List.iter (printfn "Warning: %s")
         Ok lines
 
 let build() =
