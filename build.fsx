@@ -1,6 +1,7 @@
 // This script creates the full spec doc with freshly numbered section headers, adjusted reference links and ToC.
-// Note that the reference links do work on github and in VS Code, but not with all other markdown dialects. This
-// assumes that markdown is used for development, while releases eventually would be in html and pdf.
+// Note that the reference links do work on github and in VS Code, but not with all other markdown dialects. For
+// releases (which will probably be html or pdf), a conversion tool must be used that preserves the links, or else
+// this build script must be updated to add a proper name tags to the headings.
 
 // Configuration of file locations and some document elements
 let specDir = "spec"
