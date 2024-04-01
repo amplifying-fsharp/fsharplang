@@ -1,4 +1,6 @@
 // This script creates the full spec doc with freshly numbered section headers, adjusted reference links and ToC.
+// Note that the reference links do work on github and in VS Code, but not with all other markdown dialects. This
+// assumes that markdown is used for development, while releases eventually would be in html and pdf.
 
 // Configuration of file locations and some document elements
 let specDir = "spec"
@@ -47,8 +49,10 @@ let readChapters () =
         let catalog = JsonSerializer.Deserialize<Catalog> catalogStream
         let getChapter name = {name = name; lines = File.ReadAllLines(chapterPath name) |> Array.toList}
         let clauses = catalog.MainBody |> List.map getChapter
-        printfn $"read {clauses.Length} files with a total of {clauses |> List.sumBy (_.lines >> List.length)} lines"
         let frontMatter = getChapter catalog.FrontMatter
+        let totalChapters = clauses.Length + 1
+        let totalLines = List.sumBy (_.lines >> List.length) clauses + frontMatter.lines.Length
+        printfn $"read {totalChapters} files with a total of {totalLines} lines"
         Ok {frontMatter = frontMatter; clauses = clauses}
     with e ->
         Error(IoFailure e.Message)
@@ -76,7 +80,7 @@ let newSection level prevSection =
         | _ -> []
     newSectionR (List.rev prevSection) |> List.rev
 
-let referenceable (s: string) =
+let kebabCase (s: string) =
     let convertChar c =
         if Char.IsAsciiLetterLower c || c = '-' || Char.IsAsciiDigit c then Some c
         elif Char.IsAsciiLetterUpper c then Some(Char.ToLower c)
@@ -133,7 +137,7 @@ let renumberClause state clause =
 let tocLines toc =
     let tocLine (number, heading) =
         let sText = sectionText number
-        let anchor = $"#{referenceable sText}-{referenceable heading}"
+        let anchor = $"#{kebabCase sText}-{kebabCase heading}"
         String.replicate (number.Length - 1) "  " + $"- [{sText} {heading}]({anchor})"
     toc |> Map.toList |> List.map tocLine
 
@@ -147,7 +151,7 @@ let adjustLinks state line =
             match Map.tryPick (fun n heading -> if sectionText n = sText then Some heading else None) state.toc with
             | Some _ ->
                 let post', state' = adjustLinks' state post
-                $"{pre}[§{sText}](#{referenceable sText}-{anchor}){post'}", state'
+                $"{pre}[§{sText}](#{kebabCase sText}-{anchor}){post'}", state'
             | None ->
                 let msg = $"unknown link target {filename}#{anchor} ({sText})"
                 lineFragment, {state with errors = (mkError state msg) :: state.errors}
