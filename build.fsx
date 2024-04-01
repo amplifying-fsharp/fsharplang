@@ -8,17 +8,9 @@ let specPath filename = $"{specDir}/{filename}"
 let chapterPath chapterName = specPath chapterName + ".md"
 let catalogPath = specPath "Catalog.json"
 let outFilePath = $"{outDir}/{outName}.md"
-let title = [
-    "The F# Language Specification"
-    "============================="
-    ""
-    ]
-let versionPlaceholder() = [
-    $"_This is an inofficial version, created from sources on {System.DateTime.Now}_"
-    ""
-]
+let title = ["The F# Language Specification"; "============================="; ""]
+let versionPlaceholder () = [$"_This is an inofficial version, created from sources on {System.DateTime.Now}_"; ""]
 let tocHeader = [""; "# Table of Contents"]
-
 
 open System
 open System.Text.RegularExpressions
@@ -35,8 +27,10 @@ type BuildState = {
     inCodeBlock: bool
     toc: Map<int list, string>
     errors: string list
-    }
-type BuildError = IoFailure of string | DocumentErrors of string list
+}
+type BuildError =
+    | IoFailure of string
+    | DocumentErrors of string list
 
 let initialState = {
     chapterName = ""
@@ -45,9 +39,9 @@ let initialState = {
     inCodeBlock = false
     toc = Map.empty
     errors = []
-    }
+}
 
-let readChapters() =
+let readChapters () =
     try
         use catalogStream = File.OpenRead catalogPath
         let catalog = JsonSerializer.Deserialize<Catalog> catalogStream
@@ -56,17 +50,18 @@ let readChapters() =
         printfn $"read {clauses.Length} files with a total of {clauses |> List.sumBy (_.lines >> List.length)} lines"
         let frontMatter = getChapter catalog.FrontMatter
         Ok {frontMatter = frontMatter; clauses = clauses}
-    with
-        e -> Error(IoFailure e.Message)
+    with e ->
+        Error(IoFailure e.Message)
 
 let writeSpec (lines: string list) =
     try
-        if not <| Directory.Exists outDir then Directory.CreateDirectory outDir |> ignore
+        if not <| Directory.Exists outDir then
+            Directory.CreateDirectory outDir |> ignore
         File.WriteAllLines(outFilePath, lines)
         printfn $"created {outFilePath}"
-        Ok ()
-    with
-        e -> Error(IoFailure e.Message)
+        Ok()
+    with e ->
+        Error(IoFailure e.Message)
 
 let sectionText sectionNumber =
     $"""{List.head sectionNumber}.{List.tail sectionNumber |> List.map string |> String.concat "."}"""
@@ -74,40 +69,48 @@ let sectionText sectionNumber =
 let newSection level prevSection =
     let rec newSectionR prevSectionR =
         match prevSectionR with
-            | [] -> [1]
-            | h::t when prevSectionR.Length = level -> (h + 1)::t
-            | _::t when prevSectionR.Length > level -> newSectionR t
-            | _ when prevSectionR.Length = level - 1 -> 1::prevSectionR
-            | _ -> []
+        | [] -> [1]
+        | h :: t when prevSectionR.Length = level -> (h + 1) :: t
+        | _ :: t when prevSectionR.Length > level -> newSectionR t
+        | _ when prevSectionR.Length = level - 1 -> 1 :: prevSectionR
+        | _ -> []
     newSectionR (List.rev prevSection) |> List.rev
 
 let referenceable (s: string) =
     String [|
         for c in s do
-            if Char.IsAsciiLetterLower c || c = '-' || Char.IsAsciiDigit c then yield c
-            if Char.IsAsciiLetterUpper c then yield Char.ToLower c
-            if c = ' ' then yield '-'
+            if Char.IsAsciiLetterLower c || c = '-' || Char.IsAsciiDigit c then
+                yield c
+            if Char.IsAsciiLetterUpper c then
+                yield Char.ToLower c
+            if c = ' ' then
+                yield '-'
     |]
 
 let mkError state msg = $"{state.chapterName}.md({state.lineNumber}): {msg}"
 
 let checkCodeBlock state line =
     let m = Regex.Match(line, " *```(.*)")
-    if not m.Success then state else
-        if state.inCodeBlock then {state with inCodeBlock = false} else
-            let infoString = m.Groups[1].Value
-            let validInfoStrings = ["fsgrammar"; "fsharp"; "csharp"; "fsother"]
-            if not <| List.contains infoString validInfoStrings then
-                let validFences = validInfoStrings |> List.map ((+) "```") |> String.concat ", "
-                let msg = $"starting code block fences must be one of {validFences}"
-                {state with inCodeBlock = true; errors = (mkError state msg)::state.errors}
-            else {state with inCodeBlock = true}
+    if not m.Success then
+        state
+    else if state.inCodeBlock then
+        {state with inCodeBlock = false}
+    else
+        let infoString = m.Groups[1].Value
+        let validInfoStrings = ["fsgrammar"; "fsharp"; "csharp"; "fsother"]
+        if not <| List.contains infoString validInfoStrings then
+            let validFences = validInfoStrings |> List.map ((+) "```") |> String.concat ", "
+            let msg = $"starting code block fences must be one of {validFences}"
+            {state with inCodeBlock = true; errors = (mkError state msg) :: state.errors}
+        else
+            {state with inCodeBlock = true}
 
 let renumberIfHeaderLine state line =
     let state = {state with lineNumber = state.lineNumber + 1}
     let state = checkCodeBlock state line
     let m = Regex.Match(line, "^(#+) +(.*)")
-    if state.inCodeBlock || not m.Success then line, state
+    if state.inCodeBlock || not m.Success then
+        line, state
     else
         let headerPrefix = m.Groups[1].Value
         let level = headerPrefix.Length
@@ -115,12 +118,12 @@ let renumberIfHeaderLine state line =
         let m = Regex.Match(heading, "^\d")
         if m.Success then
             let msg = "Headers must not start with digits"
-            line, {state with errors = (mkError state msg)::state.errors}
+            line, {state with errors = (mkError state msg) :: state.errors}
         else
             let sectionNumber = newSection level state.sectionNumber
             if sectionNumber.IsEmpty then
                 let msg = $"The header level jumps from {state.sectionNumber.Length} to {level}"
-                line, {state with errors = (mkError state msg)::state.errors}
+                line, {state with errors = (mkError state msg) :: state.errors}
             else
                 let headerLine = $"{headerPrefix} {sectionText sectionNumber} {heading}"
                 headerLine, {state with sectionNumber = sectionNumber; toc = state.toc.Add(sectionNumber, heading)}
@@ -131,13 +134,13 @@ let renumberClause state clause =
     {clause with lines = outLines}, state
 
 let tocLines toc =
-    let tocLine (number, heading) = 
+    let tocLine (number, heading) =
         let sText = sectionText number
         let anchor = $"#{referenceable sText}-{referenceable heading}"
         String.replicate (number.Length - 1) "  " + $"- [{sText} {heading}]({anchor})"
     toc |> Map.toList |> List.map tocLine
 
-let adjustLinks state line = 
+let adjustLinks state line =
     let state = {state with lineNumber = state.lineNumber + 1}
     let rec adjustLinks' state lineFragment =
         let m = Regex.Match(lineFragment, "(.*)\[§(\d+\.[\.\d]*)\]\(([^#)]+)#([^)]+)\)(.*)")
@@ -150,35 +153,36 @@ let adjustLinks state line =
                 $"{pre}[§{sText}](#{referenceable sText}-{anchor}){post'}", state'
             | None ->
                 let msg = $"unknown link target {filename}#{anchor} ({sText})"
-                lineFragment, {state with errors = (mkError state msg)::state.errors}
-        else lineFragment, state
+                lineFragment, {state with errors = (mkError state msg) :: state.errors}
+        else
+            lineFragment, state
     adjustLinks' state line
 
 let processClauses chapters =
     // Add section numbers to the headers and collect the ToC information
     let (processedClauses, state) = (initialState, chapters.clauses) ||> List.mapFold renumberClause
     // Create the ToC and build the complete spec
-    let lines = List.concat [
-        title
-        versionPlaceholder()
-        chapters.frontMatter.lines
-        tocHeader
-        tocLines state.toc
-        List.collect _.lines processedClauses
-    ]
+    let lines =
+        List.concat [
+            title
+            versionPlaceholder ()
+            chapters.frontMatter.lines
+            tocHeader
+            tocLines state.toc
+            List.collect _.lines processedClauses
+        ]
     // Adjust the reference links to point to the correct header of the new spec
     let (lines, state) = ({state with chapterName = outName; lineNumber = 0}, lines) ||> List.mapFold adjustLinks
-    if not state.errors.IsEmpty then
-        Error(DocumentErrors (List.rev state.errors))
-    else
-        Ok lines
+    if not state.errors.IsEmpty then Error(DocumentErrors(List.rev state.errors)) else Ok lines
 
-let build() =
-    match readChapters() |> Result.bind processClauses |> Result.bind writeSpec with
-    | Ok () -> 0
-    | Error(IoFailure msg) -> printfn $"IO error: %s{msg}"; 1
-    | Error(DocumentErrors errors) -> errors |> List.iter (printfn "Error: %s"); 2
+let build () =
+    match readChapters () |> Result.bind processClauses |> Result.bind writeSpec with
+    | Ok() -> 0
+    | Error(IoFailure msg) ->
+        printfn $"IO error: %s{msg}"
+        1
+    | Error(DocumentErrors errors) ->
+        errors |> List.iter (printfn "Error: %s")
+        2
 
-build()
-
-
+build ()
