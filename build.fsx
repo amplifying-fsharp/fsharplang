@@ -77,15 +77,12 @@ let newSection level prevSection =
     newSectionR (List.rev prevSection) |> List.rev
 
 let referenceable (s: string) =
-    String [|
-        for c in s do
-            if Char.IsAsciiLetterLower c || c = '-' || Char.IsAsciiDigit c then
-                yield c
-            if Char.IsAsciiLetterUpper c then
-                yield Char.ToLower c
-            if c = ' ' then
-                yield '-'
-    |]
+    let convertChar c =
+        if Char.IsAsciiLetterLower c || c = '-' || Char.IsAsciiDigit c then Some c
+        elif Char.IsAsciiLetterUpper c then Some(Char.ToLower c)
+        elif c = ' ' then Some '-'
+        else None
+    s |> Seq.choose convertChar |> Seq.toArray |> String
 
 let mkError state msg = $"{state.chapterName}.md({state.lineNumber}): {msg}"
 
