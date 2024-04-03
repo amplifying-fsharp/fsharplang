@@ -289,12 +289,16 @@ In this expression, the `expr infix-op expr` rule for `b * c` takes precedence o
 expression can be pictured as follows:
 
 ```fsharp
-a + b * c
+   a + b * c
+// _________
+//     _____
 ```
 rather than
 
 ```fsharp
-a + b * c
+   a + b * c
+// _________
+// _____
 ```
 Likewise, given the tokens
 
@@ -304,8 +308,10 @@ a * b * c
 the left associativity of `*` means we can picture the resolution of the ambiguity as:
 
 ```fsharp
-a * b * c
+   a * b * c
+// _____
 ```
+
 In the preceding table, leading `.` characters are ignored when determining precedence for infix
 operators. For example, `.*` has the same precedence as `*.` This rule ensures that operators such as
 `.*`, which is frequently used for pointwise-operation on matrices, have the expected precedence.
