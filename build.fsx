@@ -1,7 +1,7 @@
 // This script creates the full spec doc with freshly numbered section headers, adjusted reference links and ToC.
 // Note that the reference links do work on github and in VS Code, but not with all other markdown dialects. For
 // releases (which will probably be html or pdf), a conversion tool must be used that preserves the links, or else
-// this build script must be updated to add a proper name tags to the headings.
+// this build script must be updated to add proper name tags to the headings.
 
 // Configuration of file locations and some document elements
 let specDir = "spec"
@@ -151,7 +151,7 @@ let adjustLinks state line =
                 m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value, m.Groups[5].Value
             match Map.tryPick (fun n heading -> if sectionText n = sText then Some heading else None) state.toc with
             | Some _ ->
-                let post', state' = adjustLinks' state post
+                let post', state' = adjustLinks' state post  // recursive check for multiple links in a line
                 $"{pre}[§{sText}](#{kebabCase sText}-{anchor}){post'}", state'
             | None ->
                 let msg = $"unknown link target {filename}#{anchor} ({sText})"
@@ -160,8 +160,8 @@ let adjustLinks state line =
             lineFragment, state
     adjustLinks' state line
 
-let processClauses chapters =
-    // Add section numbers to the headers and collect the ToC information
+let processChapters chapters =
+    // Add section numbers to the headers, collect the ToC information, and check for correct code fence info strings
     let (processedClauses, state) = (initialState, chapters.clauses) ||> List.mapFold renumberClause
     // Create the ToC and build the complete spec
     let lines =
@@ -178,7 +178,7 @@ let processClauses chapters =
     if not state.errors.IsEmpty then Error(DocumentErrors(List.rev state.errors)) else Ok lines
 
 let build () =
-    match readChapters () |> Result.bind processClauses |> Result.bind writeSpec with
+    match readChapters () |> Result.bind processChapters |> Result.bind writeSpec with
     | Ok() -> 0
     | Error(IoFailure msg) ->
         printfn $"IO error: %s{msg}"
